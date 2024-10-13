@@ -1,0 +1,277 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  idRole        Int             @id
+  TenNguoiDung  String?         @db.VarChar(45)
+  Users         Users[]
+  RolePermission RolePermission[]
+}
+
+model Users {
+  idUsers     Int       @id @default(autoincrement())
+  Tentaikhoan String?   @db.VarChar(225)
+  Matkhau     String?   @db.VarChar(225)
+  Hoten       String?   @db.VarChar(225)
+  Sdt         String?   @db.VarChar(15)
+  Diachi      String?   @db.VarChar(45)
+  Email       String?   @db.VarChar(45) @unique
+  idRole      Int?      @unique
+  Ngaydangky  DateTime? @db.Date
+  role        Role?     @relation(fields: [idRole], references: [idRole])
+  DonHang     DonHang[]
+  GioHang     GioHang[]
+  LichLamViec LichLamViec[]
+  TuVanKhachHangAsNhanVien TuVanKhachHang[]@relation(name: "KhachHangTuVan")
+  TuVanKhachHangAsKhachHang TuVanKhachHang[] @relation(name: "NhanVienTuVan")
+  ChamCong    ChamCong[]
+  DatCoc      DatCoc[]
+  Luong       Luong[]
+  LichHenLayXe LichHenLayXe[]
+  LichGiaoXe  LichGiaoXe[]
+
+}
+
+model LoaiXe {
+  idLoaiXe Int     @id @default(autoincrement())
+  TenLoai  String? @db.VarChar(225)
+  NhanHieu String? @db.VarChar(45)
+  Xe       Xe[]
+}
+
+model Xe {
+  idXe        Int       @id @default(autoincrement())
+  TenXe       String?   @db.VarChar(225)
+  idLoaiXe    Int?      @unique
+  GiaXe       Decimal?  @db.Decimal(10, 2)
+  MauSac      String?   @db.VarChar(50)
+  DongCo      String?   @db.VarChar(225)
+  TrangThai   String?   @db.VarChar(50)
+  HinhAnh     String?   @db.VarChar(225)
+  NamSanXuat  String?   @db.VarChar(45)
+  loaiXe      LoaiXe?   @relation(fields: [idLoaiXe], references: [idLoaiXe])
+  ChiTietDonHang ChiTietDonHang[]
+  ChiTietNhap ChiTietNhap[]
+  GioHang     GioHang[]
+  ChiTietKho  ChiTietKho[]
+  DatCoc      DatCoc[]
+  LichHenLayXe LichHenLayXe[]
+  LichGiaoXe  LichGiaoXe[]
+}
+
+model DonHang {
+  idDonHang        Int       @id @default(autoincrement())
+  idKhachHang      Int?      @unique
+  TrangThaiDonHang String?   @db.VarChar(225)
+  TongTien         Decimal?  @db.Decimal(10, 2)
+  NgayDatHang      DateTime? @db.Date
+  khachHang        Users?    @relation(fields: [idKhachHang], references: [idUsers])
+  ChiTietDonHang   ChiTietDonHang[]
+  ThanhToan        ThanhToan[]
+  LichGiaoXe       LichGiaoXe[]
+}
+
+model ChiTietDonHang {
+  idChiTietDonHang Int      @id @default(autoincrement())
+  idDonHang        Int?     @unique
+  idXe             Int?     @unique
+  SoLuong          Int?
+  DonGia           Decimal? @db.Decimal(10, 2)
+  donHang          DonHang? @relation(fields: [idDonHang], references: [idDonHang])
+  xe               Xe?      @relation(fields: [idXe], references: [idXe])
+}
+
+model NhaCungCap {
+  idNhaCungCap  Int        @id @default(autoincrement())
+  TenNhaCungCap String?    @db.VarChar(225)
+  Sdt           String?    @db.VarChar(15)
+  Email         String?    @db.VarChar(225) @unique
+  NhapHang      NhapHang[]
+}
+
+model NhapHang {
+  idNhapHang   Int             @id @default(autoincrement())
+  idNhaCungCap Int?            @unique
+  TenHang      String?         @db.VarChar(45)
+  nhaCungCap   NhaCungCap?     @relation(fields: [idNhaCungCap], references: [idNhaCungCap])
+  ChiTietNhap  ChiTietNhap[]
+}
+
+model ChiTietNhap {
+  idChiTietNhap Int      @id @default(autoincrement())
+  idNhapHang    Int?     @unique
+  idXe          Int?     @unique
+  SoLuong       Int?
+  DonGia        Decimal? @db.Decimal(10, 2)
+  nhapHang      NhapHang? @relation(fields: [idNhapHang], references: [idNhapHang])
+  xe            Xe?       @relation(fields: [idXe], references: [idXe])
+}
+
+model GioHang {
+  idGioHang   Int    @id @default(autoincrement())
+  idXe        Int?   @unique
+  idKhachHang Int?   @unique
+  SoLuong     Int?
+  xe          Xe?    @relation(fields: [idXe], references: [idXe])
+  khachHang   Users? @relation(fields: [idKhachHang], references: [idUsers])
+}
+
+model LichLamViec {
+  idLichLamViec    Int       @id @default(autoincrement())
+  idNhanVienTuVan  Int?      @unique
+  NgayLam          DateTime? @db.Date
+  CaLam            String?   @db.VarChar(50)
+  GioLam           DateTime? @db.Time(0)
+  GioKetThuc       DateTime? @db.Time(0)
+  nhanVienTuVan    Users?    @relation(fields: [idNhanVienTuVan], references: [idUsers])
+}
+
+model TuVanKhachHang {
+  idTuVanKhachHang Int     @id @default(autoincrement())
+  idKhachHang      Int?    @unique
+  idNhanVien       Int?    @unique
+  NoiDungTin       String? @db.LongText
+  LoaiHinhTuVan    String? @db.VarChar(45)
+  khachHang        Users?  @relation(fields: [idKhachHang], references: [idUsers], name: "KhachHangTuVan")
+  nhanVien         Users?  @relation(fields: [idNhanVien], references: [idUsers], name: "NhanVienTuVan")
+}
+
+model ThanhToan {
+  idThanhToan   Int       @id @default(autoincrement())
+  idDonHang     Int?      @unique
+  PhuongThuc    String?   @db.VarChar(50)
+  NgayThanhToan DateTime? @db.Date
+  donHang       DonHang?  @relation(fields: [idDonHang], references: [idDonHang])
+}
+
+model Kho {
+  idKho           Int           @id @default(autoincrement())
+  TenKho          String?       @db.VarChar(225)
+  DiaChi          String?       @db.VarChar(225)
+  Sdt             String?       @db.VarChar(45)
+  TenNguoiQuanLy  String?       @db.VarChar(225)
+  Vung            Vung[]
+  ChiTietKho      ChiTietKho[]
+}
+
+model Vung {
+  idVung   Int     @id @default(autoincrement())
+  idKho    Int?    @unique
+  TenVung  String? @db.VarChar(225)
+  kho      Kho?    @relation(fields: [idKho], references: [idKho])
+  Gara     Gara[]
+  ChiTietKho ChiTietKho[]
+}
+
+model Gara {
+  idGara          Int     @id @default(autoincrement())
+  idVung          Int?    @unique
+  Tengara         String? @db.VarChar(225)
+  Diachi          String? @db.VarChar(225)
+  Succhua         Int?
+  Sdt             String? @db.VarChar(15)
+  TenNguoiQuanLy  String? @db.VarChar(225)
+  vung            Vung?   @relation(fields: [idVung], references: [idVung])
+  ChiTietKho      ChiTietKho[]
+}
+
+model ChiTietKho {
+  idChiTietKho Int   @id @default(autoincrement())
+  idKho        Int?  @unique
+  idXe         Int?  @unique
+  Soluong      Int?
+  idVung       Int?  @unique
+  idGara       Int?  @unique
+  kho          Kho?  @relation(fields: [idKho], references: [idKho])
+  xe           Xe?   @relation(fields: [idXe], references: [idXe])
+  vung         Vung? @relation(fields: [idVung], references: [idVung])
+  gara         Gara? @relation(fields: [idGara], references: [idGara])
+}
+
+model ChamCong {
+  idChamCong      Int       @id @default(autoincrement())
+  idNhanVienTuVan Int?      @unique
+  Ngay            DateTime? @db.Date
+  GioVao          DateTime? @db.Time(0)
+  GioRa           DateTime? @db.Time(0)
+  TrangThai       String?   @db.VarChar(45)
+  TongGioLam      DateTime? @db.Time(0)
+  nhanVienTuVan   Users?    @relation(fields: [idNhanVienTuVan], references: [idUsers])
+}
+
+model DatCoc {
+  idDatCoc      Int       @id @default(autoincrement())
+  idXe          Int?      @unique
+  idKhachHang   Int?      @unique
+  NgayDat       DateTime? @db.Date
+  SotienDat     Int?
+  TrangThaiDat  String?   @db.VarChar(225)
+  xe            Xe?       @relation(fields: [idXe], references: [idXe])
+  khachHang     Users?    @relation(fields: [idKhachHang], references: [idUsers])
+  LichHenLayXe  LichHenLayXe[]
+  LichGiaoXe    LichGiaoXe[]
+}
+
+model Luong {
+  idLuong     Int      @id @default(autoincrement())
+  idNhanVien  Int?     @unique
+  LuongCoBan  Decimal? @db.Decimal(15, 2)
+  TienThuong  Decimal? @db.Decimal(15, 2)
+  LuongNhan   Decimal? @db.Decimal(15, 2)
+  TongLuong   Int?
+  nhanVien    Users?   @relation(fields: [idNhanVien], references: [idUsers])
+}
+
+model LichHenLayXe {
+  idLichHenLayXe Int       @id @default(autoincrement())
+  idDatCoc       Int?      @unique
+  idXe           Int?      @unique
+  idKhachHang    Int?      @unique
+  NgayLayXe      DateTime? @db.Date
+  GioHenLayXe    DateTime? @db.Time(0)
+  DiaDiem        String?   @db.VarChar(225)
+  datCoc         DatCoc?   @relation(fields: [idDatCoc], references: [idDatCoc])
+  xe             Xe?       @relation(fields: [idXe], references: [idXe])
+  khachHang      Users?    @relation(fields: [idKhachHang], references: [idUsers])
+}
+
+model LichGiaoXe {
+  idLichGiaoXe Int       @id @default(autoincrement())
+  idXe         Int?      @unique
+  idKhachHang  Int?      @unique
+  NgayGiao     DateTime? @db.Date
+  GioGiao      DateTime? @db.Time(0)
+  TrangThai    String?   @db.VarChar(225)
+  idDatCoc     Int?      @unique
+  idDonHang    Int?      @unique
+  xe           Xe?       @relation(fields: [idXe], references: [idXe])
+  khachHang    Users?    @relation(fields: [idKhachHang], references: [idUsers])
+  datCoc       DatCoc?   @relation(fields: [idDatCoc], references: [idDatCoc])
+  donHang      DonHang?  @relation(fields: [idDonHang], references: [idDonHang])
+}
+
+model Permission {
+  idPermission Int              @id @default(autoincrement())
+  TenQuyen     String?          @db.VarChar(45)
+  RolePermission RolePermission[]
+}
+
+model RolePermission {
+  idRolePermission Int        @id @default(autoincrement())
+  idRole           Int?        @unique
+  idPermission     Int?        @unique
+  role             Role?      @relation(fields: [idRole], references: [idRole])
+  permission       Permission? @relation(fields: [idPermission], references: [idPermission])
+}

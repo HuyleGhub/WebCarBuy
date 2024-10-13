@@ -24,4 +24,15 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+  .animation-range-entry {
+    animation-timeline: view();
+    animation-range: entry 100px ;
+  }
+}
+.animation-range-entry {
+  animation-timeline: view();
+  animation-range: entry 0% cover 40%;
+}
+.dragging {
+  cursor: grabbing;
 }
