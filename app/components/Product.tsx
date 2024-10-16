@@ -164,7 +164,7 @@ const Product = () => {
             items={cars.map(car => car.idXe)}
             strategy={horizontalListSortingStrategy}
           >
-            <ul className="flex w-full mt-12 min-[1530px]:gap-32 xl:gap-6 xl:h-72 sm:h-44 flex-wrap animate-appear [animation-timeline:view()] animation-range-entry list-none">
+            <ul className="flex w-full mt-12 min-[1530px]:gap-32 xl:gap-3 xl:h-full h-full flex-wrap animate-appear [animation-timeline:view()] animation-range-entry list-none">
               {cars.map((car) => (
                 <SortableCarItem key={car.idXe} car={car} />
               ))}

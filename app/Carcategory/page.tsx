@@ -115,7 +115,7 @@ const Category = () => {
                   <li className="flex items-center">
                     <span className="font-medium text-gray-600 mr-2">Trạng thái:</span>
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      car.TrangThai === 'Cònhàng' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      car.TrangThai === 'Còn hàng' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                     }`}>
                       {car.TrangThai}
                     </span>
@@ -125,9 +125,14 @@ const Category = () => {
               <div>
                 <h3 className="text-xl font-semibold text-gray-800">Giá bán</h3>
                 <p className="mt-2 text-3xl font-bold text-indigo-600">{car.GiaXe.toLocaleString()} VNĐ</p>
-                <button className="mt-4 w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition duration-300">
-                  Đặt hàng ngay
+                <div className='flex'>
+                <button className="mt-4 w-48 bg-indigo-600 text-white py-2 mx-4 rounded-md hover:bg-indigo-700 transition duration-300">
+                  Đặt cọc ngay
                 </button>
+                <button className="mt-4 w-48 bg-slate-600 text-white py-2 mx-4 rounded-md hover:bg-black transition duration-300">
+                  Thêm vào giỏ hàng
+                </button>
+                </div>
               </div>
             </div>
           </div>
