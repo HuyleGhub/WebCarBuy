@@ -115,7 +115,7 @@ const Category = () => {
                   <li className="flex items-center">
                     <span className="font-medium text-gray-600 mr-2">Trạng thái:</span>
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      car.TrangThai === 'Còn hàng' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      car.TrangThai === 'Cònhàng' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                     }`}>
                       {car.TrangThai}
                     </span>
