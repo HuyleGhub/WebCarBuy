@@ -6,7 +6,7 @@ import Videobg from "./components/Videobg";
 import Car360view from "./components/Car360view";
 import Information from "./components/Information";
 import Footer from "./components/Footer";
-import App from "./components/App";
+
 
 
 

@@ -18,10 +18,10 @@ export default function Navbar() {
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchText, setSearchText] = useState(false);
-  const { userId } = useAuth();
+ 
   return (
     <div data-theme="light">
-      <div className="navbar bg-base-100 shadow-2xl fixed z-50 [animation-timeline:view()] [animation-range:entry] animate-appear">
+      <div className="navbar bg-base-100 shadow-2xl fixed z-50">
         <div className="flex-1 px-4 py-2">
           <Link href="/">
             <img
@@ -38,9 +38,9 @@ export default function Navbar() {
             </Link>
             <ul 
             onMouseEnter={() => setIsMenuOpen(true)}
-              className="bg-white  py-2 font-semibold font-serif transition-all duration-500 text-blue-500 cursor-pointer">
+              className="bg-white  py-2 font-semibold font-serif transition-all duration-500 text-blue-500 hover:text-red-500 cursor-pointer">
             <li >
-              <span>Sản Phẩm</span>
+              <span >Sản Phẩm</span>
             </li>
             </ul>
             <div
@@ -195,12 +195,12 @@ Login
     <button>close</button>
   </form>
 </dialog> */}
-          <div>
+          {/* <div>
             {userId ? (
               <div>
                 <UserButton />
               </div>
-            ) : (
+            ) : ( */}
               <div className="flex gap-5 h-14">
                 <Link
                   href="/sign-in"
@@ -215,8 +215,8 @@ Login
                   Register
                 </Link>
               </div>
-            )}
-          </div>
+             {/* )} 
+          </div> */}
         </div>
         <label className="btn btn-circle swap swap-rotate xl:hidden">
           {/* this hidden checkbox controls the state */}
