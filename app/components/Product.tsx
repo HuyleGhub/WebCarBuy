@@ -115,32 +115,6 @@ const Product = () => {
       imageUrl: 'https://i.imgur.com/IiQj1Dg.png',
     },
   ];
-  const [carss, setCarss] = useState<Car[]>([
-    {
-      id: 1,
-      title: 'VinFast Ved40 VF3',
-      price: '320.000.000 Vnđ',
-      imageUrl: 'https://i.imgur.com/ClGFlnZ.png',
-    },
-    {
-      id: 2,
-      title: 'VinFast Vef70 VF3',
-      price: '320.000.000 Vnđ',
-      imageUrl: 'https://i.imgur.com/h5eZaj7.png', 
-    },
-    {
-      id: 3,
-      title: 'VinFast Ves60 VF3',
-      price: '320.000.000 Vnđ',
-      imageUrl: 'https://i.imgur.com/h5eZaj7.png',
-    },
-    {
-      id: 4,
-      title: 'VinFast Ve50 VF3',
-      price: '320.000.000 Vnđ',
-      imageUrl: 'https://i.imgur.com/IiQj1Dg.png',
-    },
-  ]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -162,17 +136,6 @@ const Product = () => {
     }
   };
     const [cars, setCars] = useState(Cars);
-    const [hoveredCard, setHoveredCard] = useState<string | null>(null);
-  
-    const onDragEnd = (result:any) => {
-      if(!result.destination) return;
-      const items = Array.from(cars);
-      const [reorderedItem] = items.splice(result.source.index, 1);
-      items.splice(result.destination.index, 0, reorderedItem);
-  
-      setCars(items);
-    };
-
   return (
     <div className="w-full h-full flex flex-col " data-theme="light">
        {/* title vf3 */}

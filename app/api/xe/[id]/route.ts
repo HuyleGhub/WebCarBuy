@@ -1,10 +1,7 @@
 import prisma from "@/prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
-    export async function GET(
-        request: NextRequest,
-        { params }: { params: { id: string } }
-      ) {
+    export async function GET(request: NextRequest,{ params }: { params: { id: string } }) {
         try {
           const xe = await prisma.xe.findUnique({
             where: {
@@ -13,7 +10,7 @@ import { NextRequest, NextResponse } from "next/server";
             include: {
               loaiXe: true,
             },
-          });
+          }); 
       
           if (!xe) {
             return NextResponse.json(
