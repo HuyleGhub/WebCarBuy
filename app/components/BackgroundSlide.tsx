@@ -47,12 +47,12 @@ const BackgroundSlider = () => {
       >
         {images.map((image, index) => (
           <div key={index} className="flex-shrink-0 w-full h-full">
-            <img
+            <Image
               src={image.desktop}
               alt={`Background ${index + 1}`}
               className="object-cover w-full h-full md:block hidden transition-opacity duration-500 ease-in-out"
             />
-            <img
+            <Image
               src={image.mobile}
               alt={`Background ${index + 1} mobile`}
               className="object-cover w-full h-full md:hidden transition-opacity duration-500 ease-in-out"

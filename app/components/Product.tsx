@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import vf3red from "../images/vf3red.png";
-import vf6 from "../images/VF6.png";
+// import vf6 from "../images/VF6.png";
 import {
   DndContext,
   closestCenter,

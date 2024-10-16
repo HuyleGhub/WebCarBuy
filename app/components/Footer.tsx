@@ -1,6 +1,7 @@
-import React from 'react'
 import Image from 'next/image'
-import car from '../images/car2.png'
+import React from 'react'
+// import Image from 'next/image'
+// import car from '../images/car2.png'
 const Footer = () => {
   return (
     <div className='w-full h-auto py-7' data-theme="light">
@@ -30,7 +31,7 @@ const Footer = () => {
                     {/* Thông tin công ty */}
                     <div className="lg:w-1/2 p-4">
                         <div className="logo mb-4">
-                            <img 
+                            <Image 
                                 alt="Công ty TNHH Kinh doanh Thương mại và Dịch vụ VinFast" 
                                 src="https://vinfastauto.com/themes/porto/img/new-home-page/VinFast-logo.svg"
                              

@@ -1,34 +1,33 @@
 "use client";
-import { userInfo } from "os";
+// import { userInfo } from "os";
 import React from "react";
 import { IoIosSearch } from "react-icons/io";
 import { useEffect, useState } from "react";
-import {
-  ClerkProvider,
-  SignInButton,
-  SignIn,
-  SignedIn,
-  SignedOut,
-  UserButton,
-  useAuth,
-} from "@clerk/nextjs";
+// import {
+//   ClerkProvider,
+//   SignInButton,
+//   SignIn,
+//   SignedIn,
+//   SignedOut,
+//   UserButton,
+//   useAuth,
+// } from "@clerk/nextjs";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Navbar() {
-  const [isSignedIn, setIsSignedIn] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [searchText, setSearchText] = useState(false);
  
   return (
     <div data-theme="light">
       <div className="navbar bg-base-100 shadow-2xl fixed z-50">
         <div className="flex-1 px-4 py-2">
           <Link href="/">
-            <img
+            <Image
               className="ml-2 h-8 hover:scale-105 md:ml-6 md:text-2xl sm:text-2xl "
               alt="VinFast - Thương hiệu xe điện đầu tiên Việt Nam"
               src="https://vinfastauto.com/themes/porto/img/new-home-page/VinFast-logo.svg"
-            ></img>
+            />
           </Link>
           <div className="justify-start ml-36 xl:flex hidden items-start w-full gap-7">
             <Link href="/">
@@ -58,50 +57,50 @@ export default function Navbar() {
               >
                 <li className="mt-10">
                   <a href="">
-                    <img
-                      src="https://static-cms-prod.vinfastauto.com/vf3-thumb_1715586838.png"
-                      className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 "
-                    />
+                    <Image
+                        src="https://static-cms-prod.vinfastauto.com/vf3-thumb_1715586838.png"
+                        className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""}                    
+                      />
                     <div className="text-center mt-3 font-medium">VF3</div>
                   </a>
                 </li>
                 <li className="mt-10">
                   <a href="">
-                    <img src="https://static-cms-prod.vinfastauto.com/VF5_1711360061.png" 
-                    className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 "
-                    />
+                    <Image src="https://static-cms-prod.vinfastauto.com/VF5_1711360061.png"
+                      className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""}                    
+                      />
                     <div className="text-center mt-3 font-medium">VF 5 Plus</div>
                   </a>
                 </li>
                 <li className="mt-10">
                   <a href="">
-                    <img src="https://static-cms-prod.vinfastauto.com/VF6_1711360087.png" 
-                     className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 "
-                    />
+                    <Image src="https://static-cms-prod.vinfastauto.com/VF6_1711360087.png"
+                      className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""}                    
+                      />
                     <div className="text-center mt-3 font-medium">VF 6</div>
                   </a>
                 </li>
                 <li className="mt-10">
                   <a href="">
-                    <img src="https://static-cms-prod.vinfastauto.com/VF7_1711360187.png" 
-                     className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 "
-                    />
+                    <Image src="https://static-cms-prod.vinfastauto.com/VF7_1711360187.png"
+                      className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""}                    
+                      />
                     <div className="text-center mt-3 font-medium">VF 7</div>
                   </a>
                 </li>
                 <li className="mt-10">
                   <a href="">
-                    <img src="https://static-cms-prod.vinfastauto.com/VF8_0.png" 
-                     className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 "
-                    />
+                    <Image src="https://static-cms-prod.vinfastauto.com/VF8_0.png"
+                      className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""}                    
+                      />
                     <div className="text-center mt-3 font-medium">VF 8</div>
                   </a>
                 </li>
                 <li className="mt-10">
                   <a href="">
-                    <img src="https://static-cms-prod.vinfastauto.com/VF9_1711360238.png" 
-                     className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 "
-                    />
+                    <Image src="https://static-cms-prod.vinfastauto.com/VF9_1711360238.png"
+                      className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""}                    
+                      />
                     <div className="text-center mt-3 font-medium">VF 9</div>
                   </a>
                 </li>

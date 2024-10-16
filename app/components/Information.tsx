@@ -1,6 +1,7 @@
+import Image from 'next/image'
 import React from 'react'
-import Image from 'next/image';
-import R from '../images/R.png';
+// import Image from 'next/image';
+// import R from '../images/R.png';
 
 const Information = () => {
   return (
@@ -8,7 +9,7 @@ const Information = () => {
     <div className='xl:mx-36 md:mx-26 mx-10 flex sm:flex-col flex-col xl:flex-row md:flex-row'>
     <div className="xl:flex xl:flex-col py-7 ">
       <div className="relative xl:w-[600px] w-72 [animation-timeline:view()]  animation-range-entry animate-appear  group">
-        <img
+        <Image
           src="https://storage.googleapis.com/vinfast-data-01/pin-tramsac-2_1660273363.png"
           alt="car"
           className="xl:w-full md:w-full w-72 h-auto"
@@ -27,7 +28,7 @@ const Information = () => {
       </div>
 
       <div className="relative xl:w-[600px] w-72 mt-7 animate-appearright [animation-timeline:view()]  animation-range-entry group">
-        <img
+        <Image
           src="	https://storage.googleapis.com/vinfast-data-01/pin-tramsac-1_1660273470.png"
           alt="car"
           className="xl:w-full md:w-full w-72 h-auto object-cover bg-cover"
@@ -55,9 +56,8 @@ const Information = () => {
         </div>
 
         <div className='xl:ml-32 md:ml-36 ml-1 animate-appearbottom [animation-timeline:view()]  animation-range-entry '>
-        <img src= "https://th.bing.com/th/id/R.4a980c83c4342c4cce95b4c93778d205?rik=CM6Qhrc08cTz5w&riu=http%3a%2f%2ffibertronics-inc.com%2fsites%2fdefault%2ffiles%2fstyles%2fmax_650x650%2fpublic%2f2023-01%2fClassic-7-Fibertronics-com.png%3fitok%3dIoM2Z1X3&ehk=w96MABj6d%2fhIOQbQYZbqHzlHpZDzHhJDjAvKlNWujfw%3d&risl=&pid=ImgRaw&r=0"
-        className="xl:h-[600px] xl:w-[800px] "
-        
+        <Image src="https://th.bing.com/th/id/R.4a980c83c4342c4cce95b4c93778d205?rik=CM6Qhrc08cTz5w&riu=http%3a%2f%2ffibertronics-inc.com%2fsites%2fdefault%2ffiles%2fstyles%2fmax_650x650%2fpublic%2f2023-01%2fClassic-7-Fibertronics-com.png%3fitok%3dIoM2Z1X3&ehk=w96MABj6d%2fhIOQbQYZbqHzlHpZDzHhJDjAvKlNWujfw%3d&risl=&pid=ImgRaw&r=0"
+            className="xl:h-[600px] xl:w-[800px] " alt={''}        
         />
         </div>
     </div>
