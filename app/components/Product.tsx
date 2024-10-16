@@ -73,6 +73,8 @@ const SortableCarItem = ({ car }: SortableCarItemProps) => {
             <Image
               src={vf3red}
               alt={car.TenXe}
+              width={100}
+                      height={100}
               className="rounded-xl w-64 h-32"
             />
           </figure>

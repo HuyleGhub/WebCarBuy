@@ -12,6 +12,8 @@ const Information = () => {
         <Image
           src="https://storage.googleapis.com/vinfast-data-01/pin-tramsac-2_1660273363.png"
           alt="car"
+          width={100}
+                      height={100}
           className="xl:w-full md:w-full w-72 h-auto"
         />
         {/* Phần hiện thêm khi hover */}
@@ -31,7 +33,10 @@ const Information = () => {
         <Image
           src="	https://storage.googleapis.com/vinfast-data-01/pin-tramsac-1_1660273470.png"
           alt="car"
+          width={100}
+                      height={100}
           className="xl:w-full md:w-full w-72 h-auto object-cover bg-cover"
+          
         />
         {/* Phần hiện thêm khi hover */}
         <div className="absolute xl:ml-3 lg:ml-3 md:xl-3 sm:xl-3 ml-2 bottom-0 left-0 right-0 bg-black bg-opacity-[0.4] text-white text-left opacity-0 transform -translate-y-full group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500">
@@ -58,6 +63,8 @@ const Information = () => {
         <div className='xl:ml-32 md:ml-36 ml-1 animate-appearbottom [animation-timeline:view()]  animation-range-entry '>
         <Image src="https://th.bing.com/th/id/R.4a980c83c4342c4cce95b4c93778d205?rik=CM6Qhrc08cTz5w&riu=http%3a%2f%2ffibertronics-inc.com%2fsites%2fdefault%2ffiles%2fstyles%2fmax_650x650%2fpublic%2f2023-01%2fClassic-7-Fibertronics-com.png%3fitok%3dIoM2Z1X3&ehk=w96MABj6d%2fhIOQbQYZbqHzlHpZDzHhJDjAvKlNWujfw%3d&risl=&pid=ImgRaw&r=0"
             className="xl:h-[600px] xl:w-[800px] " alt={''}        
+            width={100}
+                      height={100}
         />
         </div>
     </div>

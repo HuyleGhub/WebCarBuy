@@ -1,15 +1,16 @@
-import Image from 'next/image'
 import React from 'react'
-// import Image from 'next/image'
+ import Image from 'next/image'
 // import car from '../images/car2.png'
 const Footer = () => {
   return (
     <div className='w-full h-auto py-7' data-theme="light">
         <div className='relative'>
         <div className='w-full h-auto'>
-       <img
-       src='https://i.imgur.com/ycm0La4.png'
-       className='w-full xl:h-96 h-60'
+       <Image
+                      src='https://i.imgur.com/ycm0La4.png'
+                      className='w-full xl:h-96 h-60'
+                      width={100}
+                      height={100} alt={''}              
        />
        </div>
        <div className="absolute inset-0 bg-black opacity-10"></div>
@@ -34,7 +35,8 @@ const Footer = () => {
                             <Image 
                                 alt="Công ty TNHH Kinh doanh Thương mại và Dịch vụ VinFast" 
                                 src="https://vinfastauto.com/themes/porto/img/new-home-page/VinFast-logo.svg"
-                             
+                                width={100}
+                                 height={100}
                                 className="mb-2" 
                             />
                             <div className="info">

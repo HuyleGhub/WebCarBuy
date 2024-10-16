@@ -26,6 +26,8 @@ export default function Navbar() {
             <Image
               className="ml-2 h-8 hover:scale-105 md:ml-6 md:text-2xl sm:text-2xl "
               alt="VinFast - Thương hiệu xe điện đầu tiên Việt Nam"
+              width={100}
+              height={100}
               src="https://vinfastauto.com/themes/porto/img/new-home-page/VinFast-logo.svg"
             />
           </Link>
@@ -59,7 +61,9 @@ export default function Navbar() {
                   <a href="">
                     <Image
                         src="https://static-cms-prod.vinfastauto.com/vf3-thumb_1715586838.png"
-                        className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""}                    
+                        className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""}   
+                        width={100}
+                        height={100}               
                       />
                     <div className="text-center mt-3 font-medium">VF3</div>
                   </a>
@@ -67,7 +71,9 @@ export default function Navbar() {
                 <li className="mt-10">
                   <a href="">
                     <Image src="https://static-cms-prod.vinfastauto.com/VF5_1711360061.png"
-                      className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""}                    
+                      className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""}   
+                      width={100}
+              height={100}                 
                       />
                     <div className="text-center mt-3 font-medium">VF 5 Plus</div>
                   </a>
@@ -75,7 +81,9 @@ export default function Navbar() {
                 <li className="mt-10">
                   <a href="">
                     <Image src="https://static-cms-prod.vinfastauto.com/VF6_1711360087.png"
-                      className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""}                    
+                      className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""}  
+                      width={100}
+              height={100}                  
                       />
                     <div className="text-center mt-3 font-medium">VF 6</div>
                   </a>
@@ -83,7 +91,9 @@ export default function Navbar() {
                 <li className="mt-10">
                   <a href="">
                     <Image src="https://static-cms-prod.vinfastauto.com/VF7_1711360187.png"
-                      className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""}                    
+                      className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""}  
+                      width={100}
+              height={100}                  
                       />
                     <div className="text-center mt-3 font-medium">VF 7</div>
                   </a>
@@ -91,7 +101,9 @@ export default function Navbar() {
                 <li className="mt-10">
                   <a href="">
                     <Image src="https://static-cms-prod.vinfastauto.com/VF8_0.png"
-                      className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""}                    
+                      className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""}  
+                      width={100}
+              height={100}                  
                       />
                     <div className="text-center mt-3 font-medium">VF 8</div>
                   </a>
@@ -99,7 +111,9 @@ export default function Navbar() {
                 <li className="mt-10">
                   <a href="">
                     <Image src="https://static-cms-prod.vinfastauto.com/VF9_1711360238.png"
-                      className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""}                    
+                      className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""} 
+                      width={100}
+              height={100}                   
                       />
                     <div className="text-center mt-3 font-medium">VF 9</div>
                   </a>

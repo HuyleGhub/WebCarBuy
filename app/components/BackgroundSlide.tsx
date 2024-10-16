@@ -50,10 +50,14 @@ const BackgroundSlider = () => {
             <Image
               src={image.desktop}
               alt={`Background ${index + 1}`}
+              width={100}
+              height={100} 
               className="object-cover w-full h-full md:block hidden transition-opacity duration-500 ease-in-out"
             />
             <Image
               src={image.mobile}
+              width={100}
+              height={100} 
               alt={`Background ${index + 1} mobile`}
               className="object-cover w-full h-full md:hidden transition-opacity duration-500 ease-in-out"
             />
