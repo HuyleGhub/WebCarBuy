@@ -26,7 +26,18 @@ const Category = () => {
   const [car, setCar] = useState<Car | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentImage, setCurrentImage] = useState("https://giaxeoto.vn/admin/upload/images/resize/640-vinfast-vf4.jpg");
+  
 
+  const carImages = [
+    "https://giaxeoto.vn/admin/upload/images/resize/640-vinfast-vf4.jpg",
+    "https://thekoreancarblog.com/wp-content/uploads/2024/02/hyundai-casper-electric-rendering.jpg",
+    "https://quietwheels.com/wp-content/uploads/2024/01/780/2024-vinfast-vf3-exterior-7.webp",
+    "https://cdni.autocarindia.com/ExtraImages/20240529014002_VinFast%20_3_.jpg"
+  ];
+  const handleImageClick = (image:any) => {
+    setCurrentImage(image);
+  };
   useEffect(() => {
     if (id) {
       fetch(`/api/xe/${id}`)
@@ -52,8 +63,8 @@ const Category = () => {
   }, [id]);
 
   if (loading) return (
-    <div className="flex justify-center items-center h-screen">
-      <span className="loading loading-spinner text-accent loading-lg"></span>
+    <div className="flex justify-center items-center h-screen" data-theme = "light">
+      <span className="loading loading-spinner text-blue-600 loading-lg"></span>
     </div>
   );
   
@@ -72,8 +83,7 @@ const Category = () => {
   return (
     <div className='w-full h-full px-4 py-24' data-theme="light">
       <div className='px-24 w-full h-full flex flex-col'>
-        <h1 className="text-3xl font-bold mb-8">Chi tiết sản phẩm</h1>
-        <div className="pb-4">
+      <div className="pb-4">
           <button
             onClick={() => router.push('/')}
             className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center"
@@ -84,15 +94,29 @@ const Category = () => {
             <span>Quay lại trang chủ</span>
           </button>
         </div>
+        <h1 className="text-3xl font-bold mb-8">Chi tiết sản phẩm</h1>
         <div className="bg-white shadow-xl rounded-lg overflow-hidden">
           <div className="md:flex">
             <div className="md:flex-shrink-0 xl:w-[1000px] xl:h-[500px]">
-              <img className="xl:h-[500px] xl:w-full object-cover md:w-48" src="https://giaxeoto.vn/admin/upload/images/resize/640-vinfast-vf4.jpg" alt={car.TenXe} />
+              <img className="xl:h-[500px] xl:w-full object-cover md:w-48" src={currentImage} alt={car.TenXe} />
             </div>
+            <div className='flex flex-col w-full h-full'>
             <div className="p-8">
               <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">{car.loaiXe.NhanHieu}</div>
               <h2 className="block mt-1 text-3xl leading-tight font-bold text-black">{car.TenXe}</h2>
               <p className="mt-2 text-gray-500">{car.loaiXe.TenLoai}</p>
+            </div>
+            <div className='ml-8 flex flex-wrap gap-4'>
+            {carImages.map((image, index) => (
+                  <img 
+                    key={index} 
+                    src={image} 
+                    alt={`Car image ${index + 1}`} 
+                    className="w-24 h-24 object-cover cursor-pointer border-2 hover:border-indigo-500"
+                    onClick={() => handleImageClick(image)}
+                  />
+                ))}
+            </div>
             </div>
           </div>
           <div className="px-8 py-4 bg-gray-50">

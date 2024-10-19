@@ -6,7 +6,7 @@ const Footer = () => {
     <div className='w-full h-auto py-7' data-theme="light">
         <div className='relative'>
         <div className='w-full h-auto'>
-       <Image
+       <img
                       src='https://i.imgur.com/ycm0La4.png'
                       className='w-full xl:h-96 h-60'
                       width={100}

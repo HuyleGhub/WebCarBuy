@@ -59,7 +59,7 @@ const SortableCarItem = ({ car }: SortableCarItemProps) => {
   return (
     <li ref={setNodeRef} style={style} {...attributes} {...listeners}>
       <div 
-        className={`card bg-base-100 xl:w-72 xl:h-72 w-full md:w-72 md:h-72 ml-6 shadow-xl relative ${
+        className={`card bg-base-100 xl:w-72 xl:h-72 w-full md:w-72 md:h-72 ml-6 mb-5 shadow-xl relative ${
           isHovered ? "animate-borderrun" : ""
         }`}
         onMouseEnter={() => setIsHovered(true)}
@@ -96,6 +96,8 @@ const Product = () => {
   const [cars, setCars] = useState<Car[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [displayedCars, setDisplayedCars] = useState<Car[]>([]);
+  const carsPerPage = 4;
 
   useEffect(() => {
     fetch('/api/xe')
@@ -107,6 +109,7 @@ const Product = () => {
       })
       .then(data => {
         setCars(data);
+        setDisplayedCars(data.slice(0, carsPerPage));
         setLoading(false);
       })
       .catch(e => {
@@ -115,14 +118,34 @@ const Product = () => {
         setLoading(false);
       });
   }, []);
-
+  
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
+  
+  if (loading) {
+    return <div className="flex justify-center items-center h-screen" data-theme = 'light'>
+      <div className="loading loading-spinner text-blue-600 loading-lg"></div>
+    </div>;
+  }
 
+  if (error) {
+    return <div className="flex justify-center items-center h-screen" data-theme = 'light'>
+      <div className="text-2xl font-bold text-red-600">{error}</div>
+    </div>;
+  }
+  const loadMore  = () => {
+    const currentLength = displayedCars.length;
+    const newCars = cars.slice(currentLength, currentLength + carsPerPage);
+    setDisplayedCars(prevCars => [...prevCars, ...newCars]);
+    }
+  const showLess = () => {
+    setDisplayedCars(displayedCars.slice(0, carsPerPage));
+  };
+  
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
@@ -136,21 +159,11 @@ const Product = () => {
     }
   };
 
-  if (loading) {
-    return <div className="flex justify-center items-center h-screen">
-      <div className="loading loading-infinity loading-lg border-blue-500"></div>
-    </div>;
-  }
-
-  if (error) {
-    return <div className="flex justify-center items-center h-screen">
-      <div className="text-2xl font-bold text-red-600">{error}</div>
-    </div>;
-  }
+  
 
   return (
     <div className="w-full h-full flex flex-col " data-theme="light">
-      <div className="xl:mx-36 md:mx-10 mt-24 ">
+      <div className="xl:mx-28 md:mx-10 mt-24 ">
         <span className="font-bold xl:text-5xl md:text-4xl text-3xl w-full text-slate-600 font-serif animate-appeartop 
         [animation-timeline:view()]  animation-range-entry ">
           Danh sách xe
@@ -163,16 +176,34 @@ const Product = () => {
           onDragEnd={handleDragEnd}
         >
           <SortableContext
-            items={cars.map(car => car.idXe)}
+            items={displayedCars.map(car => car.idXe)}
             strategy={horizontalListSortingStrategy}
           >
-            <ul className="flex w-full mt-12 min-[1530px]:gap-32 xl:gap-3 xl:h-full h-full flex-wrap animate-appear [animation-timeline:view()] animation-range-entry list-none">
-              {cars.map((car) => (
+            <ul className="flex w-full mt-12 min-[1530px]:gap-28 xl:gap-2 xl:h-full h-full flex-wrap animate-appear [animation-timeline:view()] animation-range-entry list-none">
+              {displayedCars.map((car) => (
                 <SortableCarItem key={car.idXe} car={car} />
               ))}
             </ul>
           </SortableContext>
         </DndContext>
+        <div className="flex justify-center gap-5">
+          <div className="flex justify-center mt-8">
+            <button 
+              onClick={loadMore} 
+              className="btn bg-blue-500 text-white hover:bg-blue-600"
+            >
+              Load more
+            </button>
+          </div>
+          <div className="flex justify-center mt-8">
+            <button 
+              onClick={showLess} 
+              className="btn bg-blue-500 text-white hover:bg-blue-600"
+            >
+              Show less
+            </button>
+          </div>
+          </div>
       </div>
     </div>
   );

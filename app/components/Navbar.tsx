@@ -15,8 +15,29 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
+interface LoaiXe {
+  idLoaiXe: number;
+  TenLoai: string;
+  NhanHieu: string;
+}
+
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [loaiXe, setLoaiXe] = useState<LoaiXe[]>([]);
+  useEffect(()=>{
+     fetch("api/loaixe")
+     .then(response=>{
+      if(!response.ok)
+        throw new Error("Failed to fetch loai xe");
+       return response.json();
+     })
+     .then(data=>{
+       setLoaiXe(data);
+     })
+     .catch(error=>{
+       console.error("Failed to fetch loai xe", error);
+     })
+  },[])
  
   return (
     <div data-theme="light">
@@ -45,79 +66,74 @@ export default function Navbar() {
             </li>
             </ul>
             <div
-            onMouseLeave={() => setIsMenuOpen(false)}
-              className={`absolute z-99 top-16 border-t-2 border-blue-200 left-0 w-full bg-white flex flex-col justify-center items-center gap-10 text-lg border-b-4 shadow-2xl  transform transition-all duration-75 ease-in-out ${
-                isMenuOpen ? "opacity-100 transform translate-y-0 transition-all duration-1000" : "opacity-0 transform -translate-y-10 pointer-events-none transition-all duration-1000"
-              }`}
-            >
-              <div className="flex flex-col h-5">
-                <span className="text-xl font-serif font-bold mt-5 text-blue-600">Danh Sách Loại Xe</span>
-              </div>
-              <div className="flex flex-grow">
-              <ul
-                className=" flex gap-20 justify-center z-[1] w-full p-2 h-40  "
-              >
-                <li className="mt-10">
+        onMouseLeave={() => setIsMenuOpen(false)}
+        className={`absolute z-99 top-16 border-t-2 border-blue-200 left-0 w-full bg-white flex flex-col justify-center items-center gap-10 text-lg border-b-4 shadow-2xl  transform transition-all duration-75 ease-in-out ${
+          isMenuOpen ? "opacity-100 transform translate-y-0 transition-all duration-1000" : "opacity-0 transform -translate-y-10 pointer-events-none transition-all duration-1000"
+        }`}
+      >
+        <div className="flex flex-col h-5">
+          <span className="text-xl font-serif font-bold mt-5 text-blue-600">Danh Sách Loại Xe</span>
+        </div>
+        <div className="flex flex-grow">
+          <ul className="flex gap-20 justify-center z-[1] w-full p-2 h-40">
+            {loaiXe.map((loai) => (
+              <li key={loai.idLoaiXe} className="mt-10">
+                <Link href={`/LoaiXe?id=${loai.idLoaiXe}`}>
+                  <img
+                    src="https://static-cms-prod.vinfastauto.com/vf3-thumb_1715586838.png"
+                    className="hover:animate-fadeleft transition-all duration-75 hover:scale-150"
+                    alt={loai.TenLoai}
+                  />
+                  <div className="text-center mt-3 font-medium">{loai.TenLoai}</div>
+                </Link>
+              </li>
+            ))}
+          
+                {/* <li className="mt-10">
                   <a href="">
-                    <Image
-                        src="https://static-cms-prod.vinfastauto.com/vf3-thumb_1715586838.png"
-                        className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""}   
-                        width={100}
-                        height={100}               
-                      />
-                    <div className="text-center mt-3 font-medium">VF3</div>
-                  </a>
-                </li>
-                <li className="mt-10">
-                  <a href="">
-                    <Image src="https://static-cms-prod.vinfastauto.com/VF5_1711360061.png"
+                    <img src="https://static-cms-prod.vinfastauto.com/VF5_1711360061.png"
                       className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""}   
-                      width={100}
-              height={100}                 
+                                   
                       />
                     <div className="text-center mt-3 font-medium">VF 5 Plus</div>
                   </a>
                 </li>
                 <li className="mt-10">
                   <a href="">
-                    <Image src="https://static-cms-prod.vinfastauto.com/VF6_1711360087.png"
+                    <img src="https://static-cms-prod.vinfastauto.com/VF6_1711360087.png"
                       className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""}  
-                      width={100}
-              height={100}                  
+                                      
                       />
                     <div className="text-center mt-3 font-medium">VF 6</div>
                   </a>
                 </li>
                 <li className="mt-10">
                   <a href="">
-                    <Image src="https://static-cms-prod.vinfastauto.com/VF7_1711360187.png"
+                    <img src="https://static-cms-prod.vinfastauto.com/VF7_1711360187.png"
                       className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""}  
-                      width={100}
-              height={100}                  
+                                       
                       />
                     <div className="text-center mt-3 font-medium">VF 7</div>
                   </a>
                 </li>
                 <li className="mt-10">
                   <a href="">
-                    <Image src="https://static-cms-prod.vinfastauto.com/VF8_0.png"
+                    <img src="https://static-cms-prod.vinfastauto.com/VF8_0.png"
                       className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""}  
-                      width={100}
-              height={100}                  
+                                      
                       />
                     <div className="text-center mt-3 font-medium">VF 8</div>
                   </a>
                 </li>
                 <li className="mt-10">
                   <a href="">
-                    <Image src="https://static-cms-prod.vinfastauto.com/VF9_1711360238.png"
+                    <img src="https://static-cms-prod.vinfastauto.com/VF9_1711360238.png"
                       className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""} 
-                      width={100}
-              height={100}                   
+                                        
                       />
                     <div className="text-center mt-3 font-medium">VF 9</div>
                   </a>
-                </li>
+                </li> */}
               </ul>
               </div>
             </div>

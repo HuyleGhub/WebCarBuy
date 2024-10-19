@@ -20,6 +20,7 @@ import { NextRequest, NextResponse } from "next/server";
           return NextResponse.json({ error: 'Lỗi khi lấy thông tin xe' },{ status: 500 });
         }
       }
+    
     export async function DELETE(request: NextRequest, {params}:{params:{id:string}}) {
       try {
         const idxe = parseInt(params.id);
