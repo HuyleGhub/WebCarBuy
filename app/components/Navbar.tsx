@@ -19,6 +19,7 @@ interface LoaiXe {
   idLoaiXe: number;
   TenLoai: string;
   NhanHieu: string;
+  HinhAnh: string;
 }
 
 export default function Navbar() {
@@ -38,6 +39,7 @@ export default function Navbar() {
        console.error("Failed to fetch loai xe", error);
      })
   },[])
+  
  
   return (
     <div data-theme="light">
@@ -77,10 +79,10 @@ export default function Navbar() {
         <div className="flex flex-grow">
           <ul className="flex gap-20 justify-center z-[1] w-full p-2 h-40">
             {loaiXe.map((loai) => (
-              <li key={loai.idLoaiXe} className="mt-10">
-                <Link href={`/LoaiXe?id=${loai.idLoaiXe}`}>
+              <li  className="mt-10">
+                <Link href={`LoaiXe?id=${loai.idLoaiXe}`}>
                   <img
-                    src="https://static-cms-prod.vinfastauto.com/vf3-thumb_1715586838.png"
+                    src={loai.HinhAnh}
                     className="hover:animate-fadeleft transition-all duration-75 hover:scale-150"
                     alt={loai.TenLoai}
                   />

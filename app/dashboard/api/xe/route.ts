@@ -1,8 +1,6 @@
+import xeSchema from "@/app/api/zodschema/route";
 import prisma from "@/prisma/client";
 import { NextRequest, NextResponse } from "next/server";
-import xeSchema from "../zodschema/route";
-
-
 
 export async function GET () {
   const xe = await prisma.xe.findMany();
@@ -11,7 +9,7 @@ export async function GET () {
 export async function POST (req: NextRequest,) {
     try {
       const body = await req.json();
-  
+
       // Validate the input data using zod schema
       const checkXe = xeSchema.safeParse({
         TenXe: body.TenXe,
@@ -70,7 +68,7 @@ export async function POST (req: NextRequest,) {
     } catch (error: any) {
       console.error("Error creating xe:", error);
       
-      if (error.code === 'P2003') {
+      if (error.code) {
         return NextResponse.json({
           message: "Loại xe không tồn tại trong hệ thống",
           code: "foreign_key_violation"

@@ -1,10 +1,12 @@
 import React from 'react'
+import Productmanagement from './productmangement/page'
+import Link from 'next/link'
 
+import DashboardLayout from '../components/Dashboardlayout'
 const page = () => {
   return (
-    <div>
-        <h1>Welcome to my React Page</h1>
-        <p>This is a simple React component.</p>
+    <div >
+     
     </div>
   )
 }

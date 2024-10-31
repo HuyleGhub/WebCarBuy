@@ -14,6 +14,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     });
 
     return NextResponse.json(xe);
+
   } catch (error) {
     return NextResponse.json({ error: 'Lỗi khi lấy danh sách xe' }, { status: 500 });
   }

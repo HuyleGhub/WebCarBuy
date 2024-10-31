@@ -3,7 +3,6 @@ import  Link  from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
-import vf3red from "../images/vf3red.png";
 import Image from 'next/image';
 
 interface Xe {
@@ -107,7 +106,7 @@ const LoaiXe = () => {
                         <div className="w-[303px] h-[303px]">
                             <figure className="px-10">
                                 <Image
-                                    src={vf3red}
+                                    src={car.HinhAnh}
                                     alt={car.TenXe}
                                     width={100}
                                     height={100}

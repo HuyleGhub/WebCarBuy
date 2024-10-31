@@ -1,6 +1,7 @@
+import xeSchema from "@/app/dashboard/zodschema/route";
 import prisma from "@/prisma/client";
 import { NextRequest, NextResponse } from "next/server";
-import xeSchema from "../../zodschema/route";
+
 
     export async function GET(request: NextRequest,{ params }: { params: { id: string } }) {
         try {

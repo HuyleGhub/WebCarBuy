@@ -28,6 +28,7 @@ CREATE TABLE `LoaiXe` (
     `idLoaiXe` INTEGER NOT NULL AUTO_INCREMENT,
     `TenLoai` VARCHAR(225) NULL,
     `NhanHieu` VARCHAR(45) NULL,
+    `HinhAnh` VARCHAR(255) NULL,
 
     PRIMARY KEY (`idLoaiXe`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -44,7 +45,6 @@ CREATE TABLE `Xe` (
     `HinhAnh` VARCHAR(225) NULL,
     `NamSanXuat` VARCHAR(45) NULL,
 
-    UNIQUE INDEX `Xe_idLoaiXe_key`(`idLoaiXe`),
     PRIMARY KEY (`idXe`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

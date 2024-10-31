@@ -28,7 +28,7 @@ model Users {
   Sdt         String?   @db.VarChar(15)
   Diachi      String?   @db.VarChar(45)
   Email       String?   @db.VarChar(45) @unique
-  idRole      Int?      @unique
+  idRole      Int?      
   Ngaydangky  DateTime? @db.Date
   role        Role?     @relation(fields: [idRole], references: [idRole])
   DonHang     DonHang[]
@@ -48,13 +48,14 @@ model LoaiXe {
   idLoaiXe Int     @id @default(autoincrement())
   TenLoai  String? @db.VarChar(225)
   NhanHieu String? @db.VarChar(45)
+  HinhAnh    String? @db.VarChar(255)
   Xe       Xe[]
 }
-
+ 
 model Xe {
   idXe        Int       @id @default(autoincrement())
   TenXe       String?   @db.VarChar(225)
-  idLoaiXe    Int?      @unique
+  idLoaiXe    Int?      
   GiaXe       Decimal?  @db.Decimal(10, 2)
   MauSac      String?   @db.VarChar(50)
   DongCo      String?   @db.VarChar(225)
@@ -73,7 +74,7 @@ model Xe {
 
 model DonHang {
   idDonHang        Int       @id @default(autoincrement())
-  idKhachHang      Int?      @unique
+  idKhachHang      Int?      
   TrangThaiDonHang String?   @db.VarChar(225)
   TongTien         Decimal?  @db.Decimal(10, 2)
   NgayDatHang      DateTime? @db.Date
@@ -103,7 +104,7 @@ model NhaCungCap {
 
 model NhapHang {
   idNhapHang   Int             @id @default(autoincrement())
-  idNhaCungCap Int?            @unique
+  idNhaCungCap Int?            
   TenHang      String?         @db.VarChar(45)
   nhaCungCap   NhaCungCap?     @relation(fields: [idNhaCungCap], references: [idNhaCungCap])
   ChiTietNhap  ChiTietNhap[]
@@ -121,8 +122,8 @@ model ChiTietNhap {
 
 model GioHang {
   idGioHang   Int    @id @default(autoincrement())
-  idXe        Int?   @unique
-  idKhachHang Int?   @unique
+  idXe        Int?   
+  idKhachHang Int?   
   SoLuong     Int?
   xe          Xe?    @relation(fields: [idXe], references: [idXe])
   khachHang   Users? @relation(fields: [idKhachHang], references: [idUsers])
@@ -130,7 +131,7 @@ model GioHang {
 
 model LichLamViec {
   idLichLamViec    Int       @id @default(autoincrement())
-  idNhanVienTuVan  Int?      @unique
+  idNhanVienTuVan  Int?      
   NgayLam          DateTime? @db.Date
   CaLam            String?   @db.VarChar(50)
   GioLam           DateTime? @db.Time(0)
@@ -140,8 +141,8 @@ model LichLamViec {
 
 model TuVanKhachHang {
   idTuVanKhachHang Int     @id @default(autoincrement())
-  idKhachHang      Int?    @unique
-  idNhanVien       Int?    @unique
+  idKhachHang      Int?    
+  idNhanVien       Int?    
   NoiDungTin       String? @db.LongText
   LoaiHinhTuVan    String? @db.VarChar(45)
   khachHang        Users?  @relation(fields: [idKhachHang], references: [idUsers], name: "KhachHangTuVan")
@@ -150,7 +151,7 @@ model TuVanKhachHang {
 
 model ThanhToan {
   idThanhToan   Int       @id @default(autoincrement())
-  idDonHang     Int?      @unique
+  idDonHang     Int?      
   PhuongThuc    String?   @db.VarChar(50)
   NgayThanhToan DateTime? @db.Date
   donHang       DonHang?  @relation(fields: [idDonHang], references: [idDonHang])
@@ -168,7 +169,7 @@ model Kho {
 
 model Vung {
   idVung   Int     @id @default(autoincrement())
-  idKho    Int?    @unique
+  idKho    Int?    
   TenVung  String? @db.VarChar(225)
   kho      Kho?    @relation(fields: [idKho], references: [idKho])
   Gara     Gara[]
@@ -177,7 +178,7 @@ model Vung {
 
 model Gara {
   idGara          Int     @id @default(autoincrement())
-  idVung          Int?    @unique
+  idVung          Int?    
   Tengara         String? @db.VarChar(225)
   Diachi          String? @db.VarChar(225)
   Succhua         Int?
@@ -189,11 +190,11 @@ model Gara {
 
 model ChiTietKho {
   idChiTietKho Int   @id @default(autoincrement())
-  idKho        Int?  @unique
-  idXe         Int?  @unique
+  idKho        Int?  
+  idXe         Int?  
   Soluong      Int?
-  idVung       Int?  @unique
-  idGara       Int?  @unique
+  idVung       Int?  
+  idGara       Int?  
   kho          Kho?  @relation(fields: [idKho], references: [idKho])
   xe           Xe?   @relation(fields: [idXe], references: [idXe])
   vung         Vung? @relation(fields: [idVung], references: [idVung])
@@ -202,7 +203,7 @@ model ChiTietKho {
 
 model ChamCong {
   idChamCong      Int       @id @default(autoincrement())
-  idNhanVienTuVan Int?      @unique
+  idNhanVienTuVan Int?      
   Ngay            DateTime? @db.Date
   GioVao          DateTime? @db.Time(0)
   GioRa           DateTime? @db.Time(0)
@@ -213,8 +214,8 @@ model ChamCong {
 
 model DatCoc {
   idDatCoc      Int       @id @default(autoincrement())
-  idXe          Int?      @unique
-  idKhachHang   Int?      @unique
+  idXe          Int?      
+  idKhachHang   Int?      
   NgayDat       DateTime? @db.Date
   SotienDat     Int?
   TrangThaiDat  String?   @db.VarChar(225)
@@ -226,7 +227,7 @@ model DatCoc {
 
 model Luong {
   idLuong     Int      @id @default(autoincrement())
-  idNhanVien  Int?     @unique
+  idNhanVien  Int?     
   LuongCoBan  Decimal? @db.Decimal(15, 2)
   TienThuong  Decimal? @db.Decimal(15, 2)
   LuongNhan   Decimal? @db.Decimal(15, 2)
@@ -236,9 +237,9 @@ model Luong {
 
 model LichHenLayXe {
   idLichHenLayXe Int       @id @default(autoincrement())
-  idDatCoc       Int?      @unique
-  idXe           Int?      @unique
-  idKhachHang    Int?      @unique
+  idDatCoc       Int?      
+  idXe           Int?      
+  idKhachHang    Int?      
   NgayLayXe      DateTime? @db.Date
   GioHenLayXe    DateTime? @db.Time(0)
   DiaDiem        String?   @db.VarChar(225)
@@ -249,13 +250,13 @@ model LichHenLayXe {
 
 model LichGiaoXe {
   idLichGiaoXe Int       @id @default(autoincrement())
-  idXe         Int?      @unique
-  idKhachHang  Int?      @unique
+  idXe         Int?      
+  idKhachHang  Int?      
   NgayGiao     DateTime? @db.Date
   GioGiao      DateTime? @db.Time(0)
   TrangThai    String?   @db.VarChar(225)
-  idDatCoc     Int?      @unique
-  idDonHang    Int?      @unique
+  idDatCoc     Int?      
+  idDonHang    Int?      
   xe           Xe?       @relation(fields: [idXe], references: [idXe])
   khachHang    Users?    @relation(fields: [idKhachHang], references: [idUsers])
   datCoc       DatCoc?   @relation(fields: [idDatCoc], references: [idDatCoc])
@@ -270,8 +271,8 @@ model Permission {
 
 model RolePermission {
   idRolePermission Int        @id @default(autoincrement())
-  idRole           Int?        @unique
-  idPermission     Int?        @unique
+  idRole           Int?        
+  idPermission     Int?        
   role             Role?      @relation(fields: [idRole], references: [idRole])
   permission       Permission? @relation(fields: [idPermission], references: [idPermission])
 }

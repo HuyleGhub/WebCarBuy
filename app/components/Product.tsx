@@ -59,23 +59,23 @@ const SortableCarItem = ({ car }: SortableCarItemProps) => {
   return (
     <li ref={setNodeRef} style={style} {...attributes} {...listeners}>
       <div 
-        className={`card bg-base-100 xl:w-72 xl:h-72 w-full md:w-72 md:h-72 ml-6 mb-5 shadow-xl relative ${
+        className={`card bg-base-100 xl:w-72 xl:h-80 w-full md:w-72 md:h-80 ml-6 mb-5 shadow-xl relative ${
           isHovered ? "animate-borderrun" : ""
         }`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div className={`absolute bg-gradient-to-bl from-blue-600 to-blue-400 w-[303px] h-[303px] z-[-1] -top-2 -left-2 rounded-2xl ${
+        <div className={`absolute bg-gradient-to-bl from-orange-600 to-orange-400 w-[303px] h-[335px] z-[-1] -top-2 -left-2 rounded-2xl ${
           isHovered ? "animate-spinrun" : "hidden"
         }`}></div>
         <div className="w-[303px] h-[303px]">
           <figure className="px-10">
-            <Image
-              src={vf3red}
+            <img
+              src={car.HinhAnh}
               alt={car.TenXe}
-              width={100}
-                      height={100}
-              className="rounded-xl w-64 h-32"
+              width={200}
+                      height={200}
+              className="rounded-xl w-80 h-36"
             />
           </figure>
           <div className="card-body items-center text-center">
@@ -83,7 +83,7 @@ const SortableCarItem = ({ car }: SortableCarItemProps) => {
             <p>Giá xe: {car.GiaXe.toLocaleString()} VNĐ</p>
             <div className="card-actions">
               <button className="btn bg-[#1464F4] text-white">Đặt Cọc</button>
-              <Link href={`/Carcategory?id=${car.idXe}`} className="btn btn-outline">Xem Chi Tiết</Link>
+              <Link href={`Carcategory?id=${car.idXe}`} className="btn btn-outline">Xem Chi Tiết</Link>
             </div>
           </div>
         </div>

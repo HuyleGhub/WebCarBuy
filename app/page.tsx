@@ -12,13 +12,11 @@ import Footer from "./components/Footer";
 export default function Home() {
   return (
     <div >
-      <Navbar></Navbar>
-      <BackgroundSlider></BackgroundSlider>
+         <BackgroundSlider></BackgroundSlider>
       <Product></Product>
       <Videobg></Videobg>
       <Information></Information>
       <Footer></Footer>
-       
     </div>
   );
 }

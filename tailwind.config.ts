@@ -87,10 +87,10 @@ const config: Config = {
         },
         borderrun: {
          '0%, 100%': {
-            boxShadow: '0 0 15px 15px rgba(20, 100, 244, 0.4)',
+            boxShadow: '0 0 15px 15px rgba(255, 66, 0, 0.8)',
           },
           '50%': {
-            boxShadow: '0 0 5px 5px rgba(148, 0, 211, 1)',
+            boxShadow: '0 0 5px 5px rgba(222, 97, 53, 0.8)',
           },
         },
         spinrun: {
