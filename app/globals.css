@@ -36,3 +36,5 @@ body {
 .dragging {
   cursor: grabbing;
 }
+
+@import "~@uploadthing/react/styles.css";

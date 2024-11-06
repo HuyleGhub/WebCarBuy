@@ -1,10 +1,13 @@
 import type { Config } from "tailwindcss";
+import { withUt } from "uploadthing/tw";
 
-const config: Config = {
+
+module.exports = withUt({
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{ts,tsx,mdx}"
   ],
   theme: {
     extend: {
@@ -108,5 +111,5 @@ const config: Config = {
   },
   
   plugins: [require('daisyui'),],
-};
-export default config;
+});
+

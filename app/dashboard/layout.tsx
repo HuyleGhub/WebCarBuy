@@ -1,6 +1,9 @@
 "use client";
 import Sidebardashboard from "@/app/components/Sidebardashboard";
-import Link from "next/link";
+import Navbardashboard from "../components/Navbardashboard";
+import { extractRouterConfig } from "uploadthing/server";
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { ourFileRouter } from "../api/uploadthing/core";
 
 export default function DashboardLayout({
   children,
@@ -10,49 +13,7 @@ export default function DashboardLayout({
   return (
     <div className="flex flex-col min-h-screen" data-theme="light">
       {/* Navbar */}
-      <nav className="fixed top-0 left-0 right-0 bg-base-100 border-b z-50 w-full">
-        <div className="navbar w-full bg-slate-950">
-          <div className="flex-none">
-            <button className="btn btn-square text-white btn-ghost">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                className="inline-block h-5 w-5 stroke-current"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4 6h16M4 12h16M4 18h16"
-                ></path>
-              </svg>
-            </button>
-          </div>
-          <div className="flex-1">
-            <Link href="/dashboard" className="btn btn-ghost text-white text-xl">
-              Dashboard
-            </Link>
-          </div>
-          <div className="flex-none">
-            <button className="btn btn-square text-white btn-ghost">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                className="inline-block h-5 w-5 stroke-current"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
-                ></path>
-              </svg>
-            </button>
-          </div>
-        </div>
-      </nav>
+      <Navbardashboard/>
       <div className="flex w-full pt-16">
         {/* Sidebar */}
         <aside className="w-72 bg-gray-200">
@@ -60,7 +21,16 @@ export default function DashboardLayout({
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-6 bg-gray-100">
+        <main className="flex-1 pl-6 justify-center h-full w-full bg-gray-100">
+        <NextSSRPlugin
+          /**
+           * The `extractRouterConfig` will extract **only** the route configs
+           * from the router to prevent additional information from being
+           * leaked to the client. The data passed to the client is the same
+           * as if you were to fetch `/api/uploadthing` directly.
+           */
+          routerConfig={extractRouterConfig(ourFileRouter)}
+        />
           {children}
         </main>
       </div>

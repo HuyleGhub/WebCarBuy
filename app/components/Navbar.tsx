@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 // } from "@clerk/nextjs";
 import Link from "next/link";
 import Image from "next/image";
+import SearchModal from "./Searchmodel";
 
 interface LoaiXe {
   idLoaiXe: number;
@@ -90,52 +91,6 @@ export default function Navbar() {
                 </Link>
               </li>
             ))}
-          
-                {/* <li className="mt-10">
-                  <a href="">
-                    <img src="https://static-cms-prod.vinfastauto.com/VF5_1711360061.png"
-                      className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""}   
-                                   
-                      />
-                    <div className="text-center mt-3 font-medium">VF 5 Plus</div>
-                  </a>
-                </li>
-                <li className="mt-10">
-                  <a href="">
-                    <img src="https://static-cms-prod.vinfastauto.com/VF6_1711360087.png"
-                      className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""}  
-                                      
-                      />
-                    <div className="text-center mt-3 font-medium">VF 6</div>
-                  </a>
-                </li>
-                <li className="mt-10">
-                  <a href="">
-                    <img src="https://static-cms-prod.vinfastauto.com/VF7_1711360187.png"
-                      className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""}  
-                                       
-                      />
-                    <div className="text-center mt-3 font-medium">VF 7</div>
-                  </a>
-                </li>
-                <li className="mt-10">
-                  <a href="">
-                    <img src="https://static-cms-prod.vinfastauto.com/VF8_0.png"
-                      className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""}  
-                                      
-                      />
-                    <div className="text-center mt-3 font-medium">VF 8</div>
-                  </a>
-                </li>
-                <li className="mt-10">
-                  <a href="">
-                    <img src="https://static-cms-prod.vinfastauto.com/VF9_1711360238.png"
-                      className="hover:animate-fadeleft transition-all duration-75 hover:scale-150 " alt={""} 
-                                        
-                      />
-                    <div className="text-center mt-3 font-medium">VF 9</div>
-                  </a>
-                </li> */}
               </ul>
               </div>
             </div>
@@ -148,100 +103,22 @@ export default function Navbar() {
           </div>
         </div>
         <div className=" justify-center md:block hidden items-center mr-4 relative">
-          <div className="dropdown">
-            <IoIosSearch className="text-2xl absolute left-2 top-1" />
-            <input
-              type="text"
-              className="rounded-xl border-2 border-blue-400 py-1 pl-10 focus:outline-blue-400"
-              placeholder="Search.."
-            />
-            <ul
-              tabIndex={0}
-              className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow "
-            >
-              <li>
-                <a>VF 3</a>
-              </li>
-              <li>
-                <a>VF 5 Plus</a>
-              </li>
-              <li>
-                <a>VF 6</a>
-              </li>
-              <li>
-                <a>VF e34</a>
-              </li>
-              <li>
-                <a>VF 7</a>
-              </li>
-              <li>
-                <a>VF 8</a>
-              </li>
-              <li>
-                <a>VF 9</a>
-              </li>
-            </ul>
-          </div>
+          <div className="mb-2">
+            <SearchModal/>
+           </div>
         </div>
 
         <div className="flex-none">
-          {/* Open the modal using document.getElementById('ID').showModal() method */}
-          {/* <Link href='/sign-up' className="btn transition-all duration-500 bg-green-400 hover:text-red-500 px-4 w-20 sm:w-28 " onClick={() => document.getElementById('my_modal_2').showModal()} href={''}>
-Login
-</Link> */}
-
-          {/* <dialog id="my_modal_2" className="modal">
-  
-  <div className="modal-box border-4 border-green-400">
-   <span className='text-3xl'>Login</span>
-  <label className="input input-bordered flex items-center gap-2">
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 16 16"
-    fill="currentColor"
-    className="h-4 w-4 opacity-70">
-    <path
-      d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
-  </svg>
-  <input type="text" className="grow" placeholder="Username" />
-</label>
-<label className="input input-bordered flex items-center gap-2">
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 16 16"
-    fill="currentColor"
-    className="h-4 w-4 opacity-70">
-    <path
-      fillRule="evenodd"
-      d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
-      clipRule="evenodd" />
-  </svg>
-  <input type="password" className="grow" value="password" />
-</label>
-<button className="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg">Login</button>
-    </div>
-  
-  <div className='absolute bg-gradient-to-t from-emerald-400 to-blue-400 '></div>
-  <form method="dialog" className="modal-backdrop">
-    <button>close</button>
-  </form>
-</dialog> */}
-          {/* <div>
-            {userId ? (
-              <div>
-                <UserButton />
-              </div>
-            ) : ( */}
               <div className="flex gap-5 h-14">
                 <Link
                   href="/sign-in"
-                  className="btn transition-all duration-500 bg-white hover:text-red-500 px-1 w-14 h-6 sm:w-20 sm:h-10 "
+                  className="btn transition-all border-2 border-b-blue-950 duration-500 bg-white hover:text-red-500 px-1 w-14 h-6 sm:w-20 sm:h-10 "
                 >
                   Login
                 </Link>
                 <Link
                   href="/sign-up"
-                  className="btn transition-all text-white duration-500 hover:text-red-500 bg-blue-600 px-2 w-15 h-6 sm:w-20 sm:h-10"
+                  className="btn transition-all border-2 border-b-blue-950 text-white duration-500 hover:text-red-500 bg-blue-600 px-2 w-15 h-6 sm:w-20 sm:h-10"
                 >
                   Register
                 </Link>
@@ -249,7 +126,7 @@ Login
              {/* )} 
           </div> */}
         </div>
-        <label className="btn btn-circle swap swap-rotate xl:hidden">
+        <label className="btn btn-circle mb-2 swap swap-rotate xl:hidden">
           {/* this hidden checkbox controls the state */}
           <input type="checkbox" onClick={() => setIsMenuOpen(!isMenuOpen)} />
 

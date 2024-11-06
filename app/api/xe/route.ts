@@ -3,11 +3,12 @@ import { NextRequest, NextResponse } from "next/server";
 import xeSchema from "../zodschema/route";
 
 
-
 export async function GET () {
   const xe = await prisma.xe.findMany();
   return NextResponse.json(xe);
 }
+
+
 export async function POST (req: NextRequest,) {
     try {
       const body = await req.json();

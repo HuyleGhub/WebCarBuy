@@ -148,7 +148,7 @@ const Category = () => {
               </div>
               <div>
                 <h3 className="text-xl font-semibold text-gray-800">Giá bán</h3>
-                <p className="mt-2 text-3xl font-bold text-indigo-600">{car.GiaXe.toLocaleString()} VNĐ</p>
+                <p className="mt-2 text-3xl font-bold text-indigo-600"> {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(car.GiaXe)}</p>
                 <div className='flex'>
                 <button className="mt-4 w-48 bg-indigo-600 text-white py-2 mx-4 rounded-md hover:bg-indigo-700 transition duration-300">
                   Đặt cọc ngay
