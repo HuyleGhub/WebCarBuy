@@ -46,6 +46,7 @@ export default function Page() {
   const [reloadKey, setReloadKey] = useState(0);
   const [showToast, setShowToast] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
+  const [loading, setLoading] = useState(true);
 
   const refreshData = () => {
     setReloadKey((prevKey) => prevKey + 1);
@@ -60,7 +61,7 @@ export default function Page() {
         setError("");
         setSuccess("");
       }, 3000);
-  
+      
       return () => clearTimeout(timer);
     }
   }, [error, success]);
@@ -76,10 +77,12 @@ export default function Page() {
       .then((data) => {
         console.log("Loai xe data:", data);
         setLoaiXeList(data);
+        setLoading(false);
       })
       .catch((err) => {
         setError("Failed to fetch loai xe data");
         console.error("Failed to fetch loai xe", err);
+        setLoading(false);
       });
   }, []);
 
@@ -161,6 +164,7 @@ export default function Page() {
       setEditingId(null);
       setImageUrl('');
       refreshData();
+     
 
       // Close the dialog after successful submission
       const dialog = document.getElementById("my_modal_3") as HTMLDialogElement;
@@ -170,6 +174,7 @@ export default function Page() {
 
     } catch (err) {
       setError(err instanceof Error ? err.message : `Error ${isEditing ? 'updating' : 'creating'} product`);
+      
     }
   };
 
@@ -192,6 +197,17 @@ export default function Page() {
       dialog.showModal();
     }
   };
+  if (loading) return (
+    <div className="flex justify-center items-center h-screen" data-theme = "light">
+      <span className="loading loading-spinner text-blue-600 loading-lg"></span>
+    </div>
+  );
+  
+  if (error) return (
+    <div className="flex justify-center items-center h-screen">
+      <div className="text-2xl font-bold text-red-600">{error}</div>
+    </div>
+  );
 
   return (
     <div className="p-2 w-[1100px] h-full ml-7" data-theme="light">
@@ -206,7 +222,7 @@ export default function Page() {
         </div>
       </div>
       {showToast && (
-        <div className="toast toast-start">
+        <div className="toast toast-top toast-end mt-16 z-[9999]">
           {error && (
             <div role="alert" className="alert alert-error">
               <svg

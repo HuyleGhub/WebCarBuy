@@ -138,7 +138,7 @@ const TableDashboard: React.FC<TableDashboardProps> = ({
                     <img src={xetable.HinhAnh} alt={xetable.TenXe} width="50" />
                   </td>
                   <td>{xetable.NamSanXuat}</td>
-                  <td className="space-x-2">
+                  <td className="flex gap-3">
                     <button
                       type="submit"
                       onClick={() => onEdit(xetable)}

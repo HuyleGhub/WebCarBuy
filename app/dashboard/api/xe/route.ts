@@ -54,6 +54,11 @@ export async function GET(request: NextRequest) {
 export async function POST (req: NextRequest,) {
     try {
       const body = await req.json();
+      const checkTenXe = await prisma.xe.findFirst({
+        where: {
+          TenXe: body.TenXe
+        }
+      })
   
       // Validate the input data using zod schema
       const checkXe = xeSchema.safeParse({
@@ -70,7 +75,6 @@ export async function POST (req: NextRequest,) {
       if (!checkXe.success) {
         return NextResponse.json({
           errors: checkXe.error.errors,
-          message: "Dữ liệu không hợp lệ"
         }, { status: 400 });
       }
   
@@ -86,7 +90,11 @@ export async function POST (req: NextRequest,) {
           message: "Loại xe không tồn tại",
           code: "invalid_loai_xe"
         }, { status: 400 });
+      }else {
+        if (checkTenXe) {
+          return NextResponse.json({checkTenXe, message: "Tên xe đã tồn tại"},{status: 400});
       }
+    }
   
       // Create new Xe record
       const xe = await prisma.xe.create({
@@ -109,7 +117,7 @@ export async function POST (req: NextRequest,) {
         data: xe,
         message: "Thêm mới xe thành công"
       }, { status: 201 });
-  
+    
     } catch (error: any) {
       console.error("Error creating xe:", error);
       

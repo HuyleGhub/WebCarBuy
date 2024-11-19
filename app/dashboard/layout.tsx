@@ -15,6 +15,7 @@ export default function DashboardLayout({
       {/* Navbar */}
       <Navbardashboard/>
       <div className="flex w-full pt-16">
+        
         {/* Sidebar */}
         <aside className="w-72 bg-gray-200">
           <Sidebardashboard />

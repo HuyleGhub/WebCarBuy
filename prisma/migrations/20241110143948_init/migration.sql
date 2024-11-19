@@ -19,7 +19,6 @@ CREATE TABLE `Users` (
     `Ngaydangky` DATE NULL,
 
     UNIQUE INDEX `Users_Email_key`(`Email`),
-    UNIQUE INDEX `Users_idRole_key`(`idRole`),
     PRIMARY KEY (`idUsers`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -56,7 +55,6 @@ CREATE TABLE `DonHang` (
     `TongTien` DECIMAL(10, 2) NULL,
     `NgayDatHang` DATE NULL,
 
-    UNIQUE INDEX `DonHang_idKhachHang_key`(`idKhachHang`),
     PRIMARY KEY (`idDonHang`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -90,7 +88,6 @@ CREATE TABLE `NhapHang` (
     `idNhaCungCap` INTEGER NULL,
     `TenHang` VARCHAR(45) NULL,
 
-    UNIQUE INDEX `NhapHang_idNhaCungCap_key`(`idNhaCungCap`),
     PRIMARY KEY (`idNhapHang`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -114,8 +111,6 @@ CREATE TABLE `GioHang` (
     `idKhachHang` INTEGER NULL,
     `SoLuong` INTEGER NULL,
 
-    UNIQUE INDEX `GioHang_idXe_key`(`idXe`),
-    UNIQUE INDEX `GioHang_idKhachHang_key`(`idKhachHang`),
     PRIMARY KEY (`idGioHang`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -128,7 +123,6 @@ CREATE TABLE `LichLamViec` (
     `GioLam` TIME(0) NULL,
     `GioKetThuc` TIME(0) NULL,
 
-    UNIQUE INDEX `LichLamViec_idNhanVienTuVan_key`(`idNhanVienTuVan`),
     PRIMARY KEY (`idLichLamViec`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -140,8 +134,6 @@ CREATE TABLE `TuVanKhachHang` (
     `NoiDungTin` LONGTEXT NULL,
     `LoaiHinhTuVan` VARCHAR(45) NULL,
 
-    UNIQUE INDEX `TuVanKhachHang_idKhachHang_key`(`idKhachHang`),
-    UNIQUE INDEX `TuVanKhachHang_idNhanVien_key`(`idNhanVien`),
     PRIMARY KEY (`idTuVanKhachHang`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -152,7 +144,6 @@ CREATE TABLE `ThanhToan` (
     `PhuongThuc` VARCHAR(50) NULL,
     `NgayThanhToan` DATE NULL,
 
-    UNIQUE INDEX `ThanhToan_idDonHang_key`(`idDonHang`),
     PRIMARY KEY (`idThanhToan`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -173,7 +164,6 @@ CREATE TABLE `Vung` (
     `idKho` INTEGER NULL,
     `TenVung` VARCHAR(225) NULL,
 
-    UNIQUE INDEX `Vung_idKho_key`(`idKho`),
     PRIMARY KEY (`idVung`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -187,7 +177,6 @@ CREATE TABLE `Gara` (
     `Sdt` VARCHAR(15) NULL,
     `TenNguoiQuanLy` VARCHAR(225) NULL,
 
-    UNIQUE INDEX `Gara_idVung_key`(`idVung`),
     PRIMARY KEY (`idGara`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -200,10 +189,6 @@ CREATE TABLE `ChiTietKho` (
     `idVung` INTEGER NULL,
     `idGara` INTEGER NULL,
 
-    UNIQUE INDEX `ChiTietKho_idKho_key`(`idKho`),
-    UNIQUE INDEX `ChiTietKho_idXe_key`(`idXe`),
-    UNIQUE INDEX `ChiTietKho_idVung_key`(`idVung`),
-    UNIQUE INDEX `ChiTietKho_idGara_key`(`idGara`),
     PRIMARY KEY (`idChiTietKho`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -217,7 +202,6 @@ CREATE TABLE `ChamCong` (
     `TrangThai` VARCHAR(45) NULL,
     `TongGioLam` TIME(0) NULL,
 
-    UNIQUE INDEX `ChamCong_idNhanVienTuVan_key`(`idNhanVienTuVan`),
     PRIMARY KEY (`idChamCong`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -230,8 +214,6 @@ CREATE TABLE `DatCoc` (
     `SotienDat` INTEGER NULL,
     `TrangThaiDat` VARCHAR(225) NULL,
 
-    UNIQUE INDEX `DatCoc_idXe_key`(`idXe`),
-    UNIQUE INDEX `DatCoc_idKhachHang_key`(`idKhachHang`),
     PRIMARY KEY (`idDatCoc`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -244,7 +226,6 @@ CREATE TABLE `Luong` (
     `LuongNhan` DECIMAL(15, 2) NULL,
     `TongLuong` INTEGER NULL,
 
-    UNIQUE INDEX `Luong_idNhanVien_key`(`idNhanVien`),
     PRIMARY KEY (`idLuong`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -258,9 +239,6 @@ CREATE TABLE `LichHenLayXe` (
     `GioHenLayXe` TIME(0) NULL,
     `DiaDiem` VARCHAR(225) NULL,
 
-    UNIQUE INDEX `LichHenLayXe_idDatCoc_key`(`idDatCoc`),
-    UNIQUE INDEX `LichHenLayXe_idXe_key`(`idXe`),
-    UNIQUE INDEX `LichHenLayXe_idKhachHang_key`(`idKhachHang`),
     PRIMARY KEY (`idLichHenLayXe`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -275,10 +253,6 @@ CREATE TABLE `LichGiaoXe` (
     `idDatCoc` INTEGER NULL,
     `idDonHang` INTEGER NULL,
 
-    UNIQUE INDEX `LichGiaoXe_idXe_key`(`idXe`),
-    UNIQUE INDEX `LichGiaoXe_idKhachHang_key`(`idKhachHang`),
-    UNIQUE INDEX `LichGiaoXe_idDatCoc_key`(`idDatCoc`),
-    UNIQUE INDEX `LichGiaoXe_idDonHang_key`(`idDonHang`),
     PRIMARY KEY (`idLichGiaoXe`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -296,8 +270,6 @@ CREATE TABLE `RolePermission` (
     `idRole` INTEGER NULL,
     `idPermission` INTEGER NULL,
 
-    UNIQUE INDEX `RolePermission_idRole_key`(`idRole`),
-    UNIQUE INDEX `RolePermission_idPermission_key`(`idPermission`),
     PRIMARY KEY (`idRolePermission`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

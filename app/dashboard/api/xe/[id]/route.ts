@@ -63,10 +63,9 @@ import { NextRequest, NextResponse } from "next/server";
           if (!checkXe.success) {
             return NextResponse.json({
               errors: checkXe.error.errors,
-              message: "Dữ liệu không hợp lệ"
             }, { status: 400 });
           }else
-        if (xe !== null) {
+        if (xe) {
           return NextResponse.json({xe, message: "Tên xe đã tồn tại"},{status: 400});
         }else {
           const updateXe = await prisma.xe.update({

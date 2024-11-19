@@ -7,6 +7,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const xe = await prisma.xe.findMany({
       where: {
         idLoaiXe: idLoaiXe,
+        TrangThai: "Còn Hàng"
       },
       include: {
         loaiXe: true,

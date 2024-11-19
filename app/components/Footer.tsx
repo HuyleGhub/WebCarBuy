@@ -3,17 +3,17 @@ import React from 'react'
 // import car from '../images/car2.png'
 const Footer = () => {
   return (
-    <div className='w-full h-auto py-7' data-theme="light">
+    <div className='w-full h-full' data-theme="light">
         <div className='relative'>
         <div className='w-full h-auto'>
        <img
-                      src='https://i.imgur.com/ycm0La4.png'
+                      src='https://cmu-cdn.vinfast.vn/2024/08/f26f4d46-footer2_980x260px_vf5.png'
                       className='w-full xl:h-96 h-60'
                       width={100}
                       height={100} alt={''}              
        />
        </div>
-       <div className="absolute inset-0 bg-black opacity-10"></div>
+       {/* <div className="absolute inset-0 bg-black opacity-10"></div>
        <div className='absolute xl:top-40 xl:left-24 top-14 '>
             <span className='xl:text-3xl xl:font-bold text-lg font-bold'>Đăng Ký</span>
             <br />
@@ -22,11 +22,11 @@ const Footer = () => {
             <span className='xl:text-xl xl:font-medium text-sm font-medium'> Và Những Mẫu Xe Mới Sắp Ra Mắt</span>
             <br/>
             <button className="btn bg-[#1464F4] text-white sm:btn-sm md:btn-md lg:btn-lg">Đăng Ký Ngay</button>
-       </div>
+       </div> */}
        </div>
 
        <div>
-       <footer className="bg-gray-100">
+       <footer className="bg-slate-900">
             <div className="container mx-auto p-4">
                 <div className="flex flex-col lg:flex-row">
                     {/* Thông tin công ty */}
@@ -39,10 +39,10 @@ const Footer = () => {
                                  height={100}
                                 className="mb-2" 
                             />
-                            <div className="info">
+                            <div className="info text-white">
                                 <p>Công ty TNHH Kinh doanh Thương mại và Dịch vụ VinFast</p>
                                 <div>
-                                    <strong>MST/MSDN:</strong> 0108926276 do Sở KHĐT TP Hà Nội cấp lần đầu ngày 01/10/2019 và các lần thay đổi tiếp theo.
+                                    <strong className='text-red-600'>MST/MSDN:</strong> 0108926276 do Sở KHĐT TP Hà Nội cấp lần đầu ngày 01/10/2019 và các lần thay đổi tiếp theo.
                                 </div>
                                 <div>
                                     <strong>Địa chỉ trụ sở chính:</strong> Số 7, đường Bằng Lăng 1, Khu đô thị Vinhomes Riverside, Phường Việt Hưng, Quận Long Biên, Thành phố Hà Nội, Việt Nam
@@ -50,8 +50,8 @@ const Footer = () => {
                             </div>
                         </div>
                         {/* Hệ sinh thái */}
-                        <div className="ecosystem">
-                            <p className="menu-title font-bold">Hệ sinh thái</p>
+                        <div className="ecosystem text-white">
+                            <p className="menu-title font-bold text-red-600">Hệ sinh thái</p>
                             <ul className="menu">
                                 <li className="menu-item">
                                     <a href="https://vinhomes.vn/vi" rel="nofollow">Vinhomes</a>
@@ -71,22 +71,22 @@ const Footer = () => {
                         <div className="menu-footer">
                             <div className="block-left">
                                 <div className="menu-item">
-                                    <p className="menu-title"><a href="/ve-chung-toi">VỀ VINFAST</a></p>
+                                    <p className="menu-title text-white"><a href="/ve-chung-toi">VỀ VINFAST</a></p>
                                 </div>
                                 <div className="menu-item">
-                                    <p className="menu-title"><a href="/ve-vingroup">VỀ VINGROUP</a></p>
+                                    <p className="menu-title text-white"><a href="/ve-vingroup">VỀ VINGROUP</a></p>
                                 </div>
                                 <div className="menu-item">
-                                    <p className="menu-title">TIN TỨC</p>
+                                    <p className="menu-title text-white">TIN TỨC</p>
                                 </div>
                                 <div className="menu-item">
-                                    <p className="menu-title"><a href="/uu-dai">ƯU ĐÃI</a></p>
+                                    <p className="menu-title text-white"><a href="/uu-dai">ƯU ĐÃI</a></p>
                                 </div>
                                 <div className="menu-item">
-                                    <p className="menu-title"><a href="/tim-kiem-showroom-tram-sac">Showroom & Đại lý</a></p>
+                                    <p className="menu-title text-white"><a href="/tim-kiem-showroom-tram-sac">Showroom & Đại lý</a></p>
                                 </div>
                                 <div className="menu-item">
-                                    <p className="menu-title">Điều khoản chính sách</p>
+                                    <p className="menu-title text-white">Điều khoản chính sách</p>
                                 </div>
                             </div>
                         </div>
@@ -96,8 +96,8 @@ const Footer = () => {
                     <div className="lg:w-1/4 p-4">
                         <div className="cskh">
                             <div className="hotline-email">
-                                <div className="hotline-title">HOTLINE</div>
-                                <div className="hotline">
+                                <div className="hotline-title text-red-600">HOTLINE</div>
+                                <div className="hotline text-white">
                                     <a href="tel:1900232389" className="flex items-center">
                                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-2">
                                             <path d="M5.51667 8.99167C6.71667 11.35 8.65 13.2833 11.0083 14.4833L12.8417 12.65C13.075 12.4167 13.4 12.35 13.6917 12.4417C14.625 12.75 15.625 12.9167 16.6667 12.9167C16.8877 12.9167 17.0996 13.0045 17.2559 13.1607C17.4122 13.317 17.5 13.529 17.5 13.75V16.6667C17.5 16.8877 17.4122 17.0996 17.2559 17.2559C17.0996 17.4122 16.8877 17.5 16.6667 17.5C12.9094 17.5 9.30609 16.0074 6.64932 13.3507C3.99256 10.6939 2.5 7.09057 2.5 3.33333C2.5 3.11232 2.5878 2.90036 2.74408 2.74408C2.90036 2.5878 3.11232 2.5 3.33333 2.5H6.25C6.47101 2.5 6.68298 2.5878 6.83926 2.74408C6.99554 2.90036 7.08333 3.11232 7.08333 3.33333C7.08333 4.375 7.25 5.375 7.55833 6.30833C7.65 6.6 7.58333 6.925 7.35 7.15833L5.51667 8.99167Z" fill="#8A8A8A"></path>
@@ -105,7 +105,7 @@ const Footer = () => {
                                         <span>1900 23 23 89</span>
                                     </a>
                                 </div>
-                                <div className="email">
+                                <div className="email text-white">
                                     <a href="mailto:support.vn@vinfastauto.com" className="flex items-center">
                                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-2">
                                             <path d="M16.668 6.66683L10.0013 10.8335L3.33464 6.66683V5.00016L10.0013 9.16683L16.668 5.00016V6.66683ZM16.668 3.3335H3.33464C2.40964 3.3335 1.66797 4.07516 1.66797 5.00016V15.0002C1.66797 15.4422 1.84356 15.8661 2.15612 16.1787C2.46868 16.4912 2.89261 16.6668 3.33464 16.6668H16.668C17.11 16.6668 17.5339 16.4912 17.8465 16.1787C18.159 15.8661 18.3346 15.4422 18.3346 15.0002V5.00016C18.3346 4.55814 18.159 4.13421 17.8465 3.82165C17.5339 3.50909 17.11 3.3335 16.668 3.3335Z" fill="#8A8A8A"></path>
@@ -116,7 +116,7 @@ const Footer = () => {
                             </div>
                             {/* Kết nối với VinFast */}
                             <div className="connect-vf mt-4">
-                                <div className="connect-title font-bold">Kết nối với VinFast</div>
+                                <div className="connect-title font-bold text-red-600">Kết nối với VinFast</div>
                                 <div className="social flex space-x-4">
                                     <a className="social-item" href="https://www.facebook.com/VinFastAuto.Official" target="_blank" title="Facebook" rel="nofollow">
                                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">

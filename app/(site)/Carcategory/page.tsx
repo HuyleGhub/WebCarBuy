@@ -3,9 +3,13 @@ import React, { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import vf3red from "../images/vf3red.png";
+import Footer from '@/app/components/Footer';
+import { AddToCart } from '@/app/components/Addtocart';
+import { getSession } from '@/app/lib/auth';
 
 interface Car {
   idXe: number;
+  currentStock: number;
   TenXe: string;
   GiaXe: number;
   MauSac: string;
@@ -27,7 +31,8 @@ const Category = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentImage, setCurrentImage] = useState("https://giaxeoto.vn/admin/upload/images/resize/640-vinfast-vf4.jpg");
-  
+  const [addingToCart, setAddingToCart] = useState(false);
+  const [quantity, setQuantity] = useState(1); // For cars, typically quantity is 1
 
   const carImages = [
     "https://giaxeoto.vn/admin/upload/images/resize/640-vinfast-vf4.jpg",
@@ -37,6 +42,51 @@ const Category = () => {
   ];
   const handleImageClick = (image:any) => {
     setCurrentImage(image);
+  };
+  const handleAddToCart = async () => {
+    try {
+      setAddingToCart(true);
+      
+      // First check if the car is still available
+      const stockCheck = await fetch('/api/giohang/check-stock', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ idXe: car?.idXe }),
+      });
+      
+      const stockData = await stockCheck.json();
+      
+      if (!stockData.available) {
+        alert('Xin lỗi, xe này hiện không còn trống để đặt hàng.');
+        return;
+      }
+
+      // Add to cart
+      const response = await fetch('/api/giohang', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          idXe: car?.idXe,
+          SoLuong: quantity,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Không thể thêm vào giỏ hàng');
+      }
+
+      // Navigate to cart page
+      router.push('/Cart');
+    } catch (err) {
+      alert('Có lỗi xảy ra khi thêm vào giỏ hàng. Vui lòng thử lại sau.');
+      console.error('Error adding to cart:', err);
+    } finally {
+      setAddingToCart(false);
+    }
   };
   useEffect(() => {
     if (id) {
@@ -81,8 +131,8 @@ const Category = () => {
   );
 
   return (
-    <div className='w-full h-full px-4 py-24' data-theme="light">
-      <div className='px-24 w-full h-full flex flex-col'>
+    <div className='w-full h-full pt-24' data-theme="light">
+      <div className='px-24 pb-24 w-full h-full flex flex-col'>
       <div className="pb-4">
           <button
             onClick={() => router.push('/')}
@@ -153,8 +203,21 @@ const Category = () => {
                 <button className="mt-4 w-48 bg-indigo-600 text-white py-2 mx-4 rounded-md hover:bg-indigo-700 transition duration-300">
                   Đặt cọc ngay
                 </button>
-                <button className="mt-4 w-48 bg-slate-600 text-white py-2 mx-4 rounded-md hover:bg-black transition duration-300">
-                  Thêm vào giỏ hàng
+                <button
+                  onClick={handleAddToCart}
+                  disabled={addingToCart || car?.TrangThai !== 'Còn Hàng'}
+                  className={`mt-4 w-48 ${
+                    car?.TrangThai === 'Còn Hàng'
+                      ? 'bg-slate-600 hover:bg-black'
+                      : 'bg-gray-400 cursor-not-allowed'
+                  } text-white py-2 mx-4 rounded-md transition duration-300`}
+                >
+                  {addingToCart 
+                    ? 'Đang thêm...' 
+                    : car?.TrangThai !== 'Còn Hàng'
+                    ? 'Hết hàng'
+                    : 'Thêm vào giỏ hàng'
+                  }
                 </button>
                 </div>
               </div>
@@ -163,6 +226,7 @@ const Category = () => {
         </div>
         
       </div>
+      <Footer></Footer>
     </div>
   )
 }

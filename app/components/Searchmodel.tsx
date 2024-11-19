@@ -39,9 +39,9 @@ const SearchModal = () => {
     if (searchParams.idLoaiXe) queryParams.append('idLoaiXe', searchParams.idLoaiXe);
 
     // Close the modal
-    const modal = document.getElementById('search_modal');
-    if (modal instanceof HTMLDialogElement) {
-      modal.close();
+    const dialog = document.getElementById('search_modal') as HTMLDialogElement;
+    if (dialog) {
+      dialog.close();
     }
 
     // Navigate to search results page with query parameters
@@ -51,12 +51,18 @@ const SearchModal = () => {
   const formatCurrency = (value: number): string => {
     return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
   };
+  const handleShowModal = () => {
+    const dialog = document.getElementById('search_modal') as HTMLDialogElement;
+    if (dialog) {
+      dialog.showModal();
+    }
+  }
 
   return (
     <div className="w-full">
       <button 
         className="btn gap-2 border-2 border-b-black"
-        onClick={() => document.getElementById('search_modal').showModal()}
+        onClick={handleShowModal}
       >
         <Search className="h-4 w-4" />
         Tìm kiếm xe

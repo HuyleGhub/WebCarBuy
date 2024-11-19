@@ -80,7 +80,7 @@ const SortableCarItem = ({ car }: SortableCarItemProps) => {
           </figure>
           <div className="card-body items-center text-center">
             <h2 className="card-title">{car.TenXe}</h2>
-            <p> {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(car.GiaXe)}</p>
+            <p>Giá Xe:  <span className="text-purple-600 font-semibold">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(car.GiaXe)}</span></p>
             <div className="card-actions">
               <button className="btn bg-[#1464F4] text-white">Đặt Cọc</button>
               <Link href={`Carcategory?id=${car.idXe}`} className="btn btn-outline">Xem Chi Tiết</Link>

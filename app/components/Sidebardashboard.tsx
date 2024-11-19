@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { GrUserManager } from "react-icons/gr";
 import { FaCar } from "react-icons/fa";
 import { GiCarDoor } from "react-icons/gi";
+import { FaShippingFast } from "react-icons/fa";
 
 interface SidebarLink {
   icon: React.ReactElement;
@@ -20,15 +21,29 @@ const SidebarDashboard: React.FC = () => {
     {
       icon: <FaCar />,
       href: "/dashboard/productmangement",
-      label: "Quản Lý Sản Phẩm",
+      label: "Xe",
     },
     {
       icon: <GiCarDoor />,
-      href: "/dashboard/productstatistics",
-      label: "Quản Lý Loại Xe",
+      href: "/dashboard/loaixemanager",
+      label: "Loại Xe",
     },
+    {
+      icon: <FaShippingFast />,
+      href: "/dashboard/nhacungcapmanager",
+      label: "Nhà Cung Cấp",
+    },
+    {
+      icon: <GiCarDoor />,
+      href: "/dashboard/quanlytaikhoan",
+      label: "Tài Khoản Người Dùng",
+    },
+    {
+      icon: <GiCarDoor />,
+      href: "/dashboard/quanlydonhang",
+      label: "Đơn Hàng",
+    }
   ];
-  const [link, setlink] = useState<SidebarLink[]>([]);
 
   const isActivePath = (path: string) => pathname === path;
 
@@ -40,8 +55,8 @@ const SidebarDashboard: React.FC = () => {
     <div className="flex flex-col w-30 h-full bg-slate-950 fixed">
       <div className="collapse collapse-arrow w-64 m-6 bg-slate-950">
         <input type="checkbox" name="my-accordion-2" />
-        <div className="collapse-title text-white text-xl text-center mb-2 font-medium">
-          <div className="absolute left-9 top-5"><GrUserManager /></div>
+        <div className="collapse-title text-white text-base text-center mb-2  font-medium">
+          <div className="absolute left-9 top-4 text-xl"><GrUserManager /></div>
           Quản Lý
         </div>
         <div className="collapse-content">
@@ -56,8 +71,8 @@ const SidebarDashboard: React.FC = () => {
                   : "text-gray-300 hover:bg-slate-800 hover:text-white"
               }`}
             >
-            <div className="absolute left-9 ">{link.icon}</div> 
-            <div >{link.label}</div>
+            <div className="absolute left-9">{link.icon}</div> 
+            <div className="text-sm">{link.label}</div>
             </button>
           </li>
         ))}

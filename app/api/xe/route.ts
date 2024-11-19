@@ -4,7 +4,13 @@ import xeSchema from "../zodschema/route";
 
 
 export async function GET () {
-  const xe = await prisma.xe.findMany();
+  const xe = await prisma.xe.findMany(
+    {
+      where: {
+        TrangThai: "Còn Hàng",
+      }
+    }
+  );
   return NextResponse.json(xe);
 }
 
