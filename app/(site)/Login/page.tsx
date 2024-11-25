@@ -40,8 +40,7 @@ export default function LoginPage() {
         if (!res.ok) {
           throw new Error(data.error || 'Đăng nhập thất bại');
         }
-  
-        router.refresh();
+        
         router.push('/');
       } catch (error) {
         if (error instanceof Error) {

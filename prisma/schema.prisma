@@ -24,7 +24,6 @@ model Users {
   idUsers     Int       @id @default(autoincrement())
   Tentaikhoan String?   @db.VarChar(225)
   Matkhau     String?   @db.VarChar(225)
-  MatkhauGoc String?
   Hoten       String?   @db.VarChar(225)
   Sdt         String?   @db.VarChar(15)
   Diachi      String?   @db.VarChar(45)

@@ -130,12 +130,27 @@ const TableDashboard: React.FC<TableDashboardProps> = ({
                   <th>{xetable.idXe}</th>
                   <td>{xetable.TenXe}</td>
                   <td>{getLoaiXeName(xetable.idLoaiXe)}</td>
-                  <td>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(xetable.GiaXe)}</td>
+                  <td>
+                    {new Intl.NumberFormat("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    }).format(xetable.GiaXe)}
+                  </td>
                   <td>{xetable.MauSac}</td>
                   <td>{xetable.DongCo}</td>
                   <td>{xetable.TrangThai}</td>
                   <td>
-                    <img src={xetable.HinhAnh} alt={xetable.TenXe} width="50" />
+                    {xetable.HinhAnh && (
+                      <img
+                        src={
+                          Array.isArray(xetable.HinhAnh)
+                            ? xetable.HinhAnh[0] // Lấy hình ảnh đầu tiên nếu là mảng
+                            : xetable.HinhAnh.split("|")[0] // Nếu là chuỗi, split và lấy phần tử đầu
+                        }
+                        alt={xetable.TenXe}
+                        width="50"
+                      />
+                    )}
                   </td>
                   <td>{xetable.NamSanXuat}</td>
                   <td className="flex gap-3">
@@ -181,7 +196,6 @@ const TableDashboard: React.FC<TableDashboardProps> = ({
             </div>
           </div>
           <div className="flex space-x-3">
-            
             <button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
@@ -211,7 +225,6 @@ const TableDashboard: React.FC<TableDashboardProps> = ({
             >
               Sau
             </button>
-            
           </div>
         </div>
       )}

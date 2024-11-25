@@ -1,7 +1,7 @@
 import { getSession } from '@/app/lib/auth';
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/prisma/client';
-import Email from 'next-auth/providers/email';
+
 
 export async function GET(request: NextRequest) {
   try {

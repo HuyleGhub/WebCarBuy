@@ -58,32 +58,51 @@ const SortableCarItem = ({ car }: SortableCarItemProps) => {
 
   return (
     <li ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <div 
+      <div
         className={`card bg-base-100 xl:w-72 xl:h-80 w-full md:w-72 md:h-80 ml-6 mb-5 shadow-xl relative ${
           isHovered ? "animate-borderrun" : ""
         }`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div className={`absolute bg-gradient-to-bl from-orange-600 to-orange-400 w-[303px] h-[335px] z-[-1] -top-2 -left-2 rounded-2xl ${
-          isHovered ? "animate-spinrun" : "hidden"
-        }`}></div>
+        <div
+          className={`absolute bg-gradient-to-bl from-orange-600 to-orange-400 w-[303px] h-[335px] z-[-1] -top-2 -left-2 rounded-2xl ${
+            isHovered ? "animate-spinrun" : "hidden"
+          }`}
+        ></div>
         <div className="w-[303px] h-[303px]">
           <figure className="px-10">
-            <img
-              src={car.HinhAnh}
+            <Image
+              src={
+                Array.isArray(car.HinhAnh)
+                  ? car.HinhAnh[0] // Nếu là mảng thì lấy ảnh đầu tiên
+                  : car.HinhAnh.split("|")[0] // Nếu là chuỗi thì split và lấy phần tử đầu
+              }
               alt={car.TenXe}
-              width={200}
-                      height={200}
-              className="rounded-xl w-80 h-36"
+              width={100}
+              height={100}
+              className="rounded-xl w-64 h-32"
             />
           </figure>
           <div className="card-body items-center text-center">
             <h2 className="card-title">{car.TenXe}</h2>
-            <p>Giá Xe:  <span className="text-purple-600 font-semibold">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(car.GiaXe)}</span></p>
+            <p>
+              Giá Xe:{" "}
+              <span className="text-purple-600 font-semibold">
+                {new Intl.NumberFormat("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                }).format(car.GiaXe)}
+              </span>
+            </p>
             <div className="card-actions">
               <button className="btn bg-[#1464F4] text-white">Đặt Cọc</button>
-              <Link href={`Carcategory?id=${car.idXe}`} className="btn btn-outline">Xem Chi Tiết</Link>
+              <Link
+                href={`Carcategory?id=${car.idXe}`}
+                className="btn btn-outline"
+              >
+                Xem Chi Tiết
+              </Link>
             </div>
           </div>
         </div>

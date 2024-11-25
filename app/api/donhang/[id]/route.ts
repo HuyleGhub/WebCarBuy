@@ -19,13 +19,19 @@ export async function PUT(req: NextRequest, {params}:{params: {id: string}}){
         }
 }
 export async function DELETE(req: NextRequest, {params}: {params: {id:string}}) {
-      try {
-        const idDonHang = parseInt(params.id);
-        const deleteDonHang = await prisma.donHang.delete({
-          where: { idDonHang: idDonHang },
-        });
-        return NextResponse.json({ deleteDonHang, message: "Xóa đơn hàng thành công" });
-      } catch (error: any) {
-        return NextResponse.json({ error: error.message});
-      }
+  try {
+    const idDonHang = parseInt(params.id);
+    await prisma.chiTietDonHang.deleteMany({
+        where: {
+          idDonHang: parseInt(params.id)
+        }
+      });
+    await prisma.donHang.delete({
+      where: { idDonHang: idDonHang },
+    });
+
+    return NextResponse.json({ message: "Xóa đơn hàng thành công" });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message});
+  }
 }

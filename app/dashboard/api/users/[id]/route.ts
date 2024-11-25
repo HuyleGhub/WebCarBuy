@@ -27,27 +27,13 @@ export async function PUT(request: NextRequest,{ params }: { params: { id: strin
         Hoten: data.Hoten,
         Sdt: data.Sdt,
         Diachi: data.Diachi,
-        idRole: parseInt(data.idRole)
       };
-  
-      // Only hash and update password if it's provided and changed
-      if (data.MatKhau && data.MatKhau.trim() !== '') {
-        updateData.Matkhau = await hash(data.MatKhau, 12);
-      }
-  
       // Update user
       const updatedUser = await prisma.users.update({
         where: { 
             idUsers: id 
         },
         data: updateData,
-        include: {
-          role: {
-            select: {
-              TenNguoiDung: true
-            }
-          }
-        }
       });
   
       return NextResponse.json({updatedUser, message:"Cập nhật thành công"});

@@ -15,17 +15,14 @@ interface ChiTietDonHang {
   idKhacHang: string;
 }
 
-interface FormData {
-  
+interface FormData { 
   TrangThaiDonHang: string;
- 
  
 }
 
 export default function Page() {
   const initialFormData: FormData = {
   TrangThaiDonHang: "",
- 
  
   };
 
@@ -179,11 +176,7 @@ export default function Page() {
     </div>
   );
   
-  if (error) return (
-    <div className="flex justify-center items-center h-screen">
-      <div className="text-2xl font-bold text-red-600">{error}</div>
-    </div>
-  );
+  
 
   return (
     <div className="p-2 w-[1100px] h-full ml-7" data-theme="light">

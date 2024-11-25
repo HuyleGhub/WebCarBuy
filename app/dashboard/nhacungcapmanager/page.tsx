@@ -3,13 +3,13 @@
 import React, { useEffect, useState } from "react";
 import Tabledashboard from "@/app/components/Tabledashboard";
 import { IoAddCircleOutline } from "react-icons/io5";
-
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadButton } from "@/app/lib/uploadthing";
 import { Fileupload } from "@/app/components/Fileupload";
 import { url } from "inspector";
 import TableLoaiXe from "../components/Tableloaixe";
 import TableNhaCungCap from "../components/Tablenhacungcap";
+import toast, { Toaster } from "react-hot-toast";
 
 interface FormData {
   TenNhaCungCap: string;
@@ -25,54 +25,63 @@ export default function Page() {
   };
 
   const [formData, setFormData] = useState<FormData>(initialFormData);
-  const [error, setError] = useState<string>("");
-  const [success, setSuccess] = useState<string>("");
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
-  const [showToast, setShowToast] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
-  
 
   const refreshData = () => {
     setReloadKey((prevKey) => prevKey + 1);
   };
- 
-  useEffect(() => {
-    if (error || success) {
-      setShowToast(true);
-      const timer = setTimeout(() => {
-        setShowToast(false);
-        // Clear messages
-        setError("");
-        setSuccess("");
-      }, 3000);
-  
-      return () => clearTimeout(timer);
-    }
-  }, [error, success]);
-
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Bạn có chắc muốn xóa loại xe này không?")) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`api/nhacungcap/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete product");
-      }
-
-      const data = await response.json();
-      setSuccess(data.message);
-      refreshData();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Error deleting product");
-    }
+    // Create a promise that resolves when user makes a choice
+    toast((t) => (
+      <div className="flex flex-col gap-2">
+        <span className="font-medium">Bạn có chắc muốn xóa nhà cung cấp này?</span>
+        <div className="flex gap-2">
+          <button
+            onClick={async () => {
+              toast.dismiss(t.id);
+              try {
+                const response = await fetch(`api/nhacungcap/${id}`, {
+                  method: "DELETE",
+                });
+  
+                if (!response.ok) {
+                  throw new Error("Failed to delete supplier");
+                }
+  
+                const data = await response.json();
+                toast.success(data.message);
+                refreshData();
+              } catch (err) {
+                toast.error(err instanceof Error ? err.message : "Lỗi khi xóa nhà cung cấp");
+              }
+            }}
+            className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition-colors"
+          >
+            Xóa
+          </button>
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="bg-gray-500 text-white px-3 py-1 rounded-md hover:bg-gray-600 transition-colors"
+          >
+            Hủy
+          </button>
+        </div>
+      </div>
+    ), {
+      duration: Infinity, // Don't auto-dismiss
+      position: 'top-center',
+      style: {
+        background: '#fff',
+        color: '#000',
+        padding: '16px',
+        borderRadius: '8px',
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+      },
+    });
   };
 
   const handleChange = (e: any) => {
@@ -91,17 +100,14 @@ export default function Page() {
     });
     setIsEditing(true);
     setEditingId(product.idNhaCungCap);
-    // Show the dialog after setting the form data
     const dialog = document.getElementById("my_modal_3") as HTMLDialogElement;
     if (dialog) {
       dialog.showModal();
     }
   };
 
-  const handleSubmit = async (e:any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
     const url = isEditing ? `api/nhacungcap/${editingId}` : 'api/nhacungcap';
     const method = isEditing ? 'PUT' : 'POST';
 
@@ -116,34 +122,29 @@ export default function Page() {
 
       if (!response.ok) {
         const errorData = await response.json();
-
-        // Kiểm tra xem API có trả về lỗi từ Zod không
         if (errorData.errors && Array.isArray(errorData.errors)) {
-            const zodErrors = errorData.errors.map((error: any) => `${error.field}: ${error.message}`).join(", ");
-            setError(`Dữ liệu không hợp lệ: ${zodErrors}`);
+          const zodErrors = errorData.errors.map((error: any) => `${error.field}: ${error.message}`).join(", ");
+          toast.error(`Dữ liệu không hợp lệ: ${zodErrors}`);
         } else {
-            // Nếu không có lỗi Zod, sử dụng thông báo lỗi chung
-            setError(errorData.message || `Không thể ${isEditing ? 'cập nhật' : 'tạo'} nhà cung cấp`);
+          toast.error(errorData.message || `Không thể ${isEditing ? 'cập nhật' : 'tạo'} nhà cung cấp`);
         }
-        return; // Dừng lại nếu có lỗi
+        return;
       }
 
       const data = await response.json();
-      setSuccess(data.message);
+      toast.success(data.message);
       setFormData(initialFormData);
       setIsEditing(false);
       setEditingId(null);
-      setImageUrl('');
       refreshData();
 
-      // Close the dialog after successful submission
       const dialog = document.getElementById("my_modal_3") as HTMLDialogElement;
       if (dialog) {
         dialog.close();
       }
 
     } catch (err) {
-      setError(err instanceof Error ? err.message : `Error ${isEditing ? 'updating' : 'creating'} product`);
+      toast.error(err instanceof Error ? err.message : `Lỗi ${isEditing ? 'cập nhật' : 'tạo'} nhà cung cấp`);
     }
   };
 
@@ -179,47 +180,32 @@ export default function Page() {
           </button>
         </div>
       </div>
-      {showToast && (
-        <div className="toast toast-top toast-end mt-16 z-[9999]">
-          {error && (
-            <div role="alert" className="alert alert-error">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 shrink-0 stroke-current"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <span>{error}</span>
-            </div>
-          )}
 
-          {success && (
-            <div role="alert" className="alert alert-success">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 shrink-0 stroke-current"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <span>{success}</span>
-            </div>
-          )}
-        </div>
-      )}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#333',
+            color: '#fff',
+            padding: '16px',
+            borderRadius: '8px',
+          },
+          success: {
+            duration: 3000,
+            style: {
+              background: '#22c55e',
+            },
+          },
+          error: {
+            duration: 3000,
+            style: {
+              background: '#ef4444',
+            },
+          },
+        }}
+      />
+
       <dialog id="my_modal_3" className="modal">
         <div className="modal-box w-11/12 max-w-5xl">
           <form method="dialog">
@@ -236,8 +222,6 @@ export default function Page() {
           <div className="flex w-full">
             <div className="pt-6 w-[20000px]">
               <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Rest of the form content remains the same */}
-                {/* Form fields... */}
                 <div className="flex justify-center w-full flex-wrap gap-4">
                   <div className="flex w-full gap-4">
                     <div className="flex-1">
@@ -259,7 +243,7 @@ export default function Page() {
                     </div>
 
                     <div className="flex-1">
-                    <label
+                      <label
                         htmlFor="Sdt"
                         className="block font-medium text-gray-700 mb-1"
                       >
@@ -278,11 +262,9 @@ export default function Page() {
                   </div>
 
                   <div className="flex w-full gap-4">
-
                     <div className="flex-1">
-                    
-                    <label
-                        htmlFor="Sdt"
+                      <label
+                        htmlFor="Email"
                         className="block font-medium text-gray-700 mb-1"
                       >
                         Email
@@ -296,7 +278,6 @@ export default function Page() {
                         className="w-full px-3 py-2 border text-black bg-white border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         required
                       />
-                
                     </div>
                   </div>
                 </div>
@@ -314,6 +295,7 @@ export default function Page() {
           </div>
         </div>
       </dialog>
+      
       <div className="flex w-full justify-center">
         <TableNhaCungCap
           onEdit={handleEdit}

@@ -7,7 +7,7 @@ import { NextResponse } from 'next/server';
 export async function POST(req: Request) {
   try {
     const session = await getSession();
-    // if (!session) {
+    // if (!session) 
     //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     // }
 
@@ -52,6 +52,9 @@ export async function POST(req: Request) {
 
       // 4. Delete all items from GioHang
       await prisma.gioHang.deleteMany({
+        where: {
+          idKhachHang: session.idUsers,
+        },
       });
 
       // 5. Update Xe inventory status if needed

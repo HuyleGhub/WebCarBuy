@@ -1,7 +1,7 @@
-// components/ShoppingCart.tsx
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import toast, {Toaster} from "react-hot-toast";
 
 interface CartItem {
   idGioHang: number;
@@ -37,7 +37,7 @@ export const ShoppingCart = () => {
       setCartItems(data);
     } catch (error) {
       console.error("Error fetching cart:", error);
-      alert("Có lỗi xảy ra khi tải giỏ hàng");
+      toast.error("Có lỗi xảy ra khi tải giỏ hàng");
     } finally {
       setLoading(false);
     }
@@ -56,16 +56,87 @@ export const ShoppingCart = () => {
       await fetchCartItems();
     } catch (error) {
       console.error("Error removing item:", error);
-      alert("Có lỗi xảy ra khi xóa sản phẩm");
+      toast.error("Có lỗi xảy ra khi xóa sản phẩm");
     }
   };
+  const deleteItem = async (idGioHang: number) => {
+    new Promise<void>((resolve) => {
+      toast((t) => (
+        <div className="flex flex-col gap-2">
+          <p className="font-medium">Bạn có chắc muốn xóa sản phẩm này không?</p>
+          <div className="flex gap-2">
+            <button
+              className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+              onClick={() => {
+                toast.dismiss(t.id);
+                removeItem(idGioHang);
+                resolve();
+              }}
+            >
+              Xóa
+            </button>
+            <button
+              className="px-3 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+              onClick={() => {
+                toast.dismiss(t.id);
+                resolve();
+              }}
+            >
+              Hủy
+            </button>
+          </div>
+        </div>
+      ), {
+        duration: 5000, // Toast hiển thị trong 5 giây
+        position: 'top-center',
+        style: {
+          minWidth: '300px',
+          background: '#fff',
+          color: '#000',
+        },
+      });
+    });
+}
   
   const updateItemQuantity = async (idGioHang: number, newQuantity: number) => {
     if (newQuantity <= 0) {
-      if (confirm("Bạn có chắc muốn xóa xe sản phẩm này không")) {
-        await removeItem(idGioHang);
-      }
-      return;
+      // Tạo promise để xử lý xác nhận
+      return new Promise<void>((resolve) => {
+        toast((t) => (
+          <div className="flex flex-col gap-2">
+            <p className="font-medium">Bạn có chắc muốn xóa sản phẩm này không?</p>
+            <div className="flex gap-2">
+              <button
+                className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                onClick={() => {
+                  toast.dismiss(t.id);
+                  removeItem(idGioHang);
+                  resolve();
+                }}
+              >
+                Xóa
+              </button>
+              <button
+                className="px-3 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+                onClick={() => {
+                  toast.dismiss(t.id);
+                  resolve();
+                }}
+              >
+                Hủy
+              </button>
+            </div>
+          </div>
+        ), {
+          duration: 5000, // Toast hiển thị trong 5 giây
+          position: 'top-center',
+          style: {
+            minWidth: '300px',
+            background: '#fff',
+            color: '#000',
+          },
+        });
+      });
     }
     try {
       const response = await fetch(`/api/giohang/${idGioHang}`, {
@@ -83,13 +154,13 @@ export const ShoppingCart = () => {
       await fetchCartItems();
     } catch (error) {
       console.error("Error updating item quantity:", error);
-      alert("Có lỗi xảy ra khi cập nhật số lượng");
+      toast.error("Có lỗi xảy ra khi cập nhật số lượng");
     }
   };
 
   const handleCheckout = async () => {
     if (!paymentMethod) {
-      alert("Vui lòng chọn phương thức thanh toán");
+      toast.error("Vui lòng chọn phương thức thanh toán");
       return;
     }
 
@@ -111,11 +182,25 @@ export const ShoppingCart = () => {
       }
 
       const result = await response.json();
-      alert("Đặt hàng thành công!");
+      const toastPromise = toast.promise(
+        new Promise(resolve => setTimeout(resolve, 2500)),
+        {
+          loading: 'Đang thanh toán...',
+          success: 'Đặt hàng thành công!',
+          error: 'Có lỗi xảy ra',
+        },
+        {
+        duration: 3000, // Toast hiển thị 3 giây
+        }
+      );
+
+      await toastPromise;
+      // Đợi thêm 1 giây sau khi toast success hiển thị trước khi chuyển trang
+      await new Promise(resolve => setTimeout(resolve, 1500));
       router.push("/"); // Redirect to orders page or home
     } catch (error) {
       console.error("Error during checkout:", error);
-      alert("Có lỗi xảy ra trong quá trình thanh toán");
+      toast.error("Có lỗi xảy ra trong quá trình thanh toán");
     } finally {
       setProcessing(false);
     }
@@ -144,6 +229,28 @@ export const ShoppingCart = () => {
         >
           <span>Quay lại</span>
         </button>
+        <Toaster
+        position= "top-right"
+        toastOptions={
+          {
+            style: {
+              background: '#363636',
+            color: '#fff',
+            },
+            duration: 2000,
+            success: {
+              style: {
+                background: 'green',
+              }
+            },
+            error: {
+              style: {
+                background:'red',
+              }
+            }
+          }
+        }
+        />
       </div>
 
       {cartItems.length === 0 ? (
@@ -199,7 +306,7 @@ export const ShoppingCart = () => {
                   </button>
                 </div>
                 <button
-                  onClick={() => removeItem(item.idGioHang)}
+                  onClick={()=>deleteItem(item.idGioHang)}
                   className="text-red-500 hover:text-red-700"
                 >
                   Xóa

@@ -1,14 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import Tabledashboard from "@/app/components/Tabledashboard";
-import { IoAddCircleOutline } from "react-icons/io5";
-
-import { createUploadthing, type FileRouter } from "uploadthing/next";
-import { UploadButton } from "@/app/lib/uploadthing";
-import { Fileupload } from "@/app/components/Fileupload";
-import { url } from "inspector";
+import React, { useEffect, useState } from "react";;
 import Tabletaikhoan from "../components/Tabletaikhoan";
+import toast, {Toaster} from "react-hot-toast";
 
 interface Role {
   idRole: number;
@@ -53,20 +47,6 @@ export default function Page() {
   };
  
   useEffect(() => {
-    if (error || success) {
-      setShowToast(true);
-      const timer = setTimeout(() => {
-        setShowToast(false);
-        // Clear messages
-        setError("");
-        setSuccess("");
-      }, 3000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [error, success]);
-
-  useEffect(() => {
     fetch("api/role")
       .then((response) => {
         if (!response.ok) {
@@ -80,32 +60,59 @@ export default function Page() {
         setLoading(false);
       })
       .catch((err) => {
-        setError("Failed to fetch role data");
+        toast.error("Failed to fetch role data");
         console.error("Failed to fetch loai xe", err);
         setLoading(false);
       });
   }, []);
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Bạn có chắc muốn xóa xe này không?")) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`api/users/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete product");
-      }
-
-      const data = await response.json();
-      setSuccess(data.message);
-      refreshData();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Error deleting product");
-    }
+    toast((t) => (
+      <div className="flex flex-col gap-2">
+        <span className="font-medium">Bạn có chắc muốn xóa nhà cung cấp này?</span>
+        <div className="flex gap-2">
+          <button
+            onClick={async () => {
+              toast.dismiss(t.id);
+              try {
+                const response = await fetch(`api/users/${id}`, {
+                  method: "DELETE",
+                });
+  
+                if (!response.ok) {
+                  throw new Error("Failed to delete supplier");
+                }
+  
+                const data = await response.json();
+                toast.success(data.message);
+                refreshData();
+              } catch (err) {
+                toast.error(err instanceof Error ? err.message : "Lỗi khi xóa nhà cung cấp");
+              }
+            }}
+            className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition-colors"
+          >
+            Xóa
+          </button>
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="bg-gray-500 text-white px-3 py-1 rounded-md hover:bg-gray-600 transition-colors"
+          >
+            Hủy
+          </button>
+        </div>
+      </div>
+    ), {
+      duration: Infinity, // Don't auto-dismiss
+      position: 'top-center',
+      style: {
+        background: '#fff',
+        color: '#000',
+        padding: '16px',
+        borderRadius: '8px',
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+      },
+    });
   };
 
   const handleChange = (e: any) => {
@@ -137,8 +144,6 @@ export default function Page() {
 
   const handleSubmit = async (e:any) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
     const url = isEditing ? `api/users/${editingId}` : 'api/users';
     const method = isEditing ? 'PUT' : 'POST';
 
@@ -148,7 +153,7 @@ export default function Page() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({...formData, HinhAnh: imageUrl }),
+        body: JSON.stringify({...formData }),
       });
 
       if (!response.ok) {
@@ -157,11 +162,10 @@ export default function Page() {
       }
 
       const data = await response.json();
-      setSuccess(data.message);
+      toast.success(data.message);
       setFormData(initialFormData);
       setIsEditing(false);
       setEditingId(null);
-      setImageUrl('');
       refreshData();
 
       // Close the dialog after successful submission
@@ -171,7 +175,7 @@ export default function Page() {
       }
 
     } catch (err) {
-      setError(err instanceof Error ? err.message : `Error ${isEditing ? 'updating' : 'creating'} product`);
+      toast.error(err instanceof Error ? err.message : `Error ${isEditing ? 'updating' : 'creating'} product`);
     }
   };
 
@@ -190,14 +194,6 @@ export default function Page() {
       <span className="loading loading-spinner text-blue-600 loading-lg"></span>
     </div>
   );
-  
-  if (error) return (
-    <div className="flex justify-center items-center h-screen">
-      <div className="text-2xl font-bold text-red-600">{error}</div>
-    </div>
-  );
-  
-  
 
   return (
     <div className="p-2 w-[1100px] h-full ml-7" data-theme="light">
@@ -209,47 +205,30 @@ export default function Page() {
          
         </div>
       </div>
-      {showToast && (
-        <div className="toast toast-top toast-end mt-16 z-[9999]">
-          {error && (
-            <div role="alert" className="alert alert-error">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 shrink-0 stroke-current"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <span>{error}</span>
-            </div>
-          )}
-
-          {success && (
-            <div role="alert" className="alert alert-success">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 shrink-0 stroke-current"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <span>{success}</span>
-            </div>
-          )}
-        </div>
-      )}
+     <Toaster 
+      position="top-right"
+      toastOptions={{
+        duration: 3000,
+        style: {
+          background: '#333',
+          color: '#fff',
+          padding: '16px',
+          borderRadius: '8px',
+        },
+        success: {
+          duration: 3000,
+          style: {
+            background: '#22c55e',
+          },
+        },
+        error: {
+          duration: 3000,
+          style: {
+            background: '#ef4444',
+          },
+        },
+      }}
+     />
       <dialog id="my_modal_3" className="modal">
         <div className="modal-box w-11/12 max-w-5xl">
           <form method="dialog">

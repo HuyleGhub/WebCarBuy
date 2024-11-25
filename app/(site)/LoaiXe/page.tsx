@@ -69,15 +69,6 @@ const LoaiXe = () => {
       </div>
     );
 
-  if (!cars.length)
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="text-2xl font-bold text-gray-800">
-          Không tìm thấy thông tin loai xe
-        </div>
-      </div>
-    );
-
   return (
     <div className="w-full h-full flex flex-col " data-theme="light">
       <div className="xl:mx-28 md:mx-10 mt-24 ">
@@ -97,58 +88,75 @@ const LoaiXe = () => {
           </button>
         </div>
         <span
-          className="font-bold xl:text-5xl md:text-4xl text-3xl w-full text-slate-600 font-serif animate-appeartop 
+          className="font-bold xl:text-3xl md:text-4xl text-3xl w-full text-black animate-appeartop 
         [animation-timeline:view()]  animation-range-entry"
         >
           Danh sách xe {cars[0]?.loaiXe.TenLoai}
         </span>
         <br />
         <div className="border-b-4 border-blue-500 pt-5 "> </div>
-        <ul className="flex w-full py-12 min-[1530px]:gap-28 xl:gap-2 xl:h-full h-full flex-wrap animate-appear [animation-timeline:view()] animation-range-entry list-none">
-          {cars.map((car) => (
-            <li key={car.idXe}>
-              <div
-                className={`card bg-base-100 xl:w-72 xl:h-72 w-full md:w-72 md:h-72 ml-6 mb-5 shadow-xl relative ${
-                  isHovered ? "" : ""
-                }`}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-              >
+        {cars.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            Không có thông tin loại xe này
+          </div>
+        ) : (
+          <ul className="flex w-full py-12 min-[1530px]:gap-28 xl:gap-2 xl:h-full h-full flex-wrap animate-appear [animation-timeline:view()] animation-range-entry list-none">
+            {cars.map((car) => (
+              <li key={car.idXe}>
                 <div
-                  className={`absolute  w-[303px] h-[303px] z-[-1] -top-2 -left-2 rounded-2xl ${
+                  className={`card bg-base-100 xl:w-72 xl:h-72 w-full md:w-72 md:h-72 ml-6 mb-5 shadow-xl relative ${
                     isHovered ? "" : ""
                   }`}
-                ></div>
-                <div className="w-[303px] h-[303px]">
-                  <figure className="px-10">
-                    <Image
-                      src={car.HinhAnh}
-                      alt={car.TenXe}
-                      width={100}
-                      height={100}
-                      className="rounded-xl w-64 h-32"
-                    />
-                  </figure>
-                  <div className="card-body items-center text-center">
-                    <h2 className="card-title">{car.TenXe}</h2>
-                    <p>Giá xe: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(car.GiaXe)}</p>
-                    <div className="card-actions">
-                      <button className="btn bg-[#1464F4] text-white">
-                        Đặt Cọc
-                      </button>
-                      <Link href={`/Carcategory?id=${car.idXe}`} passHref>
-                        <button className="btn btn-outline">
-                          Xem Chi Tiết
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
+                >
+                  <div
+                    className={`absolute  w-[303px] h-[303px] z-[-1] -top-2 -left-2 rounded-2xl ${
+                      isHovered ? "" : ""
+                    }`}
+                  ></div>
+                  <div className="w-[303px] h-[303px]">
+                    <figure className="px-10">
+                      <Image
+                        src={
+                          Array.isArray(car.HinhAnh)
+                            ? car.HinhAnh[0] // Nếu là mảng thì lấy ảnh đầu tiên
+                            : car.HinhAnh.split("|")[0] // Nếu là chuỗi thì split và lấy phần tử đầu
+                        }
+                        alt={car.TenXe}
+                        width={100}
+                        height={100}
+                        className="rounded-xl w-64 h-32"
+                      />
+                    </figure>
+                    <div className="card-body items-center text-center">
+                      <h2 className="card-title">{car.TenXe}</h2>
+                      <p>
+                        Giá xe:{" "}
+                        {new Intl.NumberFormat("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        }).format(car.GiaXe)}
+                      </p>
+                      <div className="card-actions">
+                        <button className="btn bg-[#1464F4] text-white">
+                          Đặt Cọc
                         </button>
-                      </Link>
+                        <Link href={`/Carcategory?id=${car.idXe}`} passHref>
+                          <button className="btn btn-outline">
+                            Xem Chi Tiết
+                          </button>
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </li>
-          ))}
-        </ul>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
+
       <Footer></Footer>
     </div>
   );

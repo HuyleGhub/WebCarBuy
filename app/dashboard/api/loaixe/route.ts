@@ -11,21 +11,25 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     try {
-        const checkXe = loaiXeSchema.safeParse({
-            TenLoai: body.TenLoai,
-            NhanHieu: body.NhanHieu, // Convert to number if it's coming as string
-          });
-      
-          if (!checkXe.success) {
-            return NextResponse.json({
-              errors: checkXe.error.errors,
-            }, { status: 400 });
-          }
-    const newLoaiXe = await prisma.loaiXe.create({
+        const existingLoaiXe = await prisma.loaiXe.findFirst({
+            where: {
+                TenLoai: body.TenLoai,
+            },
+        });
+        if (existingLoaiXe) {
+            return NextResponse.json(
+                { message: "Tên loại xe đã tồn tại" },
+                { status: 400 }
+            );
+        }
+
+          const imageUrls = Array.isArray(body.HinhAnh) ? body.HinhAnh : [body.HinhAnh].filter(Boolean);
+
+          const newLoaiXe = await prisma.loaiXe.create({
         data: {
             TenLoai: body.TenLoai,
             NhanHieu: body.NhanHieu,
-            HinhAnh: body.HinhAnh,
+            HinhAnh: imageUrls.join('|'),
         },
     
     })

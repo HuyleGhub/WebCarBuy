@@ -35,30 +35,12 @@ export async function DELETE(request: NextRequest, {params}:{params:{id:string}}
   }
 }
 export async function PUT(request: NextRequest, {params}: {params: {id:string}}) {
+  try {
     const body = await request.json();
     const idLoaiXe = parseInt(params.id);
-    const xe = await prisma.loaiXe.findFirst({
-      where: {
-        TenLoai: body.TenLoai,    
-        NOT: {
-          idLoaiXe: idLoaiXe, // Loại trừ xe hiện tại đang được cập nhật
-      },
-      },
-    });
-    try {
-      const checkXe = loaiXeSchema.safeParse({
-        TenLoai: body.TenLoai,
-        NhanHieu: body.NhanHieu, // Convert to number if it's coming as string
-      });
-  
-      if (!checkXe.success) {
-        return NextResponse.json({
-          errors: checkXe.error.errors,
-        }, { status: 400 });
-      }else
-    if (xe !== null) {
-      return NextResponse.json({xe, message: "Tên loại xe đã tồn tại"},{status: 400});
-    }else {
+    const imageUrls = Array.isArray(body.HinhAnh) ? body.HinhAnh : [body.HinhAnh].filter(Boolean);
+          console.log('Image URLs to be saved:', imageUrls);
+    
       const updateXe = await prisma.loaiXe.update({
         where: {
           idLoaiXe: idLoaiXe,
@@ -66,11 +48,11 @@ export async function PUT(request: NextRequest, {params}: {params: {id:string}})
         data: {
           TenLoai: body.TenLoai,
           NhanHieu: body.NhanHieu,
-          HinhAnh: body.HinhAnh,
+          HinhAnh: imageUrls.join('|'),
         },
       })
+
       return NextResponse.json({updateXe, message: `Cập nhật loại xe từ id ${params.id} thành công` }, {status:200});
-    }
     } catch (e:any) {
       return NextResponse.json({ error: 'Lỗi khi cập nhật loại xe' },{ status: 500 });
     }

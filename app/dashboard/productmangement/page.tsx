@@ -2,12 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import Tabledashboard from "@/app/components/Tabledashboard";
-import { IoAddCircleOutline } from "react-icons/io5";
-
-import { createUploadthing, type FileRouter } from "uploadthing/next";
-import { UploadButton } from "@/app/lib/uploadthing";
 import { Fileupload } from "@/app/components/Fileupload";
-import { url } from "inspector";
+import toast, { Toaster } from "react-hot-toast";
 
 interface LoaiXe {
   idLoaiXe: number;
@@ -21,7 +17,7 @@ interface FormData {
   MauSac: string;
   DongCo: string;
   TrangThai: string;
-  HinhAnh: string;
+  HinhAnh: string[];
   NamSanXuat: string;
 }
 
@@ -33,7 +29,7 @@ export default function Page() {
     MauSac: "",
     DongCo: "",
     TrangThai: "",
-    HinhAnh: "",
+    HinhAnh: [],
     NamSanXuat: "",
   };
 
@@ -45,26 +41,11 @@ export default function Page() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [showToast, setShowToast] = useState(false);
-  const [imageUrl, setImageUrl] = useState('');
   const [loading, setLoading] = useState(true);
 
   const refreshData = () => {
     setReloadKey((prevKey) => prevKey + 1);
   };
- 
-  useEffect(() => {
-    if (error || success) {
-      setShowToast(true);
-      const timer = setTimeout(() => {
-        setShowToast(false);
-        // Clear messages
-        setError("");
-        setSuccess("");
-      }, 3000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [error, success]);
 
   useEffect(() => {
     fetch("api/loaixe")
@@ -75,37 +56,63 @@ export default function Page() {
         return response.json();
       })
       .then((data) => {
-        console.log("Loai xe data:", data);
         setLoaiXeList(data);
         setLoading(false);
       })
       .catch((err) => {
-        setError("Failed to fetch loai xe data");
+        toast.error("Failed to fetch loai xe data");
         console.error("Failed to fetch loai xe", err);
         setLoading(false);
       });
   }, []);
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Bạn có chắc muốn xóa xe này không?")) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`api/xe/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete product");
-      }
-
-      const data = await response.json();
-      setSuccess(data.message);
-      refreshData();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Error deleting product");
-    }
+    toast((t) => (
+      <div className="flex flex-col gap-2">
+        <span className="font-medium">Bạn có chắc muốn xóa nhà cung cấp này?</span>
+        <div className="flex gap-2">
+          <button
+            onClick={async () => {
+              toast.dismiss(t.id);
+              try {
+                const response = await fetch(`api/xe/${id}`, {
+                  method: "DELETE",
+                });
+  
+                if (!response.ok) {
+                  throw new Error("Failed to delete supplier");
+                }
+  
+                const data = await response.json();
+                toast.success(data.message);
+                refreshData();
+              } catch (err) {
+                toast.error(err instanceof Error ? err.message : "Lỗi khi xóa nhà cung cấp");
+              }
+            }}
+            className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition-colors"
+          >
+            Xóa
+          </button>
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="bg-gray-500 text-white px-3 py-1 rounded-md hover:bg-gray-600 transition-colors"
+          >
+            Hủy
+          </button>
+        </div>
+      </div>
+    ), {
+      duration: Infinity,
+      position: 'top-center',
+      style: {
+        background: '#fff',
+        color: '#000',
+        padding: '16px',
+        borderRadius: '8px',
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+      },
+    });
   };
 
   const handleChange = (e: any) => {
@@ -117,67 +124,74 @@ export default function Page() {
   };
 
   const handleEdit = (product: any) => {
+    // Convert the stored image string back to an array
+    const images = product.HinhAnh ? 
+        (typeof product.HinhAnh === 'string' ? product.HinhAnh.split('|') : product.HinhAnh) : 
+        [];
+    
     setFormData({
-      TenXe: product.TenXe,
-      idLoaiXe: product.idLoaiXe.toString(),
-      GiaXe: product.GiaXe.toString(),
-      MauSac: product.MauSac,
-      DongCo: product.DongCo,
-      TrangThai: product.TrangThai,
-      HinhAnh: product.HinhAnh,
-      NamSanXuat: product.NamSanXuat.toString(),
+        TenXe: product.TenXe,
+        idLoaiXe: product.idLoaiXe.toString(),
+        GiaXe: product.GiaXe.toString(),
+        MauSac: product.MauSac,
+        DongCo: product.DongCo,
+        TrangThai: product.TrangThai,
+        HinhAnh: images,
+        NamSanXuat: product.NamSanXuat.toString(),
     });
     setIsEditing(true);
     setEditingId(product.idXe);
-    // Show the dialog after setting the form data
+    
     const dialog = document.getElementById("my_modal_3") as HTMLDialogElement;
     if (dialog) {
-      dialog.showModal();
+        dialog.showModal();
     }
-  };
+};
 
-  const handleSubmit = async (e:any) => {
+const handleSubmit = async (e: any) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
     const url = isEditing ? `api/xe/${editingId}` : 'api/xe';
     const method = isEditing ? 'PUT' : 'POST';
 
     try {
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({...formData, HinhAnh: imageUrl }),
-      });
+        // Ensure HinhAnh is an array
+        const submitData = {
+            ...formData,
+            HinhAnh: Array.isArray(formData.HinhAnh) ? formData.HinhAnh : [formData.HinhAnh]
+        };
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `Failed to ${isEditing ? 'update' : 'create'} product`);
-      }
+        console.log('Submitting data:', submitData); // Debug log
 
-      const data = await response.json();
-      setSuccess(data.message);
-      setFormData(initialFormData);
-      setIsEditing(false);
-      setEditingId(null);
-      setImageUrl('');
-      refreshData();
-     
+        const response = await fetch(url, {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(submitData),
+        });
 
-      // Close the dialog after successful submission
-      const dialog = document.getElementById("my_modal_3") as HTMLDialogElement;
-      if (dialog) {
-        dialog.close();
-      }
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || `Failed to ${isEditing ? 'update' : 'create'} product`);
+        }
 
+        const data = await response.json();
+        toast.success(data.message);
+        setFormData(initialFormData);
+        setIsEditing(false);
+        setEditingId(null);
+        refreshData();
+
+        const dialog = document.getElementById("my_modal_3") as HTMLDialogElement;
+        if (dialog) {
+            dialog.close();
+        }
     } catch (err) {
-      setError(err instanceof Error ? err.message : `Error ${isEditing ? 'updating' : 'creating'} product`);
-      
+        toast.error(err instanceof Error ? err.message : `Error ${isEditing ? 'updating' : 'creating'} product`);
     }
-  };
+};
 
+  // Rest of the component remains the same...
   const handleModalClose = () => {
     if (!isEditing) {
       setFormData(initialFormData);
@@ -197,17 +211,13 @@ export default function Page() {
       dialog.showModal();
     }
   };
+
   if (loading) return (
-    <div className="flex justify-center items-center h-screen" data-theme = "light">
+    <div className="flex justify-center items-center h-screen" data-theme="light">
       <span className="loading loading-spinner text-blue-600 loading-lg"></span>
     </div>
   );
   
-  if (error) return (
-    <div className="flex justify-center items-center h-screen">
-      <div className="text-2xl font-bold text-red-600">{error}</div>
-    </div>
-  );
 
   return (
     <div className="p-2 w-[1100px] h-full ml-7" data-theme="light">
@@ -221,47 +231,30 @@ export default function Page() {
           </button>
         </div>
       </div>
-      {showToast && (
-        <div className="toast toast-top toast-end mt-16 z-[9999]">
-          {error && (
-            <div role="alert" className="alert alert-error">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 shrink-0 stroke-current"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <span>{error}</span>
-            </div>
-          )}
-
-          {success && (
-            <div role="alert" className="alert alert-success">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 shrink-0 stroke-current"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <span>{success}</span>
-            </div>
-          )}
-        </div>
-      )}
+     <Toaster
+     position="top-right"
+     toastOptions={{
+      duration: 3000,
+      style: {
+        background: '#333',
+        color: '#fff',
+        padding: '16px',
+        borderRadius: '8px',
+      },
+      success: {
+        duration: 3000,
+        style: {
+          background: '#22c55e',
+        },
+      },
+      error: {
+        duration: 3000,
+        style: {
+          background: '#ef4444',
+        },
+      },
+     }}
+     />
       <dialog id="my_modal_3" className="modal">
         <div className="modal-box w-11/12 max-w-5xl">
           <form method="dialog">
@@ -437,21 +430,9 @@ export default function Page() {
                       </label>
                       <Fileupload 
                   endpoint='imageUploader'
-                  onChange={(url) => setImageUrl(url || '')}
-                  showUpload={!imageUrl}
+                  onChange={(urls) => setFormData(prev => ({ ...prev, HinhAnh: urls }))}
+                  value={formData.HinhAnh}
                 />
-               {imageUrl && (
-                  <div className="mt-2 flex flex-col items-center">
-                    <img src={imageUrl} alt="Uploaded" className="max-w-xs max-h-48" />
-                    <button 
-                      type="button" 
-                      onClick={() => setImageUrl('')} 
-                      className="mt-2 px-4 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                )}
                     </div>
                   </div>
                 </div>

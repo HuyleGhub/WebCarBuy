@@ -1,11 +1,9 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation';
-import Image from 'next/image';
-import vf3red from "../images/vf3red.png";
-import Footer from '@/app/components/Footer';
-import { AddToCart } from '@/app/components/Addtocart';
-import { getSession } from '@/app/lib/auth';
+import { useRouter, useSearchParams } from 'next/navigation'
+import Footer from '@/app/components/Footer'
+import toast, { Toaster } from 'react-hot-toast'
+import Image from 'next/image'
 
 interface Car {
   idXe: number;
@@ -15,7 +13,7 @@ interface Car {
   MauSac: string;
   DongCo: string;
   TrangThai: string;
-  HinhAnh: string;
+  HinhAnh: string | string[];  // Updated to handle both string and array
   NamSanXuat: string;
   loaiXe: {
     TenLoai: string;
@@ -24,46 +22,40 @@ interface Car {
 }
 
 const Category = () => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const id = searchParams.get('id'); 
-  const [car, setCar] = useState<Car | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [currentImage, setCurrentImage] = useState("https://giaxeoto.vn/admin/upload/images/resize/640-vinfast-vf4.jpg");
-  const [addingToCart, setAddingToCart] = useState(false);
-  const [quantity, setQuantity] = useState(1); // For cars, typically quantity is 1
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const id = searchParams.get('id')
+  const [car, setCar] = useState<Car | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [addingToCart, setAddingToCart] = useState(false)
+  const [quantity, setQuantity] = useState(1)
+  const [images, setImages] = useState<string[]>([])
 
-  const carImages = [
-    "https://giaxeoto.vn/admin/upload/images/resize/640-vinfast-vf4.jpg",
-    "https://thekoreancarblog.com/wp-content/uploads/2024/02/hyundai-casper-electric-rendering.jpg",
-    "https://quietwheels.com/wp-content/uploads/2024/01/780/2024-vinfast-vf3-exterior-7.webp",
-    "https://cdni.autocarindia.com/ExtraImages/20240529014002_VinFast%20_3_.jpg"
-  ];
-  const handleImageClick = (image:any) => {
-    setCurrentImage(image);
-  };
+  const handleImageClick = (index: number) => {
+    setCurrentImageIndex(index)
+  }
+
   const handleAddToCart = async () => {
     try {
-      setAddingToCart(true);
+      setAddingToCart(true)
       
-      // First check if the car is still available
       const stockCheck = await fetch('/api/giohang/check-stock', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ idXe: car?.idXe }),
-      });
+      })
       
-      const stockData = await stockCheck.json();
+      const stockData = await stockCheck.json()
       
       if (!stockData.available) {
-        alert('Xin lỗi, xe này hiện không còn trống để đặt hàng.');
-        return;
+        toast.error('Xin lỗi, xe này hiện không còn trống để đặt hàng.')
+        return
       }
 
-      // Add to cart
       const response = await fetch('/api/giohang', {
         method: 'POST',
         headers: {
@@ -73,67 +65,111 @@ const Category = () => {
           idXe: car?.idXe,
           SoLuong: quantity,
         }),
-      });
+      })
 
       if (!response.ok) {
-        throw new Error('Không thể thêm vào giỏ hàng');
+        throw new Error('Không thể thêm vào giỏ hàng')
       }
 
-      // Navigate to cart page
-      router.push('/Cart');
+      const toastPromise = toast.promise(
+        new Promise(resolve => setTimeout(resolve, 2500)),
+        {
+          loading: 'Đang thêm vào giỏ hàng...',
+          success: 'Đã thêm vào giỏ hàng thành công!',
+          error: 'Có lỗi xảy ra',
+        },
+        {
+          duration: 3000,
+        }
+      )
+
+      await toastPromise
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      router.push('/Cart')
+
     } catch (err) {
-      alert('Có lỗi xảy ra khi thêm vào giỏ hàng. Vui lòng thử lại sau.');
-      console.error('Error adding to cart:', err);
+      toast.error('Có lỗi xảy ra khi thêm vào giỏ hàng. Vui lòng thử lại sau.')
+      console.error('Error adding to cart:', err)
     } finally {
-      setAddingToCart(false);
+      setAddingToCart(false)
     }
-  };
+  }
+
   useEffect(() => {
     if (id) {
       fetch(`/api/xe/${id}`)
         .then(res => {
           if (!res.ok) {
-            throw new Error(`HTTP error! status: ${res.status}`);
+            throw new Error(`HTTP error! status: ${res.status}`)
           }
-          return res.json();
+          return res.json()
         })
         .then(data => {
           if (data.error) {
-            throw new Error(data.error);
+            throw new Error(data.error)
           }
-          setCar(data);
-          setLoading(false);
+          setCar(data)
+          // Parse the images
+          let imageArray: string[] = []
+          if (typeof data.HinhAnh === 'string') {
+            // Split by either comma or pipe
+            imageArray = data.HinhAnh.split(/[,|]/).map((url: string) => url.trim()).filter(Boolean)
+          } else if (Array.isArray(data.HinhAnh)) {
+            imageArray = data.HinhAnh
+          }
+          setImages(imageArray)
+          setLoading(false)
         })
         .catch(err => {
-          console.error('Lỗi khi lấy thông tin xe:', err);
-          setError(err.message);
-          setLoading(false);
-        });
+          console.error('Lỗi khi lấy thông tin xe:', err)
+          setError(err.message)
+          setLoading(false)
+        })
     }
-  }, [id]);
+  }, [id])
 
   if (loading) return (
-    <div className="flex justify-center items-center h-screen" data-theme = "light">
+    <div className="flex justify-center items-center h-screen" data-theme="light">
       <span className="loading loading-spinner text-blue-600 loading-lg"></span>
     </div>
-  );
+  )
   
   if (error) return (
     <div className="flex justify-center items-center h-screen">
       <div className="text-2xl font-bold text-red-600">{error}</div>
     </div>
-  );
+  )
 
   if (!car) return (
     <div className="flex justify-center items-center h-screen">
       <div className="text-2xl font-bold text-gray-800">Không tìm thấy thông tin xe</div>
     </div>
-  );
+  )
 
   return (
-    <div className='w-full h-full pt-24' data-theme="light">
-      <div className='px-24 pb-24 w-full h-full flex flex-col'>
-      <div className="pb-4">
+    <div className="w-full h-full pt-24" data-theme="light">
+      <Toaster 
+        position="top-right"
+        toastOptions={{
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+          duration: 2000,
+          success: {
+            style: {
+              background: 'green',
+            },
+          },
+          error: {
+            style: {
+              background: 'red',
+            },
+          },
+        }}
+      />
+      <div className="px-24 pb-24 w-full h-full flex flex-col">
+        <div className="pb-4">
           <button
             onClick={() => router.push('/')}
             className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center"
@@ -147,26 +183,38 @@ const Category = () => {
         <h1 className="text-3xl font-bold mb-8">Chi tiết sản phẩm</h1>
         <div className="bg-white shadow-xl rounded-lg overflow-hidden">
           <div className="md:flex">
-            <div className="md:flex-shrink-0 xl:w-[1000px] xl:h-[500px]">
-              <img className="xl:h-[500px] xl:w-full object-cover md:w-48" src={currentImage} alt={car.TenXe} />
+            <div className="md:flex-shrink-0 xl:w-[1000px] xl:h-[500px] relative">
+              {images.length > 0 && (
+                <img 
+                  className="xl:h-[500px] xl:w-full object-cover md:w-48"
+                  src={images[currentImageIndex]}
+                  alt={car.TenXe}
+                />
+              )}
             </div>
-            <div className='flex flex-col w-full h-full'>
-            <div className="p-8">
-              <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">{car.loaiXe.NhanHieu}</div>
-              <h2 className="block mt-1 text-3xl leading-tight font-bold text-black">{car.TenXe}</h2>
-              <p className="mt-2 text-gray-500">{car.loaiXe.TenLoai}</p>
-            </div>
-            <div className='ml-8 flex flex-wrap gap-4'>
-            {carImages.map((image, index) => (
-                  <img 
-                    key={index} 
-                    src={image} 
-                    alt={`Car image ${index + 1}`} 
-                    className="w-24 h-24 object-cover cursor-pointer border-2 hover:border-indigo-500"
-                    onClick={() => handleImageClick(image)}
-                  />
+            <div className="flex flex-col w-full h-full">
+              <div className="p-8">
+                <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">{car.loaiXe.NhanHieu}</div>
+                <h2 className="block mt-1 text-3xl leading-tight font-bold text-black">{car.TenXe}</h2>
+                <p className="mt-2 text-gray-500">{car.loaiXe.TenLoai}</p>
+              </div>
+              <div className="ml-8 flex flex-wrap gap-4">
+                {images.map((image, index) => (
+                  <div 
+                    key={index}
+                    className={`w-24 h-24 relative cursor-pointer border-2 ${
+                      index === currentImageIndex ? 'border-indigo-500' : 'border-transparent'
+                    } hover:border-indigo-500`}
+                    onClick={() => handleImageClick(index)}
+                  >
+                    <img
+                      src={image}
+                      alt={`${car.TenXe} view ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                 ))}
-            </div>
+              </div>
             </div>
           </div>
           <div className="px-8 py-4 bg-gray-50">
@@ -198,35 +246,36 @@ const Category = () => {
               </div>
               <div>
                 <h3 className="text-xl font-semibold text-gray-800">Giá bán</h3>
-                <p className="mt-2 text-3xl font-bold text-indigo-600"> {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(car.GiaXe)}</p>
-                <div className='flex'>
-                <button className="mt-4 w-48 bg-indigo-600 text-white py-2 mx-4 rounded-md hover:bg-indigo-700 transition duration-300">
-                  Đặt cọc ngay
-                </button>
-                <button
-                  onClick={handleAddToCart}
-                  disabled={addingToCart || car?.TrangThai !== 'Còn Hàng'}
-                  className={`mt-4 w-48 ${
-                    car?.TrangThai === 'Còn Hàng'
-                      ? 'bg-slate-600 hover:bg-black'
-                      : 'bg-gray-400 cursor-not-allowed'
-                  } text-white py-2 mx-4 rounded-md transition duration-300`}
-                >
-                  {addingToCart 
-                    ? 'Đang thêm...' 
-                    : car?.TrangThai !== 'Còn Hàng'
-                    ? 'Hết hàng'
-                    : 'Thêm vào giỏ hàng'
-                  }
-                </button>
+                <p className="mt-2 text-3xl font-bold text-indigo-600">
+                  {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(car.GiaXe)}
+                </p>
+                <div className="flex">
+                  <button className="mt-4 w-48 bg-indigo-600 text-white py-2 mx-4 rounded-md hover:bg-indigo-700 transition duration-300">
+                    Đặt cọc ngay
+                  </button>
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={addingToCart || car.TrangThai !== 'Còn Hàng'}
+                    className={`mt-4 w-48 ${
+                      car.TrangThai === 'Còn Hàng'
+                        ? 'bg-slate-600 hover:bg-black'
+                        : 'bg-gray-400 cursor-not-allowed'
+                    } text-white py-2 mx-4 rounded-md transition duration-300`}
+                  >
+                    {addingToCart 
+                      ? 'Đang thêm...' 
+                      : car.TrangThai !== 'Còn Hàng'
+                      ? 'Hết hàng'
+                      : 'Thêm vào giỏ hàng'
+                    }
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        
       </div>
-      <Footer></Footer>
+      <Footer />
     </div>
   )
 }

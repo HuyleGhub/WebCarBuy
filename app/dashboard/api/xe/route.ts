@@ -51,90 +51,49 @@ export async function GET(request: NextRequest) {
             );
         }
   }
-export async function POST (req: NextRequest,) {
-    try {
-      const body = await req.json();
-      const checkTenXe = await prisma.xe.findFirst({
-        where: {
-          TenXe: body.TenXe
-        }
-      })
+  // POST route for creating new xe
+  export async function POST(request: NextRequest) {
+      try {
+          const body = await request.json();
   
-      // Validate the input data using zod schema
-      const checkXe = xeSchema.safeParse({
-        TenXe: body.TenXe,
-        idLoaiXe: parseInt(body.idLoaiXe), // Convert to number if it's coming as string
-        GiaXe: parseFloat(body.GiaXe),     // Convert to number for Decimal
-        MauSac: body.MauSac,
-        DongCo: body.DongCo,
-        TrangThai: body.TrangThai,
-        HinhAnh: body.HinhAnh,
-        NamSanXuat: body.NamSanXuat
-      });
+          // Check if xe already exists
+          const existingXe = await prisma.xe.findFirst({
+              where: {
+                  TenXe: body.TenXe,
+              },
+          });
+          if (existingXe) {
+              return NextResponse.json(
+                  { message: "Tên xe đã tồn tại" },
+                  { status: 400 }
+              );
+          }
+          // Ensure HinhAnh is properly handled as an array
+          const imageUrls = Array.isArray(body.HinhAnh) ? body.HinhAnh : [body.HinhAnh].filter(Boolean);
   
-      if (!checkXe.success) {
-        return NextResponse.json({
-          errors: checkXe.error.errors,
-        }, { status: 400 });
+          const newXe = await prisma.xe.create({
+              data: {
+                  TenXe: body.TenXe,
+                  idLoaiXe: parseInt(body.idLoaiXe),
+                  GiaXe: parseFloat(body.GiaXe),
+                  MauSac: body.MauSac,
+                  DongCo: body.DongCo,
+                  TrangThai: body.TrangThai,
+                  HinhAnh: imageUrls.join('|'), // Use a separator that won't appear in URLs
+                  NamSanXuat: body.NamSanXuat
+              },
+          });
+          return NextResponse.json({
+              newXe,
+              message: "Thêm xe thành công"
+          }, { status: 201 });
+      } catch (error) {
+          console.error("Error creating xe:", error);
+          return NextResponse.json(
+              { message: "Lỗi khi thêm xe" },
+              { status: 500 }
+          );
       }
-  
-      // Check if LoaiXe exists
-      const loaiXeExists = await prisma.loaiXe.findUnique({
-        where: {
-          idLoaiXe: parseInt(body.idLoaiXe)
-        }
-      });
-  
-      if (!loaiXeExists) {
-        return NextResponse.json({
-          message: "Loại xe không tồn tại",
-          code: "invalid_loai_xe"
-        }, { status: 400 });
-      }else {
-        if (checkTenXe) {
-          return NextResponse.json({checkTenXe, message: "Tên xe đã tồn tại"},{status: 400});
-      }
-    }
-  
-      // Create new Xe record
-      const xe = await prisma.xe.create({
-        data: {
-          TenXe: body.TenXe,
-          idLoaiXe: parseInt(body.idLoaiXe),
-          GiaXe: parseFloat(body.GiaXe),
-          MauSac: body.MauSac,
-          DongCo: body.DongCo,
-          TrangThai: body.TrangThai,
-          HinhAnh: body.HinhAnh,
-          NamSanXuat: body.NamSanXuat
-        },
-        include: {
-          loaiXe: true  // Include the related LoaiXe data
-        }
-      });
-  
-      return NextResponse.json({
-        data: xe,
-        message: "Thêm mới xe thành công"
-      }, { status: 201 });
-    
-    } catch (error: any) {
-      console.error("Error creating xe:", error);
-      
-      if (error.code === 'P2003') {
-        return NextResponse.json({
-          message: "Loại xe không tồn tại trong hệ thống",
-          code: "foreign_key_violation"
-        }, { status: 400 });
-      }
-  
-      return NextResponse.json({
-        message: "Lỗi server: " + error.message
-      }, { status: 500 });
-    }
-}
-export async function DELETE(request: NextRequest) {
-  const xe = await prisma.xe.deleteMany()
-  return NextResponse.json({xe, message:"Xóa hết dữ liệu thành công"},{status: 200});
-}
+  }
+
 

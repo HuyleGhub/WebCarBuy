@@ -99,7 +99,6 @@ export default function Navbar() {
       setUser(null);
       setCartItems([]); // Clear cart items on logout
       router.push("/");
-      router.refresh();
     } catch (error) {
       console.error("Logout failed:", error);
     }
@@ -111,6 +110,13 @@ export default function Navbar() {
     (total, item) => total + ((item?.xe?.GiaXe || 0) * (item?.SoLuong || 0)),
     0
   ) : 0;
+
+  const handleShowModal = () => {
+      const dialog = document.getElementById("my_modal_3") as HTMLDialogElement
+      if(dialog) {
+        dialog.showModal();
+      }
+  }
 
   return (
     <div data-theme="light">
@@ -126,11 +132,11 @@ export default function Navbar() {
               src="https://vinfastauto.com/themes/porto/img/new-home-page/VinFast-logo.svg"
             />
           </Link>
-          
+
           {/* Navigation menu */}
           <div className="justify-start ml-36 xl:flex hidden items-start w-full gap-7">
             <Link href="/">
-              <button className="font-semibold font-serif py-2 transition-all duration-500 text-blue-500 hover:text-red-500 bg-slate-50">
+              <button className="font-semibold font-serif py-2 transition-all duration-500 text-blue-500 hover:text-red-500 ">
                 Trang Chủ
               </button>
             </Link>
@@ -142,7 +148,7 @@ export default function Navbar() {
                 <span>Sản Phẩm</span>
               </li>
             </ul>
-            
+
             {/* Product dropdown */}
             <div
               onMouseLeave={() => setIsMenuOpen(false)}
@@ -176,7 +182,7 @@ export default function Navbar() {
                 </ul>
               </div>
             </div>
-            
+
             <button className="font-semibold font-serif py-2 transition-all duration-500 text-blue-500 hover:text-red-500 bg-white">
               Giới Thiệu
             </button>
@@ -239,7 +245,7 @@ export default function Navbar() {
                     </span>
                   </div>
                 </div>
-                
+
                 {/* Cart items dropdown content */}
                 <div
                   tabIndex={0}
@@ -282,10 +288,13 @@ export default function Navbar() {
                   className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
                 >
                   <li>
-                    <a className="justify-between">
+                    <a href="/Profiles" className="justify-between">
                       Profile
                       <span className="badge">New</span>
-                    </a>
+                    </a>    
+                  </li>
+                  <li>
+                    <a href="/Orders">Orders</a>
                   </li>
                   {user.role?.TenNguoiDung === "Admin" && (
                     <li>
@@ -349,7 +358,9 @@ export default function Navbar() {
             >
               {loaiXe.map((loai) => (
                 <li key={loai.idLoaiXe}>
-                  <Link href={`LoaiXe?id=${loai.idLoaiXe}`}>{loai.TenLoai}</Link>
+                  <Link href={`LoaiXe?id=${loai.idLoaiXe}`}>
+                    {loai.TenLoai}
+                  </Link>
                 </li>
               ))}
             </ul>
