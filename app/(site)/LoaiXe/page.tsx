@@ -119,9 +119,7 @@ const LoaiXe = () => {
                     <figure className="px-10">
                       <Image
                         src={
-                          Array.isArray(car.HinhAnh)
-                            ? car.HinhAnh[0] // Nếu là mảng thì lấy ảnh đầu tiên
-                            : car.HinhAnh.split("|")[0] // Nếu là chuỗi thì split và lấy phần tử đầu
+                          car.HinhAnh.split("|")[0] // Nếu là chuỗi thì split và lấy phần tử đầu
                         }
                         alt={car.TenXe}
                         width={100}

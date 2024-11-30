@@ -249,23 +249,6 @@ export default function Page() {
                 {/* Form fields... */}
                 <div className="flex justify-center w-full flex-wrap gap-4">
                   <div className="flex w-full gap-4">
-                    <div className="flex-1">
-                      <label
-                        htmlFor="Tentaikhoan"
-                        className="block font-medium text-gray-700 mb-1"
-                      >
-                        Tên tài khoản
-                      </label>
-                      <input
-                        type="text"
-                        id="Tentaikhoan"
-                        name="Tentaikhoan"
-                        value={formData.Tentaikhoan}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2 border text-black bg-white border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required
-                      />
-                    </div>
 
                     <div className="flex-1">
                       <label
@@ -282,7 +265,7 @@ export default function Page() {
                         className="w-full px-3 py-2 border text-black bg-white border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         required
                       >
-                        <option value="">Chọn loại xe</option>
+                        <option value="">Chọn vai trò</option>
                         {roleList.map((role) => (
                           <option
                             key={role.idRole}
@@ -298,23 +281,6 @@ export default function Page() {
 
                   {/* Continue with rest of the form fields... */}
                   <div className="flex w-full gap-4">
-                    <div className="flex-1">
-                      <label
-                        htmlFor="Matkhau"
-                        className="block font-medium text-gray-700 mb-1"
-                      >
-                        Mật Khẩu
-                      </label>
-                      <input
-                        type="text"
-                        id="Matkhau"
-                        name="Matkhau"
-                        value={formData.Matkhau}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2 border text-black bg-white border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required
-                      />
-                    </div>
 
                     <div className="flex-1">
                       <label

@@ -7,50 +7,63 @@ import LoginFormSchema from '@/app/api/zodschema/zodLogin/route';
 
 export default function LoginPage() {
   const [error, setError] = useState('');
-  const router = useRouter();;
+  const router = useRouter();
   
-    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-      event.preventDefault();
-      setError('');
-      
-      const formData = new FormData(event.currentTarget);
-      const formValues = {
-        usernameOrEmail: formData.get('usernameOrEmail') as string,
-        password: formData.get('password') as string,
-      };
-  
-      // Kiểm tra dữ liệu phía client
-      const result = LoginFormSchema.safeParse(formValues);
-      if (!result.success) {
-        setError(result.error.issues[0].message);
-        return;
-      }
-  
-      try {
-        const res = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formValues),
-        });
-  
-        const data = await res.json();
-        
-        if (!res.ok) {
-          throw new Error(data.error || 'Đăng nhập thất bại');
-        }
-        
-        router.push('/');
-      } catch (error) {
-        if (error instanceof Error) {
-          setError(error.message);
-        } else {
-          setError('Thông tin đăng nhập không hợp lệ');
-        }
-      }
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError('');
+    
+    const formData = new FormData(event.currentTarget);
+    const formValues = {
+      usernameOrEmail: formData.get('usernameOrEmail') as string,
+      password: formData.get('password') as string,
+    };
+
+    // Client-side validation
+    const result = LoginFormSchema.safeParse(formValues);
+    if (!result.success) {
+      setError(result.error.issues[0].message);
+      return;
     }
 
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formValues),
+      });
+
+      const data = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(data.error || 'Đăng nhập thất bại');
+      }
+
+      // Log the response to debug
+      console.log('Login response:', data);
+      
+      // Check user role and redirect accordingly
+      if (data.user?.role === 'Admin') {
+        router.push('/dashboard');
+      } else {
+        router.push('/');
+      }
+
+      // Force a page refresh to ensure the session is updated
+      router.refresh();
+      
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('Thông tin đăng nhập không hợp lệ');
+      }
+    }
+  }
+
+  // Rest of the component remains the same...
   return (
     <div className="min-h-screen hero bg-base-200" data-theme="light">
       <div className="hero-content flex w-full bg-gradient-to-r from-pink-500 rounded-2xl to-blue-500 mt-10">
@@ -69,7 +82,6 @@ export default function LoginPage() {
               </div>
             )}
 
-            {/* Hàng đầu tiên với Email và Username */}
             <div className="flex-col gap-4 w-96">
               <div className="form-control flex-1">
                 <label className="label">

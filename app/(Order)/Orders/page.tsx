@@ -153,7 +153,7 @@ const OrderPage = () => {
     return (
         <div data-theme="light">
             <Toaster position="top-center" />
-            <div className="container mx-auto px-4 py-28">
+            <div className="container mx-auto px-36 py-28 ">
                 <h1 className="text-2xl font-bold mb-6">Đơn hàng của tôi</h1>
                 
                 {donHangs.length === 0 ? (
@@ -212,8 +212,7 @@ const OrderPage = () => {
                                             }).format(Number(donHang.TongTien))}
                                         </span>
                                     </div>
-                                    
-                                    {['đang xử lý', 'đã xác nhận'].includes(donHang.TrangThaiDonHang.toLowerCase()) && (
+                                    {donHang.TrangThaiDonHang === 'Chờ xác nhận' && (
                                         <button
                                             onClick={() => handleDelete(donHang.idDonHang)}
                                             className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-200"

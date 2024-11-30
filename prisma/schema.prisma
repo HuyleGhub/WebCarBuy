@@ -230,7 +230,7 @@ model Luong {
   idNhanVien  Int?     
   LuongCoBan  Decimal? @db.Decimal(15, 2)
   TienThuong  Decimal? @db.Decimal(15, 2)
-  LuongNhan   Decimal? @db.Decimal(15, 2)
+  LuongNhan   Decimal? @db.Decimal(15, 2) 
   TongLuong   Int?
   nhanVien    Users?   @relation(fields: [idNhanVien], references: [idUsers])
 }

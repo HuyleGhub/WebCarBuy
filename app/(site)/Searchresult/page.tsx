@@ -91,7 +91,7 @@ const SearchResults = () => {
                 <div className="w-[303px] h-[303px]">
                   <figure className="px-10">
                     <Image
-                      src={car.HinhAnh}
+                      src={car.HinhAnh.split("|")[0]}
                       alt={car.TenXe}
                       width={100}
                       height={100}

@@ -9,6 +9,7 @@ import { UploadButton } from "@/app/lib/uploadthing";
 import { Fileupload } from "@/app/components/Fileupload";
 import { url } from "inspector";
 import TableDonHang from "../components/Tabledonhang";
+import toast, {Toaster} from "react-hot-toast";
 
 interface ChiTietDonHang {
   idChiTietDonHang: number;
@@ -28,33 +29,14 @@ export default function Page() {
 
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [loaiXeList, setLoaiXeList] = useState<ChiTietDonHang[]>([]);
-  const [error, setError] = useState<string>("");
-  const [success, setSuccess] = useState<string>("");
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
-  const [showToast, setShowToast] = useState(false);
-  const [imageUrl, setImageUrl] = useState('');
   const [loading, setLoading] = useState(true);
-  const [orders, setOrders] = useState([]);
 
   const refreshData = () => {
     setReloadKey((prevKey) => prevKey + 1);
   };
- 
-  useEffect(() => {
-    if (error || success) {
-      setShowToast(true);
-      const timer = setTimeout(() => {
-        setShowToast(false);
-        // Clear messages
-        setError("");
-        setSuccess("");
-      }, 3000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [error, success]);
 
   useEffect(() => {
     fetch("api/donhang")
@@ -70,32 +52,59 @@ export default function Page() {
         setLoading(false);
       })
       .catch((err) => {
-        setError("Failed to fetch loai xe data");
+        toast.error("Failed to fetch loai xe data");
         console.error("Failed to fetch loai xe", err);
         setLoading(false);
       });
   }, []);
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Bạn có chắc muốn xóa xe này không?")) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`api/donhang/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete product");
+  toast((t)=>(
+    <div className="flex flex-col gap-2">
+        <span className="font-medium">Bạn có chắc muốn xóa loại xe này?</span>
+        <div className="flex gap-2">
+    <button
+    onClick={async () =>{
+      toast.dismiss(t.id);
+      try {
+        const response = await fetch(`api/donhang/${id}`, {
+          method: "DELETE",
+        });
+  
+        if (!response.ok) {
+          throw new Error("Failed to delete product");
+        }
+  
+        const data = await response.json();
+        toast.success(data.message);
+        refreshData();
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Error deleting product");
       }
-
-      const data = await response.json();
-      setSuccess(data.message);
-      refreshData();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Error deleting product");
-    }
+    }}
+    className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition-colors"
+    >
+     Xóa
+    </button>
+    <button
+            onClick={() => toast.dismiss(t.id)}
+            className="bg-gray-500 text-white px-3 py-1 rounded-md hover:bg-gray-600 transition-colors"
+          >
+            Hủy
+          </button>
+    </div>
+  </div>
+  ), {
+    duration: Infinity,
+    position: 'top-center',
+    style: {
+      background: '#fff',
+      color: '#000',
+      padding: '16px',
+      borderRadius: '8px',
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+    },
+  })
   };
 
   const handleChange = (e: any) => {
@@ -121,8 +130,6 @@ export default function Page() {
 
   const handleSubmit = async (e:any) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
     const url = isEditing ? `api/donhang/${editingId}` : 'api/donhang';
     const method = isEditing ? 'PUT' : 'POST';
 
@@ -141,7 +148,7 @@ export default function Page() {
       }
 
       const data = await response.json();
-      setSuccess(data.message);
+      toast.success(data.message);
       setFormData(initialFormData);
       setIsEditing(false);
       setEditingId(null);
@@ -155,7 +162,7 @@ export default function Page() {
       }
 
     } catch (err) {
-      setError(err instanceof Error ? err.message : `Error ${isEditing ? 'updating' : 'creating'} product`);
+      toast.error(err instanceof Error ? err.message : `Error ${isEditing ? 'updating' : 'creating'} product`);
       
     }
   };
@@ -186,47 +193,30 @@ export default function Page() {
         </h1>
         
       </div>
-      {showToast && (
-        <div className="toast toast-top toast-end mt-16 z-[9999]">
-          {error && (
-            <div role="alert" className="alert alert-error">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 shrink-0 stroke-current"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <span>{error}</span>
-            </div>
-          )}
-
-          {success && (
-            <div role="alert" className="alert alert-success">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 shrink-0 stroke-current"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <span>{success}</span>
-            </div>
-          )}
-        </div>
-      )}
+      <Toaster
+      position="top-right"
+      toastOptions={{
+        duration: 5000,
+        style: {
+          background: '#333',
+          color: '#fff',
+          padding: '16px',
+          borderRadius: '8px',
+        },
+        success: {
+          duration: 3000,
+          style: {
+            background: '#22c55e',
+          },
+        },
+        error: {
+          duration: 3000,
+          style: {
+            background: '#ef4444',
+          },
+        },          
+      }}
+      />
       <dialog id="my_modal_3" className="modal">
         <div className="modal-box w-11/12 max-w-5xl">
           <form method="dialog">

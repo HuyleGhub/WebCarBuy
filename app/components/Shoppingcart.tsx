@@ -272,7 +272,10 @@ export const ShoppingCart = () => {
                 className="flex flex-col md:flex-row items-center gap-4 border-b py-4"
               >
                 <img
-                  src={item.xe.HinhAnh}
+                  src={
+                    Array.isArray(item.xe.HinhAnh) ? 
+                    item.xe.HinhAnh[0] : item.xe.HinhAnh.split("|")[0]
+                  }
                   alt={item.xe.TenXe}
                   className="w-24 h-24 object-cover rounded"
                 />

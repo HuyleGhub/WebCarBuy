@@ -294,6 +294,9 @@ export default function Navbar() {
                     </a>    
                   </li>
                   <li>
+                    <a href="/Depositform">Depositform</a>
+                  </li>
+                  <li>
                     <a href="/Orders">Orders</a>
                   </li>
                   {user.role?.TenNguoiDung === "Admin" && (

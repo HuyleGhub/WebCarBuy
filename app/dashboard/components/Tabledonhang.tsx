@@ -150,6 +150,22 @@ const TableDonHang: React.FC<TableDashboardProps> = ({
       </dialog>
 
       <div className="overflow-x-auto">
+      <div className="flex items-center gap-2">
+            <label htmlFor="pageSize" className="text-sm">
+              Số mục mỗi trang:
+            </label>
+            <select
+              id="pageSize"
+              value={pageSize}
+              onChange={handlePageSizeChange}
+              className="border rounded px-2 py-1"
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+            </select>
+          </div>
         <table className="table w-[1000px]">
           <thead>
             <tr className="bg-blue-900 text-white text-center">
@@ -204,24 +220,7 @@ const TableDonHang: React.FC<TableDashboardProps> = ({
       </div>
 
       {paginationMeta && (
-        <div className="flex justify-between items-center mt-4">
-          <div className="flex items-center gap-2">
-            <label htmlFor="pageSize" className="text-sm">
-              Số mục mỗi trang:
-            </label>
-            <select
-              id="pageSize"
-              value={pageSize}
-              onChange={handlePageSizeChange}
-              className="border rounded px-2 py-1"
-            >
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="20">20</option>
-              <option value="50">50</option>
-            </select>
-          </div>
-          
+        <div className="flex justify-end items-center mt-4">          
           <div className="flex gap-2">
             <button
               onClick={() => handlePageChange(currentPage - 1)}

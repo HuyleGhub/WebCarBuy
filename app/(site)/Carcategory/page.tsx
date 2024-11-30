@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Footer from '@/app/components/Footer'
 import toast, { Toaster } from 'react-hot-toast'
 import Image from 'next/image'
+import Link from 'next/link'
 
 interface Car {
   idXe: number;
@@ -251,7 +252,7 @@ const Category = () => {
                 </p>
                 <div className="flex">
                   <button className="mt-4 w-48 bg-indigo-600 text-white py-2 mx-4 rounded-md hover:bg-indigo-700 transition duration-300">
-                    Đặt cọc ngay
+                    <Link href={`/Datcoc?id=${car.idXe}`}>Đặt cọc ngay</Link>
                   </button>
                   <button
                     onClick={handleAddToCart}

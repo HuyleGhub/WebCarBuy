@@ -104,15 +104,31 @@ const TableUser: React.FC<TableUserProps> = ({
 
   return (
     <div className="w-full">
-      <div className="overflow-hidden ring-1 ring-black ring-opacity-5">
-        <div className="overflow-x-auto">
+      <div className="overflow-hidden">
+        <div className="">
           <div className="inline-block min-w-full align-middle">
+          <div className="flex">
+            <div className=" space-x-2">
+              <label htmlFor="pageSize" className="text-sm">
+                Số mục mỗi trang:
+              </label>
+              <select
+                id="pageSize"
+                value={pageSize}
+                onChange={handlePageSizeChange}
+                className="border rounded px-2 py-1"
+              >
+                <option value="5">5 </option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+              </select>
+            </div>
+          </div>
             <table className="min-w-full divide-y divide-gray-300">
               <thead className="bg-blue-900">
                 <tr>
                   <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">Id User</th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">Tên tài khoản</th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">Mật khẩu</th>
                   <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">Họ tên</th>
                   <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">Số điện thoại</th>
                   <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">Địa chỉ</th>
@@ -139,8 +155,6 @@ const TableUser: React.FC<TableUserProps> = ({
                   users.map((user) => (
                     <tr key={user.idUsers} className="hover:bg-gray-50">
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">{user.idUsers}</td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">{user.Tentaikhoan}</td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">{user.Matkhau}</td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">{user.Hoten}</td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">{user.Sdt}</td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">{user.Diachi}</td>
@@ -173,23 +187,7 @@ const TableUser: React.FC<TableUserProps> = ({
       </div>
 
       {paginationMeta && (
-        <div className="mt-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-2">
-            <label htmlFor="pageSize" className="text-sm">
-              Số mục mỗi trang:
-            </label>
-            <select
-              id="pageSize"
-              value={pageSize}
-              onChange={handlePageSizeChange}
-              className="border rounded px-2 py-1"
-            >
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="20">20</option>
-              <option value="50">50</option>
-            </select>
-          </div>
+        <div className="mt-4 flex flex-col sm:flex-row justify-end items-center gap-4">
 
           <div className="flex flex-wrap justify-center gap-2">
             <button
