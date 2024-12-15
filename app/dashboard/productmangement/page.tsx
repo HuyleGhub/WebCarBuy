@@ -35,12 +35,9 @@ export default function Page() {
 
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [loaiXeList, setLoaiXeList] = useState<LoaiXe[]>([]);
-  const [error, setError] = useState<string>("");
-  const [success, setSuccess] = useState<string>("");
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
-  const [showToast, setShowToast] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const refreshData = () => {
@@ -115,12 +112,84 @@ export default function Page() {
     });
   };
 
-  const handleChange = (e: any) => {
+  const formatCurrency = (value: string) => {
+    // Remove non-numeric characters
+    const numericValue = value.replace(/[^\d]/g, '');
+    
+    // Convert to number and format with thousands separators
+    const formatted = new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND'
+    }).format(parseInt(numericValue || '0'));
+    
+    return formatted;
+  };
+
+  const unformatCurrency = (value: string) => {
+    // Remove non-numeric characters except decimal point
+    return value.replace(/[^0-9]/g, '');
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }));
+    
+    // Special handling for price input
+    if (name === 'GiaXe') {
+      const formattedValue = formatCurrency(value);
+      setFormData(prev => ({
+        ...prev,
+        [name]: formattedValue,
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const url = isEditing ? `api/xe/${editingId}` : 'api/xe';
+    const method = isEditing ? 'PUT' : 'POST';
+
+    try {
+      // Ensure HinhAnh is an array and unformat the price
+      const submitData = {
+        ...formData,
+        HinhAnh: Array.isArray(formData.HinhAnh) ? formData.HinhAnh : [formData.HinhAnh],
+        GiaXe: unformatCurrency(formData.GiaXe), // Unformat the price for submission
+      };
+
+      console.log('Submitting data:', submitData); // Debug log
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(submitData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Failed to ${isEditing ? 'update' : 'create'} product`);
+      }
+
+      const data = await response.json();
+      toast.success(data.message);
+      setFormData(initialFormData);
+      setIsEditing(false);
+      setEditingId(null);
+      refreshData();
+
+      const dialog = document.getElementById("my_modal_3") as HTMLDialogElement;
+      if (dialog) {
+        dialog.close();
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : `Error ${isEditing ? 'updating' : 'creating'} product`);
+    }
   };
 
   const handleEdit = (product: any) => {
@@ -132,7 +201,7 @@ export default function Page() {
     setFormData({
         TenXe: product.TenXe,
         idLoaiXe: product.idLoaiXe.toString(),
-        GiaXe: product.GiaXe.toString(),
+        GiaXe: formatCurrency(product.GiaXe.toString()), // Format price when editing
         MauSac: product.MauSac,
         DongCo: product.DongCo,
         TrangThai: product.TrangThai,
@@ -146,51 +215,7 @@ export default function Page() {
     if (dialog) {
         dialog.showModal();
     }
-};
-
-const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    const url = isEditing ? `api/xe/${editingId}` : 'api/xe';
-    const method = isEditing ? 'PUT' : 'POST';
-
-    try {
-        // Ensure HinhAnh is an array
-        const submitData = {
-            ...formData,
-            HinhAnh: Array.isArray(formData.HinhAnh) ? formData.HinhAnh : [formData.HinhAnh]
-        };
-
-        console.log('Submitting data:', submitData); // Debug log
-
-        const response = await fetch(url, {
-            method,
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(submitData),
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || `Failed to ${isEditing ? 'update' : 'create'} product`);
-        }
-
-        const data = await response.json();
-        toast.success(data.message);
-        setFormData(initialFormData);
-        setIsEditing(false);
-        setEditingId(null);
-        refreshData();
-
-        const dialog = document.getElementById("my_modal_3") as HTMLDialogElement;
-        if (dialog) {
-            dialog.close();
-        }
-    } catch (err) {
-        toast.error(err instanceof Error ? err.message : `Error ${isEditing ? 'updating' : 'creating'} product`);
-    }
-};
-
+  };
   // Rest of the component remains the same...
   const handleModalClose = () => {
     if (!isEditing) {
@@ -220,12 +245,12 @@ const handleSubmit = async (e: any) => {
   
 
   return (
-    <div className="p-2 w-[1100px] h-full ml-7" data-theme="light">
+    <div className="p-2 w-[1300px] h-[630px] ml-7" data-theme="light">
       <div className="flex gap-4 w-full">
-        <h1 className="text-2xl font-bold mb-6 mt-1 w-56 text-black whitespace-nowrap">
+        <h1 className="text-2xl font-bold mb-6 mt-1 ml-36 w-56 text-black whitespace-nowrap">
           Quản Lý Sản Phẩm
         </h1>
-        <div className="flex justify-end gap-4 w-full">
+        <div className="flex justify-end w-[750px]">
           <button className="btn btn-accent" onClick={handleAddNewClick}>
             Thêm mới
           </button>
@@ -332,7 +357,7 @@ const handleSubmit = async (e: any) => {
                         Giá Xe
                       </label>
                       <input
-                        type="number"
+                        type="text"
                         id="GiaXe"
                         name="GiaXe"
                         value={formData.GiaXe}

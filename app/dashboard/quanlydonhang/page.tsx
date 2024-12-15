@@ -9,22 +9,20 @@ import { UploadButton } from "@/app/lib/uploadthing";
 import { Fileupload } from "@/app/components/Fileupload";
 import { url } from "inspector";
 import TableDonHang from "../components/Tabledonhang";
-import toast, {Toaster} from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 
 interface ChiTietDonHang {
   idChiTietDonHang: number;
   idKhacHang: string;
 }
 
-interface FormData { 
+interface FormData {
   TrangThaiDonHang: string;
- 
 }
 
 export default function Page() {
   const initialFormData: FormData = {
-  TrangThaiDonHang: "",
- 
+    TrangThaiDonHang: "",
   };
 
   const [formData, setFormData] = useState<FormData>(initialFormData);
@@ -59,57 +57,65 @@ export default function Page() {
   }, []);
 
   const handleDelete = async (id: number) => {
-  toast((t)=>(
-    <div className="flex flex-col gap-2">
-        <span className="font-medium">Bạn có chắc muốn xóa loại xe này?</span>
-        <div className="flex gap-2">
-    <button
-    onClick={async () =>{
-      toast.dismiss(t.id);
-      try {
-        const response = await fetch(`api/donhang/${id}`, {
-          method: "DELETE",
-        });
-  
-        if (!response.ok) {
-          throw new Error("Failed to delete product");
-        }
-  
-        const data = await response.json();
-        toast.success(data.message);
-        refreshData();
-      } catch (err) {
-        toast.error(err instanceof Error ? err.message : "Error deleting product");
+    toast(
+      (t) => (
+        <div className="flex flex-col gap-2">
+          <span className="font-medium">Bạn có chắc muốn xóa loại xe này?</span>
+          <div className="flex gap-2">
+            <button
+              onClick={async () => {
+                toast.dismiss(t.id);
+                try {
+                  const response = await fetch(`api/donhang/${id}`, {
+                    method: "DELETE",
+                  });
+
+                  if (!response.ok) {
+                    throw new Error("Failed to delete product");
+                  }
+
+                  const data = await response.json();
+                  toast.success(data.message);
+                  refreshData();
+                } catch (err) {
+                  toast.error(
+                    err instanceof Error
+                      ? err.message
+                      : "Error deleting product"
+                  );
+                }
+              }}
+              className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition-colors"
+            >
+              Xóa
+            </button>
+            <button
+              onClick={() => toast.dismiss(t.id)}
+              className="bg-gray-500 text-white px-3 py-1 rounded-md hover:bg-gray-600 transition-colors"
+            >
+              Hủy
+            </button>
+          </div>
+        </div>
+      ),
+      {
+        duration: Infinity,
+        position: "top-center",
+        style: {
+          background: "#fff",
+          color: "#000",
+          padding: "16px",
+          borderRadius: "8px",
+          boxShadow:
+            "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+        },
       }
-    }}
-    className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition-colors"
-    >
-     Xóa
-    </button>
-    <button
-            onClick={() => toast.dismiss(t.id)}
-            className="bg-gray-500 text-white px-3 py-1 rounded-md hover:bg-gray-600 transition-colors"
-          >
-            Hủy
-          </button>
-    </div>
-  </div>
-  ), {
-    duration: Infinity,
-    position: 'top-center',
-    style: {
-      background: '#fff',
-      color: '#000',
-      padding: '16px',
-      borderRadius: '8px',
-      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-    },
-  })
+    );
   };
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -128,23 +134,26 @@ export default function Page() {
     }
   };
 
-  const handleSubmit = async (e:any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
-    const url = isEditing ? `api/donhang/${editingId}` : 'api/donhang';
-    const method = isEditing ? 'PUT' : 'POST';
+    const url = isEditing ? `api/donhang/${editingId}` : "api/donhang";
+    const method = isEditing ? "PUT" : "POST";
 
     try {
       const response = await fetch(url, {
         method,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || `Failed to ${isEditing ? 'update' : 'create'} product`);
+        throw new Error(
+          errorData.message ||
+            `Failed to ${isEditing ? "update" : "create"} product`
+        );
       }
 
       const data = await response.json();
@@ -153,17 +162,18 @@ export default function Page() {
       setIsEditing(false);
       setEditingId(null);
       refreshData();
-     
 
       // Close the dialog after successful submission
       const dialog = document.getElementById("my_modal_3") as HTMLDialogElement;
       if (dialog) {
         dialog.close();
       }
-
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : `Error ${isEditing ? 'updating' : 'creating'} product`);
-      
+      toast.error(
+        err instanceof Error
+          ? err.message
+          : `Error ${isEditing ? "updating" : "creating"} product`
+      );
     }
   };
 
@@ -177,45 +187,46 @@ export default function Page() {
     }
   };
 
-  if (loading) return (
-    <div className="flex justify-center items-center h-screen" data-theme = "light">
-      <span className="loading loading-spinner text-blue-600 loading-lg"></span>
-    </div>
-  );
-  
-  
+  if (loading)
+    return (
+      <div
+        className="flex justify-center items-center h-screen"
+        data-theme="light"
+      >
+        <span className="loading loading-spinner text-blue-600 loading-lg"></span>
+      </div>
+    );
 
   return (
-    <div className="p-2 w-[1100px] h-full ml-7" data-theme="light">
+    <div className="p-2 w-[1300px] h-[630px] ml-7" data-theme="light">
       <div className="flex gap-4 w-full">
-        <h1 className="text-2xl font-bold mb-6 mt-1 w-56 text-black whitespace-nowrap">
+        <h1 className="text-2xl font-bold mb-6 mt-1 ml-32 w-56 text-black whitespace-nowrap">
           Quản Lý Đơn Hàng
         </h1>
-        
       </div>
       <Toaster
-      position="top-right"
-      toastOptions={{
-        duration: 5000,
-        style: {
-          background: '#333',
-          color: '#fff',
-          padding: '16px',
-          borderRadius: '8px',
-        },
-        success: {
-          duration: 3000,
+        position="top-right"
+        toastOptions={{
+          duration: 5000,
           style: {
-            background: '#22c55e',
+            background: "#333",
+            color: "#fff",
+            padding: "16px",
+            borderRadius: "8px",
           },
-        },
-        error: {
-          duration: 3000,
-          style: {
-            background: '#ef4444',
+          success: {
+            duration: 3000,
+            style: {
+              background: "#22c55e",
+            },
           },
-        },          
-      }}
+          error: {
+            duration: 3000,
+            style: {
+              background: "#ef4444",
+            },
+          },
+        }}
       />
       <dialog id="my_modal_3" className="modal">
         <div className="modal-box w-11/12 max-w-5xl">
@@ -237,7 +248,6 @@ export default function Page() {
                 {/* Form fields... */}
                 <div className="flex justify-center w-full flex-wrap gap-4">
                   <div className="flex w-full gap-4">
-
                     <div className="flex-1">
                       <label
                         htmlFor="TrangThaiDonHang"
@@ -246,7 +256,6 @@ export default function Page() {
                         Trạng Thái
                       </label>
                       <select
-                        
                         name="TrangThaiDonHang"
                         value={formData.TrangThaiDonHang}
                         onChange={handleChange}
@@ -255,32 +264,20 @@ export default function Page() {
                       >
                         <option value="">Chọn Trạng Thái</option>
                         <option value="Chờ xác nhận">Chờ xác nhận</option>
-                    <option value="Đã xác nhận">Đã xác nhận</option>
-                    <option value="Đang giao">Đang giao</option>
-                    <option value="Đã giao">Đã giao</option>
-                    <option value="Đã hủy">Đã hủy</option>
-                    
+                        <option value="Đã xác nhận">Đã xác nhận</option>
+                        <option value="Đang giao">Đang giao</option>
+                        <option value="Đã giao">Đã giao</option>
+                        <option value="Đã hủy">Đã hủy</option>
                       </select>
                     </div>
                   </div>
 
                   {/* Continue with rest of the form fields... */}
-                  <div className="flex w-full gap-4">
-                   
+                  <div className="flex w-full gap-4"></div>
 
-                  
-                  </div>
+                  <div className="flex w-full gap-4"></div>
 
-                  <div className="flex w-full gap-4">
-                    
-
-                    
-                  </div>
-
-                  <div className="flex w-full gap-4">
-                    
-    
-                  </div>
+                  <div className="flex w-full gap-4"></div>
                 </div>
 
                 <div className="flex justify-end mt-6">
@@ -290,7 +287,6 @@ export default function Page() {
                   >
                     {isEditing ? "Cập Nhật" : "Thêm Mới"}
                   </button>
-                
                 </div>
               </form>
             </div>

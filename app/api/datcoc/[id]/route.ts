@@ -31,7 +31,10 @@ export async function GET(req: NextApiRequest, {params}:{params: {id:string}}) {
 export async function DELETE(req: NextApiRequest, {params}:{params: {id:string}}) {
     try {
         const id = parseInt(params.id)
-        
+        const datCoc = await prisma.datCoc.findUnique({
+          where: { idDatCoc: id },
+          select: { idXe: true }
+        });
         // Check if deposit exists
 
 
@@ -47,6 +50,13 @@ export async function DELETE(req: NextApiRequest, {params}:{params: {id:string}}
         // Delete the deposit
         await prisma.datCoc.delete({
             where: { idDatCoc: id }
+        })
+        if(datCoc?.idXe)
+        await prisma.xe.update({
+          where: { idXe: datCoc.idXe},
+          data: {
+            TrangThai: 'Còn Hàng',
+          }
         })
 
         return NextResponse.json({ message: 'Hủy đơn đặt cọc thành công' })

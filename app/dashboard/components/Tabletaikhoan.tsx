@@ -81,11 +81,16 @@ const TableUser: React.FC<TableUserProps> = ({
     return role?.TenNguoiDung || "N/A";
   };
 
-  const formatDateTime = (dateString: string): string => {
+  const formatDateTime = (dateString?: string | null) => {
+    if (!dateString) return '';
     try {
       const date = new Date(dateString);
-      return date.toLocaleString('vi-VN');
-    } catch {
+      return date.toLocaleDateString("vi-VN", {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    } catch (error) {
       return dateString;
     }
   };

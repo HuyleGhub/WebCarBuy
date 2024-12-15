@@ -15,7 +15,7 @@ interface ChiTietDatCoc {
     NgayDat: string;
     SotienDat: number;
     TrangThaiDat: string;
-    lichHenLayXe?: LichHenLayXe[];
+    LichHenLayXe: LichHenLayXe[];
     xe: {
         TenXe: string;
         HinhAnh: string;
@@ -42,22 +42,8 @@ const DepositOrderPage = () => {
             const data = await response.json();
             
             // Fetch pickup schedules for each deposit order
-            const datCocsWithSchedules = await Promise.all(
-                data.map(async (datCoc: ChiTietDatCoc) => {
-                    try {
-                        const scheduleResponse = await fetch(`/api/lichhen/${datCoc.idDatCoc}`);
-                        if (scheduleResponse.ok) {
-                            const scheduleData = await scheduleResponse.json();
-                            return { ...datCoc, lichHenLayXe: scheduleData };
-                        }
-                    } catch (error) {
-                        console.error(`Error fetching schedule for deposit ${datCoc.idDatCoc}:`, error);
-                    }
-                    return datCoc;
-                })
-            );
 
-            setDatCocs(datCocsWithSchedules);
+            setDatCocs(data);
         } catch (error) {
             console.error('There has been a problem with your fetch operation:', error);
             setError("Không thể tải danh sách đơn đặt cọc");
@@ -159,119 +145,156 @@ const DepositOrderPage = () => {
     }
 
     return (
-        <div data-theme="light">
-            <Toaster position="top-center" />
-            <div className="container mx-auto px-36 py-28 ">
-                <h1 className="text-2xl font-bold mb-6">Đơn Đặt Cọc Của Tôi</h1>
-                
-                {datCocs.length === 0 ? (
-                    <div className="text-center py-8 text-gray-500">
-                        Bạn chưa có đơn đặt cọc nào
-                    </div>
-                ) : (
-                    <div className="grid gap-6">
-                        {datCocs.map((datCoc) => (
-                            <div
-                                key={datCoc.idDatCoc}
-                                className="bg-white rounded-2xl shadow-xl p-6 space-y-4"
-                            >
-                                <div className="flex justify-between items-center">
-                                    <div>
-                                        <span className="text-gray-600">Mã đơn đặt cọc: </span>
-                                        <span className="font-semibold">#{datCoc.idDatCoc}</span>
-                                    </div>
-                                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(datCoc.TrangThaiDat)}`}>
-                                        {datCoc.TrangThaiDat}
-                                    </span>
-                                </div>
+      <div data-theme="light">
+        <Toaster position="top-center" />
+        <div className="container mx-auto px-36 py-28 ml-9">
+          <h1 className="text-2xl font-bold mb-6">Đơn Đặt Cọc</h1>
 
-                                <div className="flex items-center gap-4 border-t pt-4">
-                                    <div className="w-24 h-24 flex-shrink-0">
-                                        <img
-                                            src={datCoc.xe.HinhAnh.split("|")[0]}
-                                            alt={datCoc.xe.TenXe}
-                                            className="w-full h-full object-cover rounded-lg"
-                                        />
-                                    </div>
-                                    <div className="flex-1">
-                                        <h3 className="font-semibold text-lg mb-1">{datCoc.xe.TenXe}</h3>
-                                        <p className="text-gray-600 mb-1">Màu sắc: <span>{datCoc.xe.MauSac}</span></p>
-                                        <p className="text-gray-600">
-                                            Giá xe: {new Intl.NumberFormat('vi-VN', {
-                                                style: 'currency',
-                                                currency: 'VND'
-                                            }).format(Number(datCoc.xe.GiaXe))}
-                                        </p>
-                                    </div>
-                                </div>
-                                
-                                <div className="border-t pt-4">
-                                    <div className="flex justify-between items-center mb-3">
-                                        <div>
-                                            <span className="text-gray-600">Ngày đặt cọc: </span>
-                                            <span className="font-bold text-lg">
-                                                {new Date(datCoc.NgayDat).toLocaleDateString()}
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <span className="text-gray-600 mr-2">Số tiền đặt cọc: </span>
-                                            <span className="font-bold text-lg">
-                                                {new Intl.NumberFormat('vi-VN', {
-                                                    style: 'currency',
-                                                    currency: 'VND'
-                                                }).format(Number(datCoc.SotienDat))}
-                                            </span>
-                                        </div>
-                                        {datCoc.TrangThaiDat === 'Chờ xác nhận' && (
-                                            <button
-                                                onClick={() => handleCancelDeposit(datCoc.idDatCoc)}
-                                                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-200"
-                                            >
-                                                Hủy đơn
-                                            </button>
-                                        )}
-                                    </div>
-
-                                    {/* Pickup Schedule Section */}
-                                    {datCoc.lichHenLayXe && datCoc.lichHenLayXe.length > 0 && (
-                                        <div className="bg-blue-50 p-4 rounded-lg">
-                                            <h4 className="text-lg font-semibold mb-2 text-blue-800">Lịch Hẹn Lấy Xe</h4>
-                                            {datCoc.lichHenLayXe.map((schedule) => (
-                                                <div key={schedule.idLichHenLayXe} className="mb-2">
-                                                    <div className="flex items-center gap-2">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
-                                                            <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1V8a1 1 0 011-1h1zm5 0a1 1 0 011 1v3a1 1 0 01-1 1h-1a1 1 0 01-1-1V8a1 1 0 011-1h1z" clipRule="evenodd" />
-                                                        </svg>
-                                                        <span className="font-medium text-blue-800">
-                                                            {new Date(schedule.NgayLayXe).toLocaleDateString()}
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex items-center gap-2 mt-1">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
-                                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                                                        </svg>
-                                                        <span className="text-blue-700">
-                                                            {new Date(schedule.GioHenLayXe).toLocaleTimeString()}
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex items-center gap-2 mt-1">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
-                                                            <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                                                        </svg>
-                                                        <span className="text-blue-700">{schedule.DiaDiem}</span>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
+          {datCocs.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              Bạn chưa có đơn đặt cọc nào
             </div>
-            <Footer/>
+          ) : (
+            <div className="flex flex-wrap flex-shrink justify-stretch gap-12">
+              {datCocs.map((datCoc) => (
+                <div
+                  key={datCoc.idDatCoc}
+                  className="bg-white rounded-2xl shadow-xl p-6 space-y-4"
+                >
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <span className="text-gray-600">Mã đơn đặt cọc: </span>
+                      <span className="font-semibold">#{datCoc.idDatCoc}</span>
+                    </div>
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+                        datCoc.TrangThaiDat
+                      )}`}
+                    >
+                      {datCoc.TrangThaiDat}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-4 border-t pt-4">
+                    <div className="w-24 h-24 flex-shrink-0">
+                      <img
+                        src={datCoc.xe.HinhAnh.split("|")[0]}
+                        alt={datCoc.xe.TenXe}
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-lg mb-1">
+                        {datCoc.xe.TenXe}
+                      </h3>
+                      <p className="text-gray-600 mb-1">
+                        Màu sắc: <span>{datCoc.xe.MauSac}</span>
+                      </p>
+                      <p className="text-gray-600">
+                        Giá xe:{" "}
+                        {new Intl.NumberFormat("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        }).format(Number(datCoc.xe.GiaXe))}
+                      </p>
+                    </div>
+                    <div>
+                      {datCoc.LichHenLayXe &&
+                        datCoc.LichHenLayXe.length > 0 && (
+                          <div className="bg-white p-4 rounded-lg">
+                            <h4 className="text-lg font-semibold mb-2 text-blue-800">
+                              Lịch Hẹn Lấy Xe
+                            </h4>
+                            {datCoc.LichHenLayXe.map((schedule) => (
+                              <div
+                                key={schedule.idLichHenLayXe}
+                                className="mb-2"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-5 w-5 text-blue-600"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                  >
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1V8a1 1 0 011-1h1zm5 0a1 1 0 011 1v3a1 1 0 01-1 1h-1a1 1 0 01-1-1V8a1 1 0 011-1h1z"
+                                      clipRule="evenodd"
+                                    />
+                                  </svg>
+                                  <span className="font-medium text-blue-800">
+                                    {new Date(
+                                      schedule.NgayLayXe
+                                    ).toLocaleDateString("vi-Vn", {
+                                      year: "numeric",
+                                      month: "long",
+                                      day: "numeric",
+                                    })}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2 mt-1">
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-5 w-5 text-blue-600"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                  >
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                                      clipRule="evenodd"
+                                    />
+                                  </svg>
+                                  <span className="text-blue-700">
+                                    {schedule.DiaDiem}
+                                  </span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                    </div>
+                  </div>
+                  <div className="flex justify-between">
+                    <div>
+                      <span className="text-gray-600">Ngày đặt cọc: </span>
+                      <span className="font-bold text-lg">
+                        {new Date(datCoc.NgayDat).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600 mr-2">
+                        Số tiền đặt cọc:{" "}
+                      </span>
+                      <span className="font-bold text-lg">
+                        {new Intl.NumberFormat("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        }).format(Number(datCoc.SotienDat))}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-4">
+                    <div className="flex justify-end">
+                      {datCoc.TrangThaiDat === "Chờ xác nhận" && (
+                        <button
+                          onClick={() => handleCancelDeposit(datCoc.idDatCoc)}
+                          className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-200"
+                        >
+                          Hủy đơn
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
+        <Footer />
+      </div>
     );
 };
 

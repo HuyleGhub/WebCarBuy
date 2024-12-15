@@ -36,7 +36,14 @@ export async function GET(req: NextRequest) {
       include: {
         khachHang: {
           select: {
-            Hoten: true
+            Hoten: true,
+            Email: true,
+            Sdt: true,
+          }
+        },
+        LichGiaoXe: {
+          select: {
+            NgayGiao: true
           }
         }
       },

@@ -114,7 +114,7 @@ const SearchModal = () => {
               <input 
                 type="range" 
                 min={0} 
-                max="100000000" 
+                max="1000000000000" 
                 step="1000000"
                 className="range input-bordered w-full" 
                 value={searchParams.gia}

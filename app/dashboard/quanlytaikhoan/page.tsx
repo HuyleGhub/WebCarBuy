@@ -196,9 +196,9 @@ export default function Page() {
   );
 
   return (
-    <div className="p-2 w-[1100px] h-full ml-7" data-theme="light">
+    <div className="p-2 w-[1300px] h-[630px] ml-7" data-theme="light">
       <div className="flex gap-4 w-full">
-        <h1 className="text-2xl font-bold mb-6 mt-1 w-56 text-black whitespace-nowrap">
+        <h1 className="text-2xl font-bold mb-6 mt-1 ml-20 w-56 text-black whitespace-nowrap">
           Quản Lý Tài Khoản Người Dùng
         </h1>
         <div className="flex justify-end gap-4 w-full">
@@ -354,7 +354,7 @@ export default function Page() {
           </div>
         </div>
       </dialog>
-      <div className="flex w-full justify-center">
+      <div className="flex ml-20 w-[1150px] justify-center">
         <Tabletaikhoan
           onEdit={handleEdit}
           onDelete={handleDelete}

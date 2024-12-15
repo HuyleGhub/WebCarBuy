@@ -33,12 +33,7 @@ export default function Navbar() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<UserAuth | null>(null);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [reReloadKey, setReloadKey] = useState("");
   const router = useRouter();
-  const refreshData = () => {
-    setReloadKey((prevKey) => prevKey + 1);
-  };
 
   useEffect(() => {
     const fetchCartItems = async () => {
@@ -48,8 +43,6 @@ export default function Navbar() {
         if (!response.ok) throw new Error("Failed to fetch cart items");
         const data = await response.json();
         setCartItems(data || []); // Ensure we always have an array
-        router.refresh();
-        
       } catch (error) {
         console.error("Failed to fetch cart items", error);
         setCartItems([]); // Set empty array on error
@@ -58,9 +51,30 @@ export default function Navbar() {
       }
     };
 
-    if (user) { // Only fetch cart items if user is logged in
+    // Add event listener for cart updates
+    const handleCartUpdate = async () => {
+      try {
+        const response = await fetch("/api/giohang");
+        if (!response.ok) throw new Error("Failed to fetch cart items");
+        const data = await response.json();
+        setCartItems(data || []); 
+      } catch (error) {
+        console.error("Failed to fetch cart items", error);
+        setCartItems([]); 
+      }
+    };
+
+    if (user) {
       fetchCartItems();
     }
+
+    // Add event listener
+    window.addEventListener('cartUpdated', handleCartUpdate);
+
+    // Remove event listener on cleanup
+    return () => {
+      window.removeEventListener('cartUpdated', handleCartUpdate);
+    };
   }, [user]);
 
   useEffect(() => {
@@ -106,17 +120,6 @@ export default function Navbar() {
 
   // Calculate cart totals
   const cartItemCount = cartItems?.length || 0;
-  const cartSubtotal = Array.isArray(cartItems) ? cartItems.reduce(
-    (total, item) => total + ((item?.xe?.GiaXe || 0) * (item?.SoLuong || 0)),
-    0
-  ) : 0;
-
-  const handleShowModal = () => {
-      const dialog = document.getElementById("my_modal_3") as HTMLDialogElement
-      if(dialog) {
-        dialog.showModal();
-      }
-  }
 
   return (
     <div data-theme="light">
@@ -225,6 +228,7 @@ export default function Navbar() {
                   role="button"
                   className="btn btn-ghost btn-circle"
                 >
+                  <Link href={"/Cart"}>
                   <div className="indicator">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -244,26 +248,7 @@ export default function Navbar() {
                       {cartItemCount}
                     </span>
                   </div>
-                </div>
-
-                {/* Cart items dropdown content */}
-                <div
-                  tabIndex={0}
-                  className="card card-compact dropdown-content bg-base-100 z-[1] mt-3 w-52 shadow"
-                >
-                  <div className="card-body">
-                    <span className="text-lg font-bold">
-                      {cartItemCount} Items
-                    </span>
-                    <span className="text-info">
-                      Subtotal: ${cartSubtotal.toFixed(2)}
-                    </span>
-                    <div className="card-actions">
-                      <Link href="/Cart" className="btn btn-primary btn-block">
-                        View cart
-                      </Link>
-                    </div>
-                  </div>
+                  </Link>
                 </div>
               </div>
 

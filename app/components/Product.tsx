@@ -96,7 +96,9 @@ const SortableCarItem = ({ car }: SortableCarItemProps) => {
               </span>
             </p>
             <div className="card-actions">
-              <button className="btn bg-[#1464F4] text-white">Đặt Cọc</button>
+              <button className="btn bg-[#1464F4] text-white">
+                <Link href={`Datcoc?id=${car.idXe}`}>Đặt Cọc</Link>
+                </button>
               <Link
                 href={`Carcategory?id=${car.idXe}`}
                 className="btn btn-outline"
@@ -198,7 +200,7 @@ const Product = () => {
             items={displayedCars.map(car => car.idXe)}
             strategy={horizontalListSortingStrategy}
           >
-            <ul className="flex w-full mt-12 min-[1530px]:gap-28 xl:gap-2 xl:h-full h-full flex-wrap animate-appear [animation-timeline:view()] animation-range-entry list-none">
+            <ul className="flex w-full mt-12 min-[1536px]:gap-2 min-[1920px]:gap-32  xl:gap-8 xl:h-full h-full flex-wrap animate-appear [animation-timeline:view()] animation-range-entry list-none">
               {displayedCars.map((car) => (
                 <SortableCarItem key={car.idXe} car={car} />
               ))}

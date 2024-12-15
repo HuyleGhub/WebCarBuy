@@ -10,17 +10,29 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
 
         // Create deposit record
-        const datCoc = await prisma.datCoc.create({
-            data: {
-                idXe: parseInt(body.idXe),
-                idKhachHang: session.idUsers,
-                NgayDat: new Date(body.NgayDat),
-                SotienDat: parseInt(body.SotienDat),
-                TrangThaiDat: body.TrangThaiDat
-            }
-        });
+        const result = await prisma.$transaction(async (prisma) => {
+            // Create deposit record
+            const datCoc = await prisma.datCoc.create({
+                data: {
+                    idXe: parseInt(body.idXe),
+                    idKhachHang: session.idUsers,
+                    NgayDat: new Date(body.NgayDat),
+                    SotienDat: parseInt(body.SotienDat),
+                    TrangThaiDat: body.TrangThaiDat
+                }
+            });
 
-        return NextResponse.json(datCoc);
+            // Update car status to 'Đã Đặt Cọc'
+            await prisma.xe.update({
+                where: { idXe: parseInt(body.idXe) },
+                data: { 
+                    TrangThai: 'Đã Đặt Cọc'  // New status indicating the car is reserved
+                }
+            });
+
+            return datCoc;
+        });
+        return NextResponse.json(result, {status: 201});
     } catch (error) {
         console.error('Deposit creation error:', error);
 
@@ -51,7 +63,6 @@ export async function GET() {
             LichHenLayXe: {
                 select:{
                     NgayLayXe: true,
-                    GioHenLayXe: true,
                     DiaDiem: true,
                 },
             }

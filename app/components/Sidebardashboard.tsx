@@ -42,6 +42,16 @@ const SidebarDashboard: React.FC = () => {
       icon: <GiCarDoor />,
       href: "/dashboard/quanlydonhang",
       label: "Đơn Hàng",
+    },
+    {
+      icon: <GiCarDoor />,
+      href: "/dashboard/quanlydatcoc",
+      label: "Đặt Cọc",
+    },
+    {
+      icon: <GiCarDoor />,
+      href: "/dashboard/quanlylichhenlayxe",
+      label: "Lịch Hẹn",
     }
   ];
 

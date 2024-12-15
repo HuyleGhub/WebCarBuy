@@ -7,80 +7,86 @@ import { NextResponse } from 'next/server';
 export async function POST(req: Request) {
   try {
     const session = await getSession();
-    // if (!session) 
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    // }
-
     const { cartItems, paymentMethod } = await req.json();
 
-    // Start a transaction
     const result = await prisma.$transaction(async (prisma) => {
-      // 1. Create new DonHang
-      const donHang = await prisma.donHang.create({
-        data: {
-          idKhachHang: session.idUsers,
-          NgayDatHang: new Date(),
-          TrangThaiDonHang: 'Chờ xác nhận',
-          TongTien: cartItems.reduce((total: number, item: any) => {
-            return total + (Number(item.xe.GiaXe) * item.SoLuong);
-          }, 0),
-        },
-      });
+      const allOrders: any[] = [];
+      const allPayments: any[] = [];
+      const allDeliverySchedules: any[] = [];
+      const allOrderDetails: any[] = [];
 
-      // 2. Create ChiTietDonHang for each cart item
-      await Promise.all(
-        cartItems.map((item: any) =>
-          prisma.chiTietDonHang.create({
-            data: {
-              idDonHang: donHang.idDonHang,
-              idXe: item.idXe,
-              SoLuong: item.SoLuong,
-              DonGia: item.xe.GiaXe,
-            },
-          })
-        )
-      );
+      for (const item of cartItems) {
+        // 1. Tạo đơn hàng mới
+        const order = await prisma.donHang.create({
+          data: {
+            idKhachHang: session.idUsers,
+            NgayDatHang: new Date(),
+            TrangThaiDonHang: 'Chờ xác nhận',
+            TongTien: Number(item.xe.GiaXe) * item.SoLuong,
+          },
+        });
+        allOrders.push(order);
 
-      // 3. Create ThanhToan record
-      const thanhToan = await prisma.thanhToan.create({
-        data: {
-          idDonHang: donHang.idDonHang,
-          PhuongThuc: paymentMethod,
-          NgayThanhToan: new Date(),
-        },
-      });
+        // 2. Tạo chi tiết đơn hàng
+        const orderDetail = await prisma.chiTietDonHang.create({
+          data: {
+            idDonHang: order.idDonHang,
+            idXe: item.idXe,
+            SoLuong: item.SoLuong,
+            DonGia: item.xe?.GiaXe || 0,
+          },
+        });
+        allOrderDetails.push(orderDetail);
 
-      // 4. Delete all items from GioHang
-      await prisma.gioHang.deleteMany({
-        where: {
-          idKhachHang: session.idUsers,
-        },
-      });
+        // 3. Tạo bản ghi thanh toán
+        const payment = await prisma.thanhToan.create({
+          data: {
+            idDonHang: order.idDonHang,
+            PhuongThuc: paymentMethod,
+            NgayThanhToan: new Date(),
+          },
+        });
+        allPayments.push(payment);
 
-      // 5. Update Xe inventory status if needed
-      await Promise.all(
-        cartItems.map((item: any) =>
-          prisma.xe.update({
-            where: {
-              idXe: item.idXe,
-            },
-            data: {
-              TrangThai: 'Đã đặt hàng',
-            },
-          })
-        )
-      );
+        // 4. Xóa mặt hàng khỏi giỏ hàng
+        await prisma.gioHang.delete({
+          where: {
+            idGioHang: item.idGioHang,
+          },
+        });
+
+        // 5. Cập nhật trạng thái xe
+        await prisma.xe.update({
+          where: {
+            idXe: item.idXe,
+          },
+          data: {
+            TrangThai: 'Đã đặt hàng',
+          },
+        });
+
+        // 6. Tạo lịch giao hàng
+        const deliverySchedule = await prisma.lichGiaoXe.create({
+          data: {
+            idDonHang: order.idDonHang,
+            idXe: item.idXe,
+            idKhachHang: session.idUsers,
+            NgayGiao: await calculateDeliveryDate(),
+            TrangThai: 'Chờ giao',
+          },
+        });
+        allDeliverySchedules.push(deliverySchedule);
+      }
 
       return {
-        donHang,
-        thanhToan,
+        orders: allOrders,
+        orderDetails: allOrderDetails,
+        payments: allPayments,
+        deliverySchedules: allDeliverySchedules,
       };
     });
 
-    return NextResponse.json({
-      success: true,
-      data: result,
-    });
+    return NextResponse.json({ success: true, data: result });
   } catch (error) {
     console.error('Checkout error:', error);
     return NextResponse.json(
@@ -88,4 +94,23 @@ export async function POST(req: Request) {
       { status: 500 }
     );
   }
+}
+
+async function calculateDeliveryDate(): Promise<Date> {
+  // Logic để tính ngày giao hàng dự kiến
+  const orderDate = new Date();
+  const earliestDeliveryDate = new Date(orderDate);
+  earliestDeliveryDate.setDate(orderDate.getDate() + 3);
+
+  const maxDeliveryDate = new Date(orderDate);
+  maxDeliveryDate.setDate(orderDate.getDate() + 6);
+
+  const deliveryDate = new Date(
+    earliestDeliveryDate.getTime() +
+      Math.random() * (maxDeliveryDate.getTime() - earliestDeliveryDate.getTime())
+  );
+
+  deliveryDate.setHours(8 + Math.floor(Math.random() * 10), Math.floor(Math.random() * 60), 0, 0);
+
+  return deliveryDate;
 }

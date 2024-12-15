@@ -22,6 +22,12 @@ export async function GET() {
                             }
                         }
                     }
+                },
+                LichGiaoXe:{
+                    select: {
+                        NgayGiao: true,
+                        TrangThai: true,
+                    }
                 }
             }
         })

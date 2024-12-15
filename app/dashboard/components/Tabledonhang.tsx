@@ -1,4 +1,5 @@
 import { getImageUrl } from "@/app/components/Fileupload";
+import { LichGiaoXe } from "@prisma/client";
 import React, { useEffect, useState } from "react";
 
 interface DonHang {
@@ -9,7 +10,12 @@ interface DonHang {
   NgayDatHang: string;
   khachHang?: {
     Hoten: string;
+    Email: string;
+    Sdt: string;
   } 
+  LichGiaoXe?: Array<{
+    NgayGiao: string;
+  }>
 }
 
 interface ChiTietDonHang {
@@ -96,10 +102,15 @@ const TableDonHang: React.FC<TableDashboardProps> = ({
     setCurrentPage(1);
   };
 
-  const formatDateTime = (dateString: string) => {
+  const formatDateTime = (dateString?: string | null) => {
+    if (!dateString) return '';
     try {
       const date = new Date(dateString);
-      return date.toLocaleDateString("vi-VN");
+      return date.toLocaleDateString("vi-VN", {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
     } catch (error) {
       return dateString;
     }
@@ -128,7 +139,7 @@ const TableDonHang: React.FC<TableDashboardProps> = ({
               >
                 {detail.xe?.HinhAnh && (
                   <img
-                    src={getImageUrl(detail.xe.HinhAnh)}
+                    src={getImageUrl(detail.xe?.HinhAnh.split("|")[0])}
                     alt={detail.xe?.TenXe || "Product image"}
                     className="w-24 h-24 object-cover rounded-lg"
                   />
@@ -169,11 +180,13 @@ const TableDonHang: React.FC<TableDashboardProps> = ({
         <table className="table w-[1000px]">
           <thead>
             <tr className="bg-blue-900 text-white text-center">
-              <th>Id DonHang</th>
+              <th>Id</th>
               <th>Tên Khách Hàng</th>
+              <th>Số điện Thoại</th>
               <th>Trạng Thái Đơn Hàng</th>
               <th>Tổng Tiền</th>
               <th>Ngày Đặt Hàng</th>
+              <th>Lịch Giao Xe</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -189,13 +202,16 @@ const TableDonHang: React.FC<TableDashboardProps> = ({
                 <tr key={donhang.idDonHang} className="text-black text-center">
                   <th>{donhang.idDonHang}</th>
                   <td>{donhang.khachHang?.Hoten || "Undefine"}</td>
+                  <td>{donhang.khachHang?.Sdt || "Undefine"}</td>
                   <td>{donhang.TrangThaiDonHang}</td>
                   <td>{formatCurrency(donhang.TongTien)}</td>
                   <td>{formatDateTime(donhang.NgayDatHang)}</td>
+                  <td>{formatDateTime(donhang.LichGiaoXe?.[0]?.NgayGiao)}</td>
+                
                   <td className="flex gap-2 justify-center">
                     <button
                       onClick={() => onEdit(donhang)}
-                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                      className="px-2 py-1  bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
                     >
                       Duyệt
                     </button>
@@ -209,7 +225,7 @@ const TableDonHang: React.FC<TableDashboardProps> = ({
                       onClick={() => handleViewDetail(donhang.idDonHang)}
                       className="px-3 py-1 bg-slate-500 text-white rounded hover:bg-slate-600 transition-colors"
                     >
-                      Xem Chi tiết
+                      Detail
                     </button>
                   </td>
                 </tr>

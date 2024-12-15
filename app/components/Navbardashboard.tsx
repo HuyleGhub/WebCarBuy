@@ -16,11 +16,12 @@ interface CartItem {
     TrangThai: string;
   };
 }
+interface NavbarProps {
+  onToggleSidebar: () => void;
+}
 
-const Navbardashboard = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+const Navbardashboard: React.FC<NavbarProps> = ({ onToggleSidebar })=> {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<UserAuth | null>(null);
   const router = useRouter();
   
@@ -53,7 +54,7 @@ const Navbardashboard = () => {
     <nav className="fixed top-0 left-0 right-0 bg-base-100 border-b z-50 w-full">
     <div className="navbar w-full bg-slate-950">
       <div className="flex-none">
-        <button className="btn btn-square text-white btn-ghost">
+        <button className="btn btn-square text-white btn-ghost" onClick={onToggleSidebar}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"

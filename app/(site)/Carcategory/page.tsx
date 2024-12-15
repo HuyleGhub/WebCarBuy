@@ -33,10 +33,20 @@ const Category = () => {
   const [addingToCart, setAddingToCart] = useState(false)
   const [quantity, setQuantity] = useState(1)
   const [images, setImages] = useState<string[]>([])
+  
 
   const handleImageClick = (index: number) => {
     setCurrentImageIndex(index)
   }
+
+  async function ApiCart(){
+    const response = await fetch(`/api/giohang`)
+  const data = await response.json()
+  }
+
+  useEffect(()=>{
+      ApiCart()
+  },[ApiCart])
 
   const handleAddToCart = async () => {
     try {
@@ -56,7 +66,7 @@ const Category = () => {
         toast.error('Xin lỗi, xe này hiện không còn trống để đặt hàng.')
         return
       }
-
+  
       const response = await fetch('/api/giohang', {
         method: 'POST',
         headers: {
@@ -67,11 +77,14 @@ const Category = () => {
           SoLuong: quantity,
         }),
       })
-
+  
       if (!response.ok) {
         throw new Error('Không thể thêm vào giỏ hàng')
       }
-
+  
+      // Dispatch a custom event to update cart items
+      window.dispatchEvent(new Event('cartUpdated'))
+  
       const toastPromise = toast.promise(
         new Promise(resolve => setTimeout(resolve, 2500)),
         {
@@ -83,11 +96,9 @@ const Category = () => {
           duration: 3000,
         }
       )
-
+  
       await toastPromise
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      router.push('/Cart')
-
+      
     } catch (err) {
       toast.error('Có lỗi xảy ra khi thêm vào giỏ hàng. Vui lòng thử lại sau.')
       console.error('Error adding to cart:', err)
@@ -146,6 +157,8 @@ const Category = () => {
       <div className="text-2xl font-bold text-gray-800">Không tìm thấy thông tin xe</div>
     </div>
   )
+  const isCarAvailable = car.TrangThai === 'Còn Hàng';
+  const isCarReserved = car.TrangThai === 'Đã Đặt Cọc';
 
   return (
     <div className="w-full h-full pt-24" data-theme="light">
@@ -170,21 +183,11 @@ const Category = () => {
         }}
       />
       <div className="px-24 pb-24 w-full h-full flex flex-col">
-        <div className="pb-4">
-          <button
-            onClick={() => router.push('/')}
-            className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center"
-          >
-            <svg className="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-              <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm.707-10.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L9.414 11H13a1 1 0 100-2H9.414l1.293-1.293z" />
-            </svg>
-            <span>Quay lại trang chủ</span>
-          </button>
-        </div>
+        
         <h1 className="text-3xl font-bold mb-8">Chi tiết sản phẩm</h1>
         <div className="bg-white shadow-xl rounded-lg overflow-hidden">
           <div className="md:flex">
-            <div className="md:flex-shrink-0 xl:w-[1000px] xl:h-[500px] relative">
+            <div className="md:flex-shrink-0 xl:w-[600px] xl:h-[500px] relative">
               {images.length > 0 && (
                 <img 
                   className="xl:h-[500px] xl:w-full object-cover md:w-48"
@@ -193,14 +196,8 @@ const Category = () => {
                 />
               )}
             </div>
-            <div className="flex flex-col w-full h-full">
-              <div className="p-8">
-                <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">{car.loaiXe.NhanHieu}</div>
-                <h2 className="block mt-1 text-3xl leading-tight font-bold text-black">{car.TenXe}</h2>
-                <p className="mt-2 text-gray-500">{car.loaiXe.TenLoai}</p>
-              </div>
-              <div className="ml-8 flex flex-wrap gap-4">
-                {images.map((image, index) => (
+            <div className="flex flex-col ml-8">
+            {images.map((image, index) => (
                   <div 
                     key={index}
                     className={`w-24 h-24 relative cursor-pointer border-2 ${
@@ -215,11 +212,14 @@ const Category = () => {
                     />
                   </div>
                 ))}
-              </div>
             </div>
-          </div>
-          <div className="px-8 py-4 bg-gray-50">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col ml-16 w-full h-full">
+              <div className="p-8">
+                <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">{car.loaiXe.NhanHieu}</div>
+                <h2 className="block mt-1 text-3xl leading-tight font-bold text-black">{car.TenXe}</h2>
+                <p className="mt-2 text-gray-500">{car.loaiXe.TenLoai}</p>
+              </div>
+              <div className="ml-8 flex flex-col gap-4">
               <div>
                 <h3 className="text-xl font-semibold text-gray-800">Thông số kỹ thuật</h3>
                 <ul className="mt-2 space-y-2">
@@ -245,32 +245,48 @@ const Category = () => {
                   </li>
                 </ul>
               </div>
+
               <div>
                 <h3 className="text-xl font-semibold text-gray-800">Giá bán</h3>
                 <p className="mt-2 text-3xl font-bold text-indigo-600">
                   {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(car.GiaXe)}
                 </p>
                 <div className="flex">
-                  <button className="mt-4 w-48 bg-indigo-600 text-white py-2 mx-4 rounded-md hover:bg-indigo-700 transition duration-300">
-                    <Link href={`/Datcoc?id=${car.idXe}`}>Đặt cọc ngay</Link>
-                  </button>
-                  <button
-                    onClick={handleAddToCart}
-                    disabled={addingToCart || car.TrangThai !== 'Còn Hàng'}
-                    className={`mt-4 w-48 ${
-                      car.TrangThai === 'Còn Hàng'
-                        ? 'bg-slate-600 hover:bg-black'
-                        : 'bg-gray-400 cursor-not-allowed'
-                    } text-white py-2 mx-4 rounded-md transition duration-300`}
-                  >
-                    {addingToCart 
-                      ? 'Đang thêm...' 
-                      : car.TrangThai !== 'Còn Hàng'
-                      ? 'Hết hàng'
-                      : 'Thêm vào giỏ hàng'
-                    }
-                  </button>
+                {isCarAvailable ? (
+                <button 
+                  className="mt-4 w-48 bg-indigo-600 text-white py-2 mx-4 rounded-md hover:bg-indigo-700 transition duration-300"
+                >
+                  <Link href={`/Datcoc?id=${car.idXe}`}>Đặt cọc ngay</Link>
+                </button>
+              ) : (
+                <button 
+                  disabled
+                  className="mt-4 w-48 $ bg-gray-400 text-white py-2 mx-4 rounded-md cursor-not-allowed "
+                >
+                  {isCarReserved ? 'Đã đặt cọc' : 'Không thể đặt cọc'}
+                </button>
+              )}
+
+              {/* Conditionally render add to cart button */}
+              <button
+                onClick={handleAddToCart}
+                disabled={!isCarAvailable || addingToCart}
+                className={`mt-4 w-48 ${
+                  isCarAvailable
+                    ? 'bg-slate-600 hover:bg-black'
+                    : 'bg-gray-400 cursor-not-allowed '
+                } text-white py-2 mx-4 rounded-md transition duration-300`}
+              >
+                {addingToCart 
+                  ? 'Đang thêm...' 
+                  : !isCarAvailable
+                  ? (isCarReserved ? "Không thể thêm giỏ hàng" : 'Hết hàng')
+                  : 'Thêm vào giỏ hàng'
+                }
+              </button>
                 </div>
+              </div>
+
               </div>
             </div>
           </div>

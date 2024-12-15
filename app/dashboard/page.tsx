@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/app/components/ui/card";
 import {
   LineChart,
@@ -16,51 +15,20 @@ import {
   Area,
 } from "recharts";
 import {
-  User,
-  ShoppingCart,
-  Package,
-  ChevronDown,
-  ChevronUp,
-  Heart,
-  Users,
-  ShoppingBag,
-  CreditCard,
-  RotateCcw,
-  Tags,
-  Truck,
-  Award,
-  ArrowUpRight,
   DollarSign,
+  ShoppingCart,
+  Users,
   TrendingUp,
+  ArrowUpRight,
 } from "lucide-react";
 
-// Interfaces
-interface SidebarSectionProps {
-  title: string;
-  icon: React.ReactNode;
-  children?: React.ReactNode;
-  isOpen: boolean;
-  onToggle: () => void;
-}
-
-interface SidebarItemProps {
-  icon: React.ReactNode;
-  label: string;
-  onClick: () => void;
-}
-
+// Interfaces remain the same as in the original file
 interface StatsCardProps {
   title: string;
   value: string;
   icon: React.ReactNode;
   trend?: "up" | "down";
   trendValue?: string;
-}
-
-interface OpenSections {
-  products: boolean;
-  customers: boolean;
-  orders: boolean;
 }
 
 interface SalesDataPoint {
@@ -77,47 +45,7 @@ interface Transaction {
   status: "Completed" | "Pending" | "Processing";
 }
 
-// Sidebar Section Component
-const SidebarSection: React.FC<SidebarSectionProps> = ({
-  title,
-  icon,
-  children,
-  isOpen,
-  onToggle,
-}) => (
-  <div className="text-white">
-    <button
-      onClick={onToggle}
-      className="w-full flex items-center px-4 py-2 hover:bg-gray-800 transition-colors rounded-md"
-    >
-      {icon}
-      <span className="ml-2 flex-1 text-sm font-medium">{title}</span>
-      {children && (
-        <span className="ml-2">
-          {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-        </span>
-      )}
-    </button>
-    {children && isOpen && (
-      <div className="ml-8 space-y-1 mt-1 transition-all duration-200">
-        {children}
-      </div>
-    )}
-  </div>
-);
-
-// Sidebar Item Component
-const SidebarItem: React.FC<SidebarItemProps> = ({ icon, label, onClick }) => (
-  <button
-    onClick={onClick}
-    className="w-full flex items-center px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors rounded-md text-sm"
-  >
-    {icon}
-    <span className="ml-2">{label}</span>
-  </button>
-);
-
-// Stats Card Component
+// Stats Card Component remains the same
 const StatsCard: React.FC<StatsCardProps> = ({
   title,
   value,
@@ -159,14 +87,15 @@ const StatsCard: React.FC<StatsCardProps> = ({
 );
 
 const SalesDashboard: React.FC = () => {
-  const router = useRouter();
-  const [openSections, setOpenSections] = useState<OpenSections>({
-    products: false,
-    customers: false,
-    orders: false,
-  });
 
-  // Sample data
+  // State for dashboard metrics
+  const [totalReservations, setTotalReservations] = useState(0);
+  const [pendingReservations, setPendingReservations] = useState(0);
+  const [totalOrders, setTotalOrders] = useState(0);
+  const [pendingOrders, setPendingOrders] = useState(0);
+  const [totalUsers, setTotalUsers] = useState(0);
+
+  // Sample data (can be replaced with real data later)
   const salesData: SalesDataPoint[] = [
     { name: "Jan", sales: 4000, revenue: 2400, profit: 2400 },
     { name: "Feb", sales: 3000, revenue: 1398, profit: 2210 },
@@ -184,130 +113,70 @@ const SalesDashboard: React.FC = () => {
     { id: 4, customer: "Sarah Williams", amount: "$749.99", status: "Processing" },
   ];
 
-  const toggleSection = (section: keyof OpenSections) => {
-    setOpenSections((prev) => ({
-      ...prev,
-      [section]: !prev[section],
-    }));
-  };
+  // Fetch data from APIs
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        // Fetch total reservations
+        const totalReservationsResponse = await fetch('/api/tongdondatcoccxn');
+        const totalReservationsData = await totalReservationsResponse.json();
+        setTotalReservations(totalReservationsData);
 
-  // const renderSidebarSections = () => (
-  //   <nav className="w-64 bg-gray-900 p-4 space-y-2">
-  //     <SidebarSection
-  //       title="Quản Lý Sản Phẩm"
-  //       icon={<Package size={18} />}
-  //       isOpen={openSections.products}
-  //       onToggle={() => toggleSection("products")}
-  //     >
-  //       <SidebarItem
-  //         icon={<Tags size={16} />}
-  //         label="Category"
-  //         onClick={() => router.push("/category")}
-  //       />
-  //       <SidebarItem
-  //         icon={<Tags size={16} />}
-  //         label="Product Type"
-  //         onClick={() => router.push("/Admin/DashBoard/LoaiSanPham")}
-  //       />
-  //       <SidebarItem
-  //         icon={<ShoppingBag size={16} />}
-  //         label="Product"
-  //         onClick={() => router.push("/Admin/DashBoard/ProductManager")}
-  //       />
-  //       <SidebarItem
-  //         icon={<Truck size={16} />}
-  //         label="Supplier"
-  //         onClick={() => router.push("/Admin/DashBoard/Nhacungcap")}
-  //       />
-  //       <SidebarItem
-  //         icon={<Award size={16} />}
-  //         label="Brand"
-  //         onClick={() => router.push("/brand")}
-  //       />
-  //       <SidebarItem
-  //         icon={<Tags size={16} />}
-  //         label="Season"
-  //         onClick={() => router.push("/season")}
-  //       />
-  //     </SidebarSection>
+        // Fetch pending reservations
+        const pendingReservationsResponse = await fetch('/api/tongdondatcoc');
+        const pendingReservationsData = await pendingReservationsResponse.json();
+        setPendingReservations(pendingReservationsData);
 
-  //     <SidebarSection
-  //       title="Quản Lý Khách Hàng"
-  //       icon={<Users size={18} />}
-  //       isOpen={openSections.customers}
-  //       onToggle={() => toggleSection("customers")}
-  //     >
-  //       <SidebarItem
-  //         icon={<User size={16} />}
-  //         label="Customer"
-  //         onClick={() => router.push("/customer")}
-  //       />
-  //       <SidebarItem
-  //         icon={<ShoppingCart size={16} />}
-  //         label="Cart"
-  //         onClick={() => router.push("/cart")}
-  //       />
-  //       <SidebarItem
-  //         icon={<Heart size={16} />}
-  //         label="Wishlist"
-  //         onClick={() => router.push("/wishlist")}
-  //       />
-  //     </SidebarSection>
+        // Fetch total orders
+        const totalOrdersResponse = await fetch('/api/tongdonhang');
+        const totalOrdersData = await totalOrdersResponse.json();
+        setTotalOrders(totalOrdersData);
 
-  //     <SidebarSection
-  //       title="Quản Lý Đơn Hàng"
-  //       icon={<ShoppingBag size={18} />}
-  //       isOpen={openSections.orders}
-  //       onToggle={() => toggleSection("orders")}
-  //     >
-  //       <SidebarItem
-  //         icon={<ShoppingBag size={16} />}
-  //         label="Order"
-  //         onClick={() => router.push("/order")}
-  //       />
-  //       <SidebarItem
-  //         icon={<CreditCard size={16} />}
-  //         label="Payment"
-  //         onClick={() => router.push("/payment")}
-  //       />
-  //       <SidebarItem
-  //         icon={<RotateCcw size={16} />}
-  //         label="Return"
-  //         onClick={() => router.push("/return")}
-  //       />
-  //     </SidebarSection>
-  //   </nav>
-  // );
+        // Fetch pending orders
+        const pendingOrdersResponse = await fetch('/api/tongdonhangcxn');
+        const pendingOrdersData = await pendingOrdersResponse.json();
+        setPendingOrders(pendingOrdersData);
+
+        // Fetch total users
+        const totalUsersResponse = await fetch('/api/tongkhachhang');
+        const totalUsersData = await totalUsersResponse.json();
+        setTotalUsers(totalUsersData);
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
 
   const renderStatsCards = () => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <StatsCard
-        title="Total Revenue"
-        value="$54,239"
+        title="Tổng Đơn Đặt Cọc"
+        value={totalReservations.toString()}
         icon={<DollarSign size={24} className="text-green-500" />}
         trend="up"
-        trendValue="12.5%"
       />
       <StatsCard
-        title="Total Orders"
-        value="1,759"
+        title="Tổng Đơn Đặt Cọc Pending"
+        value={pendingReservations.toString()}
+        icon={<DollarSign size={24} className="text-yellow-500" />}
+      />
+      <StatsCard
+        title="Tổng Đơn Hàng"
+        value={totalOrders.toString()}
         icon={<ShoppingCart size={24} className="text-blue-500" />}
         trend="up"
-        trendValue="8.2%"
       />
       <StatsCard
-        title="Total Customers"
-        value="2,854"
-        icon={<Users size={24} className="text-purple-500" />}
-        trend="up"
-        trendValue="4.9%"
+        title="Tổng Đơn Hàng Pending"
+        value={pendingOrders.toString()}
+        icon={<ShoppingCart size={24} className="text-orange-500" />}
       />
       <StatsCard
-        title="Total Profit"
-        value="$12,389"
-        icon={<TrendingUp size={24} className="text-orange-500" />}
-        trend="up"
-        trendValue="15.3%"
+        title="Tổng Users"
+        value={totalUsers.toString()}
+        icon={<ShoppingCart size={24} className="text-orange-500" />}
       />
     </div>
   );
@@ -416,9 +285,8 @@ const SalesDashboard: React.FC = () => {
   );
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      {/* {renderSidebarSections()} */}
-      <div className="flex-1 overflow-auto">
+    <div className="flex h-full ml-20 bg-gray-100">
+      <div className="w-full">
         <div className="p-8">
           <div className="mb-8">
             <h1 className="text-2xl font-bold text-gray-800 mb-2">

@@ -197,7 +197,7 @@ export const ShoppingCart = () => {
       await toastPromise;
       // Đợi thêm 1 giây sau khi toast success hiển thị trước khi chuyển trang
       await new Promise(resolve => setTimeout(resolve, 1500));
-      router.push("/"); // Redirect to orders page or home
+      router.push("/Orders"); // Redirect to orders page or home
     } catch (error) {
       console.error("Error during checkout:", error);
       toast.error("Có lỗi xảy ra trong quá trình thanh toán");
@@ -237,7 +237,7 @@ export const ShoppingCart = () => {
               background: '#363636',
             color: '#fff',
             },
-            duration: 2000,
+            duration: 4000,
             success: {
               style: {
                 background: 'green',

@@ -171,9 +171,9 @@ export default function Page() {
   );
 
   return (
-    <div className="p-2 w-[1100px] h-full ml-7" data-theme="light">
+    <div className="p-2 w-[1300px] h-[630px] ml-7" data-theme="light">
       <div className="flex gap-4 w-full">
-        <h1 className="text-2xl font-bold mb-6 mt-1 w-56 text-black whitespace-nowrap">
+        <h1 className="text-2xl font-bold mb-6 ml-36 mt-1 w-56 text-black whitespace-nowrap">
           Quản Lý Loại Xe
         </h1>
         <div className="flex justify-end gap-4 w-full">

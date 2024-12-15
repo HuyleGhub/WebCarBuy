@@ -4,6 +4,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
 import Footer from "@/app/components/Footer";
 import { UserAuth } from "@/app/types/auth";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 interface Car {
   idXe: number;
@@ -24,7 +26,7 @@ interface DepositFormData {
 }
 
 interface PickupScheduleData {
-  NgayLayXe: string;
+  NgayLayXe: Date | null;
   GioHenLayXe: string;
   DiaDiem: string;
 }
@@ -39,7 +41,7 @@ const CarDepositPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pickupSchedule, setPickupSchedule] = useState<PickupScheduleData>({
-    NgayLayXe: "",
+    NgayLayXe: null,
     GioHenLayXe: "",
     DiaDiem: "",
   });
@@ -136,6 +138,7 @@ const CarDepositPage = () => {
       [name]: value,
     }));
   };
+
   const handlePickupScheduleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -148,9 +151,7 @@ const CarDepositPage = () => {
 
   const handleDepositSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
-    // Validation checks remain the same
-  
+
     try {
       // Submit deposit request
       const depositResponse = await fetch("/api/datcoc", {
@@ -171,13 +172,13 @@ const CarDepositPage = () => {
           },
         }),
       });
-  
+
       if (!depositResponse.ok) {
         throw new Error("Không thể tạo đơn đặt cọc");
       }
-  
+
       const depositData = await depositResponse.json();
-  
+
       // Create pickup schedule
       const pickupResponse = await fetch("/api/lichhen", {
         method: "POST",
@@ -188,16 +189,16 @@ const CarDepositPage = () => {
           idDatCoc: depositData.idDatCoc,
           idXe: car?.idXe,
           idKhachHang: user?.idUsers,
-          NgayLayXe: pickupSchedule.NgayLayXe,
+          NgayLayXe: pickupSchedule.NgayLayXe?.toISOString(),
           GioHenLayXe: pickupSchedule.GioHenLayXe,
           DiaDiem: pickupSchedule.DiaDiem,
         }),
       });
-  
+
       if (!pickupResponse.ok) {
         throw new Error("Không thể tạo lịch hẹn lấy xe");
       }
-  
+
       // Show success toast and redirect
       toast.success("Đặt cọc và lịch hẹn thành công!");
       router.push("/Depositform");
@@ -340,26 +341,32 @@ const CarDepositPage = () => {
 
                   <div className="flex flex-col">
                     <label className="leading-loose">Ngày lấy xe</label>
-                    <input
-                      type="date"
-                      name="NgayLayXe"
-                      value={pickupSchedule.NgayLayXe}
-                      onChange={handlePickupScheduleChange}
+                    <DatePicker
+                      selected={pickupSchedule.NgayLayXe}
+                      onChange={(date: Date | null) =>
+                        setPickupSchedule((prev) => ({
+                          ...prev,
+                          NgayLayXe: date,
+                        }))
+                      }
+                      minDate={new Date()}
                       className="px-4 py-2 border bg-white focus:ring-indigo-500 focus:border-indigo-500 w-full sm:text-sm border-gray-300 rounded-md"
+                      placeholderText="Chọn ngày lấy xe"
+                      dateFormat="dd/MM/yyyy"
                       required
                     />
                   </div>
                   <div className="flex flex-col">
-                    <label className="leading-loose">Giờ hẹn lấy xe</label>
-                    <input
-                      type="time"
-                      name="GioHenLayXe"
-                      value={pickupSchedule.GioHenLayXe}
-                      onChange={handlePickupScheduleChange}
-                      className="px-4 py-2 border bg-white focus:ring-indigo-500 focus:border-indigo-500 w-full sm:text-sm border-gray-300 rounded-md"
-                      required
-                    />
-                  </div>
+            <label className="leading-loose">Giờ hẹn lấy xe</label>
+            <input
+              type="time"
+              name="GioHenLayXe"
+              value={pickupSchedule.GioHenLayXe}
+              onChange={handlePickupScheduleChange}
+              className="px-4 py-2 border bg-white focus:ring-indigo-500 focus:border-indigo-500 w-full sm:text-sm border-gray-300 rounded-md"
+              required
+            />
+          </div>
                   <div className="flex flex-col">
                     <label className="leading-loose">Địa điểm lấy xe</label>
                     <select
