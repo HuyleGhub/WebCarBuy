@@ -1,9 +1,9 @@
 'use client';
-
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import LoginFormSchema from '@/app/api/zodschema/zodLogin/route';
+import toast, {Toaster} from 'react-hot-toast';
 
 export default function LoginPage() {
   const [error, setError] = useState('');
@@ -43,6 +43,19 @@ export default function LoginPage() {
 
       // Log the response to debug
       console.log('Login response:', data);
+      const toastPromise = toast.promise(
+        new Promise(resolve => setTimeout(resolve, 3500)),
+        {
+          loading: 'Đang Đăng Nhập...',
+          success: 'Đã đăng nhập thành công!',
+          error: 'Có lỗi xảy ra',
+        },
+        {
+          duration: 4000,
+        }
+      )
+  
+      await toastPromise
       
       // Check user role and redirect accordingly
       if (data.user?.role === 'Admin') {
@@ -66,38 +79,75 @@ export default function LoginPage() {
   // Rest of the component remains the same...
   return (
     <div className="min-h-screen hero bg-base-200" data-theme="light">
-      <div className="hero-content flex w-full bg-gradient-to-r from-pink-500 rounded-2xl to-blue-500 mt-10">
-        <div className="text-center lg:text-left lg:ml-8">
-          <h1 className="text-5xl font-bold">Login now!</h1>
-          <p className="py-6">Join us to explore our amazing products and services.</p>
+      <Toaster 
+              position="top-right"
+              toastOptions={{
+                style: {
+                  background: '#363636',
+                  color: '#fff',
+                },
+                duration: 3000,
+                success: {
+                  style: {
+                    background: 'green',
+                  },
+                },
+                error: {
+                  style: {
+                    background: 'red',
+                  },
+                },
+              }}
+              />
+       <div className="hero-content flex-col lg:flex-row w-full bg-gradient-to-r from-pink-500 to-blue-500 rounded-2xl mt-10 p-4 lg:p-8 gap-8">
+        {/* Hero Text Section */}
+        <div className="text-center lg:text-left max-w-md">
+          <h1 className="text-3xl lg:text-5xl font-bold text-white">Login now!</h1>
+          <p className="py-4 lg:py-6 text-white text-sm lg:text-base">
+            Join us to explore our amazing products and services.
+          </p>
         </div>
-        <div className="card flex shadow-2xl bg-base-100 h-auto">
-          <form onSubmit={handleSubmit} className="card-body">
+
+        {/* Card Section */}
+        <div className="card shadow-2xl bg-base-100 w-full max-w-sm lg:max-w-md">
+          <form onSubmit={handleSubmit} className="card-body p-4 lg:p-8">
+            {/* Error Alert */}
             {error && (
-              <div className="alert alert-error">
-                <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <div className="alert alert-error text-sm">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="stroke-current shrink-0 h-5 w-5 lg:h-6 lg:w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
                 <span>{error}</span>
               </div>
             )}
 
-            <div className="flex-col gap-4 w-96">
-              <div className="form-control flex-1">
+            {/* Form Fields */}
+            <div className="flex flex-col gap-4 w-full">
+              <div className="form-control">
                 <label className="label">
-                  <span className="label-text">Email or UseName</span>
+                  <span className="label-text">Email or Username</span>
                 </label>
                 <input
                   type="text"
                   id="usernameOrEmail"
                   name="usernameOrEmail"
-                  placeholder="Email or UseName"
-                  className="input input-bordered"
+                  placeholder="Email or Username"
+                  className="input input-bordered w-full text-sm lg:text-base"
                   required
                 />
               </div>
 
-              <div className="form-control flex-1">
+              <div className="form-control">
                 <label className="label">
                   <span className="label-text">Password</span>
                 </label>
@@ -106,21 +156,38 @@ export default function LoginPage() {
                   id="password"
                   name="password"
                   placeholder="Password"
-                  className="input input-bordered"
+                  className="input input-bordered w-full text-sm lg:text-base"
                   required
                 />
               </div>
             </div>
 
-            <div className="form-control mt-6">
-              <button type="submit" className="btn btn-primary">Login</button>
+            {/* Submit Button */}
+            <div className="form-control mt-4 lg:mt-6">
+              <button type="submit" className="btn btn-primary w-full">
+                Login
+              </button>
             </div>
 
-            <label className="label">
-              <Link href="/Register" className="label-text-alt link link-hover">
-                Do you not have Account? Register Here
+            {/* Register Link */}
+            <label className="label justify-center lg:justify-start">
+              <Link
+                href="/Register"
+                className="label-text-alt link link-hover text-sm"
+              >
+                Don't have an account? Register Here
               </Link>
             </label>
+
+             {/* Forgot Password Link */}
+             <label className="label justify-center lg:justify-end">
+                <Link
+                  href="/Forgotpassword"
+                  className="label-text-alt link link-hover text-sm"
+                >
+                  Forgot Password?
+                </Link>
+              </label>
           </form>
         </div>
       </div>

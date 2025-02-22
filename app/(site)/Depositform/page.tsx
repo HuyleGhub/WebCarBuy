@@ -147,7 +147,7 @@ const DepositOrderPage = () => {
     return (
       <div data-theme="light">
         <Toaster position="top-center" />
-        <div className="container mx-auto px-36 py-28 ml-9">
+        <div className="container mx-auto px-16 py-28 ">
           <h1 className="text-2xl font-bold mb-6">Đơn Đặt Cọc</h1>
 
           {datCocs.length === 0 ? (
@@ -260,7 +260,7 @@ const DepositOrderPage = () => {
                     <div>
                       <span className="text-gray-600">Ngày đặt cọc: </span>
                       <span className="font-bold text-lg">
-                        {new Date(datCoc.NgayDat).toLocaleDateString()}
+                        {new Date(datCoc.NgayDat).toLocaleDateString("vi-VN")}
                       </span>
                     </div>
                     <div>

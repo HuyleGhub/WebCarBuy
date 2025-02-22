@@ -13,7 +13,7 @@ import CozeChat from "./components/CozeAi";
 export default function Home() {
   return (
     <div >
-         <BackgroundSlider></BackgroundSlider>
+      <BackgroundSlider></BackgroundSlider>
       <Product></Product>
       <Videobg></Videobg>
       <Information></Information>

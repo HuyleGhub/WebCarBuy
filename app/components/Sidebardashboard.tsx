@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React from "react";
 import { GrUserManager } from "react-icons/gr";
 import { FaCar } from "react-icons/fa";
 import { GiCarDoor } from "react-icons/gi";
@@ -13,7 +13,11 @@ interface SidebarLink {
   label: string;
 }
 
-const SidebarDashboard: React.FC = () => {
+interface SidebarDashboardProps {
+  isOpen: boolean;
+}
+
+const SidebarDashboard: React.FC<SidebarDashboardProps> = ({ isOpen }) => {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -62,31 +66,39 @@ const SidebarDashboard: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col w-30 h-full bg-slate-950 fixed">
-      <div className="collapse collapse-arrow w-64 m-6 bg-slate-950">
+    <div className={`fixed top-0 left-0 h-full bg-white shadow-lg transition-all duration-700 ease-in-out z-[9999] ${
+      isOpen ? 'w-72' : 'w-24'
+    }`}>
+      <div className="collapse  mt-3 shadow-md">
         <input type="checkbox" name="my-accordion-2" />
-        <div className="collapse-title text-white text-base text-center mb-2  font-medium">
-          <div className="absolute left-9 top-4 text-xl"><GrUserManager /></div>
-          Quản Lý
+        <div className="collapse-title text-black text-base text-center mb-2 font-medium">
+          <div className="absolute left-7 top-4 bg-gradient-to-tr from-[#ff0080] to-[#7928ca] rounded-sm text-white text-3xl">
+            <GrUserManager />
+          </div>
+          {isOpen && <span className="text-slate-950 ml-12">Quản Lý</span>}
         </div>
         <div className="collapse-content">
-        <ul className="">
-        {sidebarLinks.map((link) => (
-          <li key={link.href} className="my-5 pl-4">
-            <button
-              onClick={() => handleNavigation(link.href)}
-              className={`block pl-7 pr-7 py-2 rounded-lg transition-colors ${
-                isActivePath(link.href)
-                  ? "bg-blue-600 text-white"
-                  : "text-gray-300 hover:bg-slate-800 hover:text-white"
-              }`}
-            >
-            <div className="absolute left-9">{link.icon}</div> 
-            <div className="text-sm">{link.label}</div>
-            </button>
-          </li>
-        ))}
-      </ul>
+          <ul className="space-y-4">
+            {sidebarLinks.map((link) => (
+              <li key={link.href}>
+                <button
+                  onClick={() => handleNavigation(link.href)}
+                  className={`w-full flex items-center p-3 rounded-lg transition-all duration-300 ${
+                    isActivePath(link.href)
+                      ? "bg-blue-600 text-white"
+                      : "text-slate-950 hover:bg-slate-800 hover:text-white"
+                  }`}
+                >
+                  <div className="text-xl">{link.icon}</div>
+                  {isOpen && (
+                    <span className="ml-4 text-sm">
+                      {link.label}
+                    </span>
+                  )}
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>

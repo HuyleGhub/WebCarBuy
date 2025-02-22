@@ -123,12 +123,12 @@ export default function Navbar() {
 
   return (
     <div data-theme="light">
-      <div className="navbar bg-base-100 shadow-2xl fixed z-50">
+      <div className="navbar bg-base-100 shadow-sm fixed z-50">
         {/* Left section with logo and navigation */}
-        <div className="flex-1 px-4 py-2">
+        <div className="flex-1  px-4 py-2">
           <Link href="/">
             <Image
-              className="ml-2 h-8 hover:scale-105 md:ml-6 md:text-2xl sm:text-2xl"
+              className="ml-2 h-8  hover:scale-105 md:ml-6 md:text-2xl sm:text-2xl"
               alt="VinFast - Thương hiệu xe điện đầu tiên Việt Nam"
               width={100}
               height={100}
@@ -196,7 +196,7 @@ export default function Navbar() {
         </div>
 
         {/* Search section */}
-        <div className="justify-center md:block hidden items-center mr-4 relative">
+        <div className="justify-center w-10 md:w-60 items-center mr-4 relative">
           <div className="mb-2">
             <SearchModal />
           </div>
@@ -205,7 +205,7 @@ export default function Navbar() {
         {/* Right section with cart and user profile */}
         <div className="flex-none">
           {!user ? (
-            <div className="flex gap-5 h-14">
+            <div className="flex gap-2 h-14">
               <Link
                 href="/Login"
                 className="btn transition-all border-2 border-b-blue-950 duration-500 bg-white hover:text-red-500 px-1 w-14 h-6 sm:w-20 sm:h-10"
@@ -222,38 +222,38 @@ export default function Navbar() {
           ) : (
             <div className="flex relative">
               {/* Cart dropdown */}
-              <div className="dropdown dropdown-end">
+              <div className="dropdown dropdown-end ">
                 <div
                   tabIndex={0}
                   role="button"
                   className="btn btn-ghost btn-circle"
                 >
                   <Link href={"/Cart"}>
-                  <div className="indicator">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-                      />
-                    </svg>
-                    <span className="badge badge-sm indicator-item">
-                      {cartItemCount}
-                    </span>
-                  </div>
+                    <div className="indicator">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                        />
+                      </svg>
+                      <span className="badge badge-sm indicator-item">
+                        {cartItemCount}
+                      </span>
+                    </div>
                   </Link>
                 </div>
               </div>
 
               {/* User profile dropdown */}
-              <div className="dropdown dropdown-end">
+              <div className="dropdown dropdown-end hidden xl:block">
                 <div
                   tabIndex={0}
                   role="button"
@@ -276,7 +276,7 @@ export default function Navbar() {
                     <a href="/Profiles" className="justify-between">
                       Profile
                       <span className="badge">New</span>
-                    </a>    
+                    </a>
                   </li>
                   <li>
                     <a href="/Depositform">Depositform</a>
@@ -298,68 +298,235 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Mobile menu button */}
-        <label className="btn btn-circle mb-2 swap swap-rotate xl:hidden">
-          <input type="checkbox" onClick={() => setIsMenuOpen(!isMenuOpen)} />
-          <svg
-            className="swap-off fill-current"
-            xmlns="http://www.w3.org/2000/svg"
-            width="32"
-            height="32"
-            viewBox="0 0 512 512"
-          >
-            <path d="M64,384H448V341.33H64Zm0-106.67H448V234.67H64ZM64,128v42.67H448V128Z" />
-          </svg>
-          <svg
-            className="swap-on fill-current"
-            xmlns="http://www.w3.org/2000/svg"
-            width="32"
-            height="32"
-            viewBox="0 0 512 512"
-          >
-            <polygon points="400 145.49 366.51 112 256 222.51 145.49 112 112 145.49 222.51 256 112 366.51 145.49 400 256 289.49 366.51 400 400 366.51 289.49 256 400 145.49" />
-          </svg>
-        </label>
-
         {/* Mobile menu */}
-        <div
-          className={`absolute xl:hidden top-20 left-0 w-full bg-white flex flex-col items-center gap-10 text-lg rounded-xl transform transition-all duration-75 ${
-            isMenuOpen ? "animate-fadetop" : "hidden"
-          }`}
-        >
-          <Link href="/">
-            <button className="font-semibold font-serif transition-all duration-500 hover:text-red-500 bg-slate-50">
-              Trang Chủ
-            </button>
-          </Link>
-          <div className="dropdown">
-            <div
-              tabIndex={0}
-              role="button"
-              className="font-semibold font-serif hover:text-red-500 bg-white"
-            >
-              Sản Phẩm
+
+        <div className="xl:hidden">
+          <button
+            className="btn btn-ghost rounded-lg p-2 "
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            <div className="w-6 h-6 relative">
+              <span
+                className={`block absolute h-0.5 w-6 bg-blue-600 transform transition-all duration-300 ease-in-out ${
+                  isMenuOpen ? "rotate-45 top-3" : "top-1"
+                }`}
+              ></span>
+              <span
+                className={`block absolute h-0.5 w-6 bg-blue-600 top-3 transition-all duration-300 ease-in-out ${
+                  isMenuOpen ? "opacity-0" : "opacity-100"
+                }`}
+              ></span>
+              <span
+                className={`block absolute h-0.5 w-6 bg-blue-600 transform transition-all duration-300 ease-in-out ${
+                  isMenuOpen ? "-rotate-45 top-3" : "top-5"
+                }`}
+              ></span>
             </div>
-            <ul
-              tabIndex={0}
-              className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
-            >
-              {loaiXe.map((loai) => (
-                <li key={loai.idLoaiXe}>
-                  <Link href={`LoaiXe?id=${loai.idLoaiXe}`}>
-                    {loai.TenLoai}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <button className="font-semibold font-serif transition-all duration-500 hover:text-red-500 bg-white">
-            Giới Thiệu
-          </button>
-          <button className="font-semibold font-serif transition-all duration-500 hover:text-red-500 bg-white">
-            Liên Hệ
           </button>
         </div>
+
+        {/* Enhanced Mobile Menu */}
+        <div
+          className={`fixed xl:hidden top-[4rem] left-0 w-full overflow-y-auto bg-white transform transition-all duration-300 ease-in-out ${
+            isMenuOpen
+              ? "translate-x-0 opacity-100 shadow-lg"
+              : "translate-x-full opacity-0"
+          }`}
+          style={{ height: "calc(100vh - 4rem)" }}
+        >
+          <div className="flex flex-col h-full">
+            {/* Navigation Links */}
+
+            <div className="border-t border-gray-200 ml-3 p-4">
+              {user ? (
+                <div className="flex items-center space-x-3 p-3 w-80 bg-blue-50 rounded-lg">
+                  <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
+                    {user?.Hoten?.[0]?.toUpperCase() ||
+                      user?.Tentaikhoan?.[0]?.toUpperCase() ||
+                      "U"}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-800">
+                      {user?.Hoten || user?.Tentaikhoan}
+                    </p>
+                    <p className="text-sm text-gray-500">{user?.Email}</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  <Link
+                    href="/Login"
+                    className="btn btn-outline btn-primary w-full"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Đăng nhập
+                  </Link>
+                  <Link
+                    href="/Register"
+                    className="btn btn-primary w-full"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Đăng ký
+                  </Link>
+                </div>
+              )}
+            </div>
+            <div className="flex flex-col p-4 space-y-4"> 
+              <Link
+                href="/"
+                className="flex items-center space-x-3 p-4  rounded-lg hover:bg-blue-50 transition-colors duration-200"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-blue-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                  />
+                </svg>
+                <span className="font-semibold text-gray-700">Trang Chủ</span>
+              </Link>
+
+              {/* Products Dropdown */}
+              <div className="collapse collapse-arrow">
+                <input type="checkbox" />
+                <div className="collapse-title flex text-base font-medium">
+                <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6 text-blue-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                      />
+                    </svg>
+                    <span className="font-semibold ml-3 text-gray-700">
+                      Sản Phẩm
+                    </span>
+                </div>
+                <div className="collapse-content">
+                <div className="mt-2 p-2 bg-gray-50 rounded-lg">
+                  {loaiXe.map((loai) => (
+                    <Link
+                      key={loai.idLoaiXe}
+                      href={`LoaiXe?id=${loai.idLoaiXe}`}
+                      className="flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-100 transition-colors duration-200"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <Image
+                        src={loai.HinhAnh}
+                        alt={loai.TenLoai}
+                        width={40}
+                        height={40}
+                        className="rounded-md"
+                      />
+                      <span className="font-medium text-gray-700">
+                        {loai.TenLoai}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+                </div>
+              </div>
+
+              <Link
+                href="/about"
+                className="flex items-center space-x-3 p-4 rounded-lg hover:bg-blue-50 transition-colors duration-200"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-blue-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span className="font-semibold text-gray-700">Giới Thiệu</span>
+              </Link>
+
+              <Link
+                href="/contact"
+                className="flex items-center space-x-3 p-4 rounded-lg hover:bg-blue-50 transition-colors duration-200"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-blue-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  />
+                </svg>
+                <span className="font-semibold text-gray-700">Liên Hệ</span>
+              </Link>
+            </div>
+
+            {/* Bottom Section with User Info if logged in */}
+            {user && (
+              <div className="">
+                <ul className="menu menu-lg gap-2 mt-4 h-96 pt-4 font-semibold text-gray-700 text-base border-t">
+                  <li>
+                    <Link href="/Profiles" className="text-base" onClick={() => setIsMenuOpen(false)}>
+                      Profile
+                      <span className="badge badge-primary badge-sm">New</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/Depositform" className="text-base" onClick={() => setIsMenuOpen(false)}>
+                      Depositform
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/Orders" className="text-base" onClick={() => setIsMenuOpen(false)}>
+                      Orders
+                    </Link>
+                  </li>
+                  {user.role?.TenNguoiDung === "Admin" && (
+                    <li>
+                      <Link href="/dashboard" className="text-base" onClick={() => setIsMenuOpen(false)}>
+                        Dashboard
+                      </Link>
+                    </li>
+                  )}
+                  <li>
+                    <a className="text-base" onClick={() => {
+                      handleLogout();
+                      setIsMenuOpen(false);
+                    }}>
+                      Logout
+                    </a>
+                  </li>
+                </ul>
+                </div>
+              )}
+          </div>
+        </div>
+        {/* Rest of the navbar components... */}
       </div>
     </div>
   );

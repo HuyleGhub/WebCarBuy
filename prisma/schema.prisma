@@ -30,6 +30,8 @@ model Users {
   Email       String?   @db.VarChar(45) @unique
   idRole      Int?      
   Ngaydangky  DateTime? @db.Date
+  resetToken        String? @db.VarChar(500)
+  resetTokenExpiry  DateTime?
   role        Role?     @relation(fields: [idRole], references: [idRole])
   DonHang     DonHang[]
   GioHang     GioHang[]
@@ -41,7 +43,6 @@ model Users {
   Luong       Luong[]
   LichHenLayXe LichHenLayXe[]
   LichGiaoXe  LichGiaoXe[]
-
 }
 
 model LoaiXe {

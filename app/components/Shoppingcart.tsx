@@ -1,8 +1,16 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import toast, {Toaster} from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+import { PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import CheckoutForm from "./Stripecomponents";
 
+const stripePromise = loadStripe("pk_test_51QaB9PFpmk2HpO4QaGNvRIHUjOtwVbp0rxQe2ZqDHSxgz5knLTtLyGjETsMDUQ0LfZYHumfu7EihpWa8czvbE2Su00DTC0twXp");
+
+
+// Main Shopping Cart Component
 interface CartItem {
   idGioHang: number;
   idXe: number;
@@ -21,6 +29,8 @@ export const ShoppingCart = () => {
   const [loading, setLoading] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState<string>("");
   const [processing, setProcessing] = useState(false);
+  const [showStripeForm, setShowStripeForm] = useState(false);
+  const [clientSecret, setClientSecret] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -59,6 +69,7 @@ export const ShoppingCart = () => {
       toast.error("Có lỗi xảy ra khi xóa sản phẩm");
     }
   };
+
   const deleteItem = async (idGioHang: number) => {
     new Promise<void>((resolve) => {
       toast((t) => (
@@ -87,7 +98,7 @@ export const ShoppingCart = () => {
           </div>
         </div>
       ), {
-        duration: 5000, // Toast hiển thị trong 5 giây
+        duration: 5000,
         position: 'top-center',
         style: {
           minWidth: '300px',
@@ -96,47 +107,11 @@ export const ShoppingCart = () => {
         },
       });
     });
-}
-  
+  };
+
   const updateItemQuantity = async (idGioHang: number, newQuantity: number) => {
     if (newQuantity <= 0) {
-      // Tạo promise để xử lý xác nhận
-      return new Promise<void>((resolve) => {
-        toast((t) => (
-          <div className="flex flex-col gap-2">
-            <p className="font-medium">Bạn có chắc muốn xóa sản phẩm này không?</p>
-            <div className="flex gap-2">
-              <button
-                className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-                onClick={() => {
-                  toast.dismiss(t.id);
-                  removeItem(idGioHang);
-                  resolve();
-                }}
-              >
-                Xóa
-              </button>
-              <button
-                className="px-3 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
-                onClick={() => {
-                  toast.dismiss(t.id);
-                  resolve();
-                }}
-              >
-                Hủy
-              </button>
-            </div>
-          </div>
-        ), {
-          duration: 5000, // Toast hiển thị trong 5 giây
-          position: 'top-center',
-          style: {
-            minWidth: '300px',
-            background: '#fff',
-            color: '#000',
-          },
-        });
-      });
+      return deleteItem(idGioHang);
     }
     try {
       const response = await fetch(`/api/giohang/${idGioHang}`, {
@@ -158,30 +133,72 @@ export const ShoppingCart = () => {
     }
   };
 
+  const validateAmount = (total: number) => {
+    return total <= 200000000; // 200 million VND
+  };
+
+  const handleStripePayment = async () => {
+    try {
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          cartItems,
+          metadata: {
+            cartItems: JSON.stringify(cartItems)  // Add this
+          }
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message);
+      }
+
+      const { clientSecret } = await response.json();
+      setClientSecret(clientSecret);
+      setShowStripeForm(true);
+    } catch (error) {
+      console.error("Payment error:", error);
+      toast.error("Có lỗi xảy ra trong quá trình thanh toán");
+    }
+  };
+
   const handleCheckout = async () => {
     if (!paymentMethod) {
       toast.error("Vui lòng chọn phương thức thanh toán");
       return;
     }
+  
+    const total = cartItems.reduce(
+      (sum, item) => sum + Number(item.xe.GiaXe) * item.SoLuong,
+      0
+    );
+  
+    if (paymentMethod === 'STRIPE' && !validateAmount(total)) {
+      toast.error("Giá trị đơn hàng vượt quá 200 triệu VND. Vui lòng chọn phương thức thanh toán khác hoặc chia nhỏ đơn hàng.");
+      return;
+    }
+
+    setProcessing(true);
 
     try {
-      setProcessing(true);
-      const response = await fetch("/api/thanhtoan", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          cartItems,
-          paymentMethod,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Checkout failed");
+      if (paymentMethod === "STRIPE") {
+        await handleStripePayment();
+        return;
       }
 
+      // Handle traditional payment methods
+      const response = await fetch("/api/thanhtoan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cartItems, paymentMethod }),
+      });
+
+      if (!response.ok) throw new Error("Checkout failed");
+
       const result = await response.json();
+      
       const toastPromise = toast.promise(
         new Promise(resolve => setTimeout(resolve, 2500)),
         {
@@ -189,15 +206,12 @@ export const ShoppingCart = () => {
           success: 'Đặt hàng thành công!',
           error: 'Có lỗi xảy ra',
         },
-        {
-        duration: 3000, // Toast hiển thị 3 giây
-        }
+        { duration: 4000 }
       );
 
       await toastPromise;
-      // Đợi thêm 1 giây sau khi toast success hiển thị trước khi chuyển trang
       await new Promise(resolve => setTimeout(resolve, 1500));
-      router.push("/Orders"); // Redirect to orders page or home
+      router.push("/Orders");
     } catch (error) {
       console.error("Error during checkout:", error);
       toast.error("Có lỗi xảy ra trong quá trình thanh toán");
@@ -230,12 +244,11 @@ export const ShoppingCart = () => {
           <span>Quay lại</span>
         </button>
         <Toaster
-        position= "top-right"
-        toastOptions={
-          {
+          position="top-right"
+          toastOptions={{
             style: {
               background: '#363636',
-            color: '#fff',
+              color: '#fff',
             },
             duration: 4000,
             success: {
@@ -245,11 +258,10 @@ export const ShoppingCart = () => {
             },
             error: {
               style: {
-                background:'red',
+                background: 'red',
               }
             }
-          }
-        }
+          }}
         />
       </div>
 
@@ -273,8 +285,9 @@ export const ShoppingCart = () => {
               >
                 <img
                   src={
-                    Array.isArray(item.xe.HinhAnh) ? 
-                    item.xe.HinhAnh[0] : item.xe.HinhAnh.split("|")[0]
+                    Array.isArray(item.xe.HinhAnh)
+                      ? item.xe.HinhAnh[0]
+                      : item.xe.HinhAnh.split("|")[0]
                   }
                   alt={item.xe.TenXe}
                   className="w-24 h-24 object-cover rounded"
@@ -309,7 +322,7 @@ export const ShoppingCart = () => {
                   </button>
                 </div>
                 <button
-                  onClick={()=>deleteItem(item.idGioHang)}
+                  onClick={() => deleteItem(item.idGioHang)}
                   className="text-red-500 hover:text-red-700"
                 >
                   Xóa
@@ -355,6 +368,7 @@ export const ShoppingCart = () => {
                     <option value="">Chọn phương thức thanh toán</option>
                     <option value="CASH">Tiền mặt</option>
                     <option value="CARD">Thẻ tín dụng</option>
+                    <option value="STRIPE">Thanh toán online (Stripe)</option>
                   </select>
                 </div>
 
@@ -374,6 +388,32 @@ export const ShoppingCart = () => {
           </div>
         </div>
       )}
+
+      {showStripeForm && clientSecret && (
+        <Elements stripe={stripePromise} options={{
+          clientSecret,
+          appearance: {
+            theme: 'stripe',
+            variables: {
+              colorPrimary: '#4F46E5',
+            },
+          },
+        }}>
+          <CheckoutForm 
+            amount={total}
+            onSuccess={() => {
+              setShowStripeForm(false);
+              router.push("/success");
+            }}
+            onCancel={() => {
+              setShowStripeForm(false);
+              setProcessing(false);
+            }}
+          />
+        </Elements>
+      )}
     </div>
   );
 };
+
+export default ShoppingCart;

@@ -28,7 +28,7 @@ const Navbardashboard: React.FC<NavbarProps> = ({ onToggleSidebar })=> {
   useEffect(() => {
     const fetchSession = async () => {
       try {
-        const response = await fetch("api/auth/session");
+        const response = await fetch("/api/auth/session");
         if (!response.ok) throw new Error("Failed to fetch session");
         const data = await response.json();
         setUser(data);
@@ -52,9 +52,9 @@ const Navbardashboard: React.FC<NavbarProps> = ({ onToggleSidebar })=> {
   };
   return (
     <nav className="fixed top-0 left-0 right-0 bg-base-100 border-b z-50 w-full">
-    <div className="navbar w-full bg-slate-950">
+    <div className="navbar w-full bg-white">
       <div className="flex-none">
-        <button className="btn btn-square text-white btn-ghost" onClick={onToggleSidebar}>
+        <button className="btn btn-square text-black btn-ghost" onClick={onToggleSidebar}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -71,7 +71,7 @@ const Navbardashboard: React.FC<NavbarProps> = ({ onToggleSidebar })=> {
         </button>
       </div>
       <div className="flex-1">
-        <Link href="/dashboard" className="btn btn-ghost text-white text-xl">
+        <Link href="/dashboard" className="btn btn-ghost text-black text-xl">
           Dashboard
         </Link>
       </div>

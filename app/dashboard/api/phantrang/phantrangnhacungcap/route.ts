@@ -9,13 +9,27 @@ export async function GET(request: NextRequest) {
       const limit_size:number = searchParams.get('limit_size') ? Number(searchParams.get('limit_size')) : 10;
   
       const skip = (page - 1) * limit_size;
+
+      const searchText = searchParams.get('searchText') || null;
+
+      const whereClause = searchText ? {
+        OR: [
+            { TenNhaCungCap: { contains: searchText } },
+            { Sdt: { contains: searchText } },
+            { Email: { contains: searchText } },
+          
+        ]
+      } : {};
       // tính tổng số trang
       // 1. đếm xem có bao nhiêu bản ghi hiện tại trong cở sở dữ liệu
-      const totalRecords = await prisma.nhaCungCap.count();
+      const totalRecords = await prisma.nhaCungCap.count({
+        where: whereClause
+      });
        
       const totalPage = Math.ceil(totalRecords/limit_size)
   
       const data = await prisma.nhaCungCap.findMany({
+          where: whereClause,
           skip: skip,
           take: limit_size,
       })

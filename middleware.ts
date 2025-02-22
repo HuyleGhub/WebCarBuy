@@ -13,7 +13,8 @@ export async function middleware(request: NextRequest) {
   }
 
   // Protected routesm
-  if (!session && !request.nextUrl.pathname.startsWith('/Login') && !request.nextUrl.pathname.startsWith('/Register')) {
+  if (!session && !request.nextUrl.pathname.startsWith('/Login') && !request.nextUrl.pathname.startsWith('/Register') && !request.nextUrl.pathname.startsWith('/Forgotpassword') 
+    && !request.nextUrl.pathname.startsWith('/Resetpassword')) {
     return NextResponse.redirect(new URL('/Login', request.url));
   }
 

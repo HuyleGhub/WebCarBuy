@@ -39,10 +39,12 @@ export default function Page() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [searchText, setSearchText] = useState('');
 
   const refreshData = () => {
     setReloadKey((prevKey) => prevKey + 1);
   };
+  
 
   useEffect(() => {
     fetch("api/loaixe")
@@ -129,6 +131,7 @@ export default function Page() {
     // Remove non-numeric characters except decimal point
     return value.replace(/[^0-9]/g, '');
   };
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -245,12 +248,12 @@ export default function Page() {
   
 
   return (
-    <div className="p-2 w-[1300px] h-[630px] ml-7" data-theme="light">
-      <div className="flex gap-4 w-full">
-        <h1 className="text-2xl font-bold mb-6 mt-1 ml-36 w-56 text-black whitespace-nowrap">
+    <div className="p-2 flex-col justify-center text-center w-full h-[630px] " data-theme="light">
+      <div className="flex justify-between pb-4  w-full">
+        <h1 className="text-2xl font-bold mr-44 flex-grow text-black">
           Quản Lý Sản Phẩm
         </h1>
-        <div className="flex justify-end w-[750px]">
+        <div className="flex-grow">
           <button className="btn btn-accent" onClick={handleAddNewClick}>
             Thêm mới
           </button>
@@ -475,7 +478,7 @@ export default function Page() {
           </div>
         </div>
       </dialog>
-      <div className="flex w-full justify-center">
+      <div className="flex w-full justify-center h-full" data-theme="light">
         <Tabledashboard
           onEdit={handleEdit}
           onDelete={handleDelete}

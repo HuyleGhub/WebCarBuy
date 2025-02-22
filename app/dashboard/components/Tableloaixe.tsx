@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import ImportExportComponent from "./ImportExportLoaiXe";
 
 
 interface LoaiXe {
@@ -22,6 +24,7 @@ interface PaginationMeta {
   skip: number;
 }
 
+
 const TableLoaiXe: React.FC<TableDashboardProps> = ({
   onEdit,
   onDelete,
@@ -32,9 +35,11 @@ const TableLoaiXe: React.FC<TableDashboardProps> = ({
   const [pageSize, setPageSize] = useState(10);
   const [paginationMeta, setPaginationMeta] = useState<PaginationMeta | null>(null);
   const [loading, setLoading] = useState(false);
+  const [searchText, setSearchText] = useState("");
+ 
 
   useEffect(() => {
-    fetch(`api/phantrang/phantrangloaixe?page=${currentPage}&limit_size=${pageSize}`)
+    fetch(`api/phantrang/phantrangloaixe?page=${currentPage}&limit_size=${pageSize}&search=${searchText}`)
       .then((response) => {
         if (!response.ok) throw new Error("Failed to fetch data");
         return response.json();
@@ -47,7 +52,7 @@ const TableLoaiXe: React.FC<TableDashboardProps> = ({
       .catch((error) => {
         console.error("Error:", error);
       });
-  }, [currentPage, pageSize, reloadKey]);
+  }, [currentPage, pageSize, reloadKey, searchText]);
 
   useEffect(() => {
     fetch("api/loaixe")
@@ -75,28 +80,66 @@ const TableLoaiXe: React.FC<TableDashboardProps> = ({
     setPageSize(newSize);
     setCurrentPage(1); // Reset to first page when changing page size
   };
+  const handleExport = async() => {
+      try {
+        const response = await fetch("api/loaixe?export=true", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ search: searchText }),
+        });
+  
+        if (!response.ok) {
+          throw new Error("Export failed");
+        }
+  
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "Loaixe_list.xlsx";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      } catch (error) {
+        console.error("Export error:", error);
+        toast.error("Xuất Excel thất bại");
+      }
+    };
+  
 
   return (
     <div className="space-y-4">
       <div className="overflow-x-auto">
-      <div className="flex">
-            <div className=" space-x-2">
-              <label htmlFor="pageSize" className="text-sm">
-                Số mục mỗi trang:
-              </label>
-              <select
-                id="pageSize"
-                value={pageSize}
-                onChange={handlePageSizeChange}
-                className="border rounded px-2 py-1"
-              >
-                <option value="5">5 </option>
-                <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="50">50</option>
-              </select>
-            </div>
+      <div className="flex justify-between pb-5">
+          <div className="mt-6">
+            <label htmlFor="pageSize" className="text-sm">
+              Số mục mỗi trang:
+            </label>
+            <select
+              id="pageSize"
+              value={pageSize}
+              onChange={handlePageSizeChange}
+              className="border rounded px-2 py-1"
+            >
+              <option value="5">5 </option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+            </select>
           </div>
+          <div className="flex pl-3 items-center gap-4 ">
+            <input
+              type="text"
+              placeholder="Tìm kiếm..."
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              className="input input-bordered w-full max-w-xs"
+            />
+           <ImportExportComponent/>
+          </div>
+        </div>
         <table className="table h-full w-[1000px]">
           <thead>
             <tr className="bg-blue-900 text-white text-center">

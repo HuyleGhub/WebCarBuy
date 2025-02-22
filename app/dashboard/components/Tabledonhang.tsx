@@ -1,6 +1,7 @@
 import { getImageUrl } from "@/app/components/Fileupload";
 import { LichGiaoXe } from "@prisma/client";
 import React, { useEffect, useState } from "react";
+import ReportHopDongComponent from "./ReportHopDong";
 
 interface DonHang {
   idDonHang: number;
@@ -176,6 +177,9 @@ const TableDonHang: React.FC<TableDashboardProps> = ({
               <option value="20">20</option>
               <option value="50">50</option>
             </select>
+          </div>
+          <div>
+            <ReportHopDongComponent/>
           </div>
         <table className="table w-[1000px]">
           <thead>

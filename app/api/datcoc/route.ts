@@ -1,5 +1,4 @@
 
-
 import { getSession } from '@/app/lib/auth'
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/prisma/client';

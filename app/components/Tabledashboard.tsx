@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import ImportExportComponent from "../dashboard/components/ImportExport";
 
 interface Xe {
   idXe: number;
@@ -49,9 +51,11 @@ const TableDashboard: React.FC<TableDashboardProps> = ({
     null
   );
   const [loading, setLoading] = useState(false);
-
+  const [searchText, setSearchText] = useState("");
   useEffect(() => {
-    fetch(`api/xe?page=${currentPage}&limit_size=${pageSize}`)
+    fetch(
+      `api/xe?page=${currentPage}&limit_size=${pageSize}&search=${searchText}`
+    )
       .then((response) => {
         if (!response.ok) throw new Error("Failed to fetch data");
         return response.json();
@@ -64,7 +68,7 @@ const TableDashboard: React.FC<TableDashboardProps> = ({
       .catch((error) => {
         console.error("Error:", error);
       });
-  }, [currentPage, pageSize, reloadKey]);
+  }, [currentPage, pageSize, reloadKey, searchText]);
 
   useEffect(() => {
     fetch("api/loaixe")
@@ -102,24 +106,40 @@ const TableDashboard: React.FC<TableDashboardProps> = ({
   return (
     <div className="space-y-4">
       <div className="overflow-x-auto">
-      <div className="flex">
-            <div className=" space-x-2">
-              <label htmlFor="pageSize" className="text-sm">
-                Số mục mỗi trang:
-              </label>
-              <select
-                id="pageSize"
-                value={pageSize}
-                onChange={handlePageSizeChange}
-                className="border rounded px-2 py-1"
-              >
-                <option value="5">5 </option>
-                <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="50">50</option>
-              </select>
-            </div>
+        <div className="flex justify-between pb-5">
+          <div className="mt-6">
+            <label htmlFor="pageSize" className="text-sm">
+              Số mục mỗi trang:
+            </label>
+            <select
+              id="pageSize"
+              value={pageSize}
+              onChange={handlePageSizeChange}
+              className="border rounded px-2 py-1"
+            >
+              <option value="5">5 </option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+            </select>
           </div>
+          <div className="flex items-center gap-4  ">
+             <input
+              type="text"
+              placeholder="Tìm kiếm..."
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              className="input input-bordered w-full max-w-xs ml-4"
+            />
+            {/* <button
+              onClick={handleExport}
+              className="btn btn-outline btn-success"
+            >
+              Xuất Excel
+            </button>  */}
+            <ImportExportComponent/>
+          </div>
+        </div>
         <table className="table h-full w-[1000px]">
           <thead>
             <tr className="bg-blue-900 text-white text-center">

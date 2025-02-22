@@ -171,12 +171,12 @@ export default function Page() {
   );
 
   return (
-    <div className="p-2 w-[1300px] h-[630px] ml-7" data-theme="light">
-      <div className="flex gap-4 w-full">
-        <h1 className="text-2xl font-bold mb-6 ml-36 mt-1 w-56 text-black whitespace-nowrap">
+    <div className="p-2 flex-col justify-center text-center w-full h-[630px] " data-theme="light">
+      <div className="flex justify-between pb-4  w-full">
+        <h1 className="text-2xl font-bold mr-44 flex-grow text-black">
           Quản Lý Loại Xe
         </h1>
-        <div className="flex justify-end gap-4 w-full">
+        <div className="flex-grow">
           <button className="btn btn-accent" onClick={handleAddNewClick}>
             Thêm mới
           </button>

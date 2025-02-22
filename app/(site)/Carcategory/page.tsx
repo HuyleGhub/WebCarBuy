@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Footer from '@/app/components/Footer'
 import toast, { Toaster } from 'react-hot-toast'
-import Image from 'next/image'
 import Link from 'next/link'
 
 interface Car {
@@ -38,15 +37,6 @@ const Category = () => {
   const handleImageClick = (index: number) => {
     setCurrentImageIndex(index)
   }
-
-  async function ApiCart(){
-    const response = await fetch(`/api/giohang`)
-  const data = await response.json()
-  }
-
-  useEffect(()=>{
-      ApiCart()
-  },[ApiCart])
 
   const handleAddToCart = async () => {
     try {
@@ -86,14 +76,14 @@ const Category = () => {
       window.dispatchEvent(new Event('cartUpdated'))
   
       const toastPromise = toast.promise(
-        new Promise(resolve => setTimeout(resolve, 2500)),
+        new Promise(resolve => setTimeout(resolve, 1500)),
         {
           loading: 'Đang thêm vào giỏ hàng...',
           success: 'Đã thêm vào giỏ hàng thành công!',
           error: 'Có lỗi xảy ra',
         },
         {
-          duration: 3000,
+          duration: 2000,
         }
       )
   

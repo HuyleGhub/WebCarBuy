@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import SignupFormSchema from '@/app/api/zodschema/zodSignUp/route';
+import toast, { ToastBar, Toaster } from 'react-hot-toast';
 
 export default function RegisterPage() {
   const [error, setError] = useState('');
@@ -35,6 +36,20 @@ export default function RegisterPage() {
         throw new Error('Registration failed');
       }
 
+      const toastPromise = toast.promise(
+        new Promise((resolve) => setTimeout(resolve, 4500)),
+        {
+          loading: 'Đang Đăng Ký...',
+          success: 'Đã đăng ký thành công!',
+          error: 'Có lỗi xảy ra',
+        },
+        {
+          duration: 4000,
+        }
+      )
+      
+      await toastPromise;
+
       router.push('/Login');
     } catch (error: any) {
         console.error(error);
@@ -44,24 +59,60 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen hero bg-base-200" data-theme="light">
-      <div className="hero-content flex w-full bg-gradient-to-r from-pink-500 rounded-2xl to-blue-500 mt-10">
-        <div className="text-center lg:text-left lg:ml-8">
-          <h1 className="text-5xl font-bold">Register now!</h1>
-          <p className="py-6">Join us to explore our amazing products and services.</p>
+       <Toaster 
+              position="top-right"
+              toastOptions={{
+                style: {
+                  background: '#363636',
+                  color: '#fff',
+                },
+                duration: 3000,
+                success: {
+                  style: {
+                    background: 'green',
+                  },
+                },
+                error: {
+                  style: {
+                    background: 'red',
+                  },
+                },
+              }}
+              />
+       <div className="hero-content  flex-col lg:flex-row w-full bg-gradient-to-r from-pink-500 to-blue-500 rounded-2xl mt-20 p-4 lg:p-8 gap-8">
+        {/* Hero Text Section */}
+        <div className="text-center lg:text-left">
+          <h1 className="text-3xl lg:text-5xl font-bold text-white">Register now!</h1>
+          <p className="py-4 lg:py-6 text-white text-sm lg:text-base">
+            Join us to explore our amazing products and services.
+          </p>
         </div>
-        <div className="card flex shadow-2xl bg-base-100 h-auto">
-          <form onSubmit={handleSubmit} className="card-body">
+
+        {/* Card Section */}
+        <div className="card shadow-2xl bg-base-100 w-full max-w-sm lg:max-w-md">
+          <form onSubmit={handleSubmit} className="card-body p-4 lg:p-8">
+            {/* Error Alert */}
             {error && (
-              <div className="alert alert-error">
-                <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <div className="alert alert-error text-sm">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="stroke-current shrink-0 h-5 w-5 lg:h-6 lg:w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
                 <span>{error}</span>
               </div>
             )}
 
-            {/* Hàng đầu tiên với Email và Username */}
-            <div className="flex gap-4">
+            {/* Email and Username */}
+            <div className="flex flex-col lg:flex-row gap-4">
               <div className="form-control flex-1">
                 <label className="label">
                   <span className="label-text">Email</span>
@@ -71,7 +122,7 @@ export default function RegisterPage() {
                   id="email"
                   name="email"
                   placeholder="Email"
-                  className="input input-bordered"
+                  className="input input-bordered w-full text-sm lg:text-base"
                   required
                 />
               </div>
@@ -85,14 +136,14 @@ export default function RegisterPage() {
                   id="username"
                   name="username"
                   placeholder="Username"
-                  className="input input-bordered"
+                  className="input input-bordered w-full text-sm lg:text-base"
                   required
                 />
               </div>
             </div>
 
-            {/* Hàng thứ hai với Full Name và Phone Number */}
-            <div className="flex gap-4">
+            {/* Full Name and Phone Number */}
+            <div className="flex flex-col lg:flex-row gap-4">
               <div className="form-control flex-1">
                 <label className="label">
                   <span className="label-text">Full Name</span>
@@ -102,7 +153,7 @@ export default function RegisterPage() {
                   id="fullname"
                   name="fullname"
                   placeholder="Full Name"
-                  className="input input-bordered"
+                  className="input input-bordered w-full text-sm lg:text-base"
                   required
                 />
               </div>
@@ -116,49 +167,55 @@ export default function RegisterPage() {
                   id="phone"
                   name="phone"
                   placeholder="Phone Number"
-                  className="input input-bordered"
+                  className="input input-bordered w-full text-sm lg:text-base"
                   required
                 />
               </div>
             </div>
 
-            <div className="flex gap-4">
-            {/* Trường Address */}
-            <div className="form-control flex-1">
-              <label className="label w-56">
-                <span className="label-text">Address</span>
-              </label>
-              <textarea
-                id="address"
-                name="address"
-                placeholder="Address"
-                className="textarea textarea-bordered"
-                rows={3}
-              />
+            {/* Address and Password */}
+            <div className="flex flex-col lg:flex-row gap-4">
+              <div className="form-control flex-1">
+                <label className="label">
+                  <span className="label-text">Address</span>
+                </label>
+                <textarea
+                  id="address"
+                  name="address"
+                  placeholder="Address"
+                  className="textarea textarea-bordered w-full text-sm lg:text-base"
+                  rows={3}
+                />
+              </div>
+
+              <div className="form-control flex-1">
+                <label className="label">
+                  <span className="label-text">Password</span>
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="Password"
+                  className="input input-bordered w-full text-sm lg:text-base"
+                  required
+                />
+              </div>
             </div>
 
-            {/* Trường Password */}
-            <div className="form-control flex-1">
-              <label className="label">
-                <span className="label-text">Password</span>
-              </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="Password"
-                className="input input-bordered"
-                required
-              />
-            </div>
+            {/* Submit Button */}
+            <div className="form-control mt-4 lg:mt-6">
+              <button type="submit" className="btn btn-primary w-full">
+                Register
+              </button>
             </div>
 
-            <div className="form-control mt-6">
-              <button type="submit" className="btn btn-primary">Register</button>
-            </div>
-
-            <label className="label">
-              <Link href="/Login" className="label-text-alt link link-hover">
+            {/* Login Link */}
+            <label className="label justify-center lg:justify-start">
+              <Link
+                href="/Login"
+                className="label-text-alt link link-hover text-sm"
+              >
                 Already have an account? Login
               </Link>
             </label>

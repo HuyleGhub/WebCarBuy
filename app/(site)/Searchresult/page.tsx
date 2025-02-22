@@ -102,11 +102,8 @@ const SearchResults = () => {
                     <h2 className="card-title">{car.TenXe}</h2>
                     <p className='text-purple-600 font-semibold'><span className='text-black font-medium'>Giá Xe: </span>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(car.GiaXe)}</p>
                     <div className="card-actions">
-                      <button className="btn bg-[#1464F4] text-white">
-                        Đặt Cọc
-                      </button>
                       <Link href={`/Carcategory?id=${car.idXe}`} passHref>
-                        <button className="btn btn-outline">
+                        <button className="btn bg-[#1464F4] text-white ">
                           Xem Chi Tiết
                         </button>
                       </Link>

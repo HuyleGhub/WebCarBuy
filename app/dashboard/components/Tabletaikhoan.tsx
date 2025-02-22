@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 interface User {
   idUsers: number;
@@ -45,6 +46,7 @@ const TableUser: React.FC<TableUserProps> = ({
   const [pageSize, setPageSize] = useState(10);
   const [paginationMeta, setPaginationMeta] = useState<PaginationMeta | null>(null);
   const [loading, setLoading] = useState(true);
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     fetch("api/role")
@@ -61,7 +63,7 @@ const TableUser: React.FC<TableUserProps> = ({
   }, []);
 
   useEffect(() => {
-    fetch(`api/phantrang/phantranguser?page=${currentPage}&limit_size=${pageSize}`)
+    fetch(`api/phantrang/phantranguser?page=${currentPage}&limit_size=${pageSize}&search=${searchText}`)
       .then((response) => {
         if (!response.ok) throw new Error("Failed to fetch data");
         return response.json();
@@ -74,7 +76,7 @@ const TableUser: React.FC<TableUserProps> = ({
       .catch((error) => {
         console.error("Error:", error);
       });
-  }, [currentPage, pageSize, reloadKey]);
+  }, [currentPage, pageSize, reloadKey, searchText]);
 
   const getRoleName = (idRole: number): string => {
     const role = roles.find(role => role.idRole === idRole);
@@ -107,29 +109,73 @@ const TableUser: React.FC<TableUserProps> = ({
     setCurrentPage(1);
   };
 
+  const handleExport = async () => {
+    try {
+      const response = await fetch("api/users?export=true", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ search: searchText }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Export failed");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "NguoiDung_list.xlsx";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } catch (error) {
+      console.error("Export error:", error);
+      toast.error("Xuất Excel thất bại");
+    }
+  
+  }
+
   return (
     <div className="w-full">
       <div className="overflow-hidden">
         <div className="">
           <div className="inline-block min-w-full align-middle">
-          <div className="flex">
-            <div className=" space-x-2">
-              <label htmlFor="pageSize" className="text-sm">
-                Số mục mỗi trang:
-              </label>
-              <select
-                id="pageSize"
-                value={pageSize}
-                onChange={handlePageSizeChange}
-                className="border rounded px-2 py-1"
-              >
-                <option value="5">5 </option>
-                <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="50">50</option>
-              </select>
-            </div>
+          <div className="flex justify-between pb-5">
+          <div className="mt-3">
+            <label htmlFor="pageSize" className="text-sm">
+              Số mục mỗi trang:
+            </label>
+            <select
+              id="pageSize"
+              value={pageSize}
+              onChange={handlePageSizeChange}
+              className="border rounded px-2 py-1"
+            >
+              <option value="5">5 </option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+            </select>
           </div>
+          <div className="flex items-center gap-4 ">
+            <input
+              type="text"
+              placeholder="Tìm kiếm..."
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              className="input input-bordered w-full max-w-xs"
+            />
+            <button
+              onClick={handleExport}
+              className="btn btn-outline btn-success"
+            >
+              Xuất Excel
+            </button>
+          </div>
+        </div>
             <table className="min-w-full divide-y divide-gray-300">
               <thead className="bg-blue-900">
                 <tr>

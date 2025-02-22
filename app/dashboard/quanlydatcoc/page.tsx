@@ -187,8 +187,8 @@ export default function Page() {
   
 
   return (
-    <div className="p-2 w-[1300px] h-[630px] ml-7" data-theme="light">
-      <div className="flex gap-4 w-full">
+    <div className="p-2 w-full h-[630px]" data-theme="light">
+      <div className="flex w-full">
         <h1 className="text-2xl font-bold mb-6 mt-1 ml-20 w-56 text-black whitespace-nowrap">
           Quản Lý Đặt Cọc
         </h1>

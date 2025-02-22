@@ -1,6 +1,8 @@
 "use client";
-import Sidebardashboard from "@/app/components/Sidebardashboard";
+
 import Link from "next/link";
+import Sidebardashboard from "./Sidebardashboard";
+
 
 export default function DashboardLayout({
   children,
@@ -56,7 +58,7 @@ export default function DashboardLayout({
       <div className="flex w-full pt-16">
         {/* Sidebar */}
         <div className="w-72 bg-gray-200">
-          <Sidebardashboard />
+          <Sidebardashboard isOpen={false}/>
         </div>
 
         {/* Main Content */}
