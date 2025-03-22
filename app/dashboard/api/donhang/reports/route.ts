@@ -2,8 +2,62 @@ import prisma from '@/prisma/client';
 import { NextResponse } from 'next/server';
 import puppeteer from 'puppeteer';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    // Get orderIds from URL parameters
+    const { searchParams } = new URL(request.url);
+    const orderIds = searchParams.get('orderIds')?.split(',').map(Number) || [];
+
+    if (!orderIds.length) {
+      return NextResponse.json(
+        { message: 'No orders specified' },
+        { status: 400 }
+      );
+    }
+
+    // Fetch orders with all related data
+    const orders = await prisma.donHang.findMany({
+      where: {
+        idDonHang: {
+          in: orderIds
+        }
+      },
+      include: {
+        khachHang: true,
+        ChiTietDonHang: {
+          include: {
+            xe: true
+          }
+        }
+      }
+    });
+
+    if (!orders.length) {
+      return NextResponse.json(
+        { message: 'No orders found' },
+        { status: 404 }
+      );
+    }
+
+    // Generate table rows from order data
+    const productTableRows = orders.map(order => 
+      order.ChiTietDonHang.map(detail => `
+        <tr>
+          <td>${detail.xe?.TenXe || ''}</td>
+          <td>${detail.xe?.DongCo || ''}</td>
+          <td>${detail.xe?.MauSac || ''}</td>
+          <td>${detail.xe?.NamSanXuat || ''}</td>
+          <td>${detail.SoLuong || 1}</td>
+          <td>${new Intl.NumberFormat('vi-VN').format(Number(detail.DonGia))} VNĐ</td>
+        </tr>
+      `).join('')
+    ).join('');
+
+    // Calculate total amount
+    const totalAmount = orders.reduce((sum, order) => 
+      sum + (Number(order.TongTien) || 0), 0
+    );
+
     const htmlContent = `
       <html>
         <head>
@@ -26,21 +80,26 @@ export async function GET() {
             .section strong {
               font-size: 18px;
             }
-            table {
-              width: 100%;
-              border-collapse: collapse;
-              margin: 20px 0;
-            }
-            th, td {
-              border: 1px solid #000;
-              padding: 10px;
-              text-align: left;
-            
-            }
-            th {
-              background-color: #0000FF;
-              color: #FFFFFF;
-            }
+             table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+      }
+      th, td {
+        border: 1px solid #000;
+        padding: 10px;
+        text-align: left;
+      }
+      th {
+        background-color: #003366;
+        
+      }
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+      tr:nth-child(odd) {
+        background-color: white;
+      }
             .signatures {
               display: flex;
               justify-content: space-between;
@@ -89,24 +148,17 @@ export async function GET() {
             <strong>ĐIỀU 1. TÊN HÀNG – CHẤT LƯỢNG – SỐ LƯỢNG - GIÁ TRỊ HỢP ĐỒNG</strong>
             <table>
               <tr>
-                <th>Tên Hàng</th>
+                <th>Tên Xe</th>
                 <th>Phiên bản</th>
+                <th>Động cơ</th>
                 <th>Màu ngoại thất</th>
-                <th>Màu nội thất</th>
                 <th>Số lượng</th>
                 <th>Giá bán VNĐ</th>
               </tr>
+              ${productTableRows}
               <tr>
-                <td>Vinfast ...</td>
-                <td>...</td>
-                <td>...</td>
-                <td>...</td>
-                <td>...</td>
-                <td>...</td>
-              </tr>
-              <tr>
-                <td colspan="5">Tổng giá trị hợp đồng:</td>
-                <td>(Bằng chữ: ..............................)</td>
+                <th colspan="5">Tổng giá trị hợp đồng:</th>
+                <td>${new Intl.NumberFormat('vi-VN').format(totalAmount)} VNĐ</td>
               </tr>
             </table> <br>
 

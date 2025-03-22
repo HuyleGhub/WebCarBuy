@@ -2,6 +2,8 @@ import { getImageUrl } from "@/app/components/Fileupload";
 import { LichGiaoXe } from "@prisma/client";
 import React, { useEffect, useState } from "react";
 import ReportHopDongComponent from "./ReportHopDong";
+import { CheckBox } from "docx";
+import { Check } from "lucide-react";
 
 interface DonHang {
   idDonHang: number;
@@ -54,10 +56,47 @@ const TableDonHang: React.FC<TableDashboardProps> = ({
   const [isDonHangTable, setDonHangTable] = useState<DonHang[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isChiTietDonHang, setChiTietDonHang] = useState<ChiTietDonHang[]>([]);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(5);
   const [paginationMeta, setPaginationMeta] = useState<PaginationMeta | null>(null);
   const [loading, setLoading] = useState(false);
   const [currentOrderId, setCurrentOrderId] = useState<number | null>(null);
+  const [selectedOrders, setSelectedOrders] = useState<number[]>([]);
+  const [selectAll, setSelectAll] = useState(false);
+
+  const handleCheckboxChange = (orderId: number) => {
+    setSelectedOrders(prev => {
+      if (prev.includes(orderId)) {
+        return prev.filter(id => id !== orderId);
+      }
+      return [...prev, orderId];
+    });
+  };
+
+  // New function to handle the "Check All" functionality
+  const handleSelectAll = () => {
+    const newSelectAll = !selectAll;
+    setSelectAll(newSelectAll);
+    
+    if (newSelectAll) {
+      // If select all is true, select all orders in the current page
+      const allOrderIds = isDonHangTable.map(order => order.idDonHang);
+      setSelectedOrders(allOrderIds);
+    } else {
+      // If select all is false, clear all selections
+      setSelectedOrders([]);
+    }
+  };
+
+  // Effect to update selectAll state when selectedOrders changes
+  useEffect(() => {
+    // Check if all orders on the current page are selected
+    if (isDonHangTable.length > 0) {
+      const allSelected = isDonHangTable.every(order => 
+        selectedOrders.includes(order.idDonHang)
+      );
+      setSelectAll(allSelected);
+    }
+  }, [selectedOrders, isDonHangTable]);
 
   useEffect(() => {
     setLoading(true);
@@ -123,6 +162,30 @@ const TableDonHang: React.FC<TableDashboardProps> = ({
       currency: 'VND' 
     }).format(amount);
   };
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "Chờ xác nhận":
+        return "bg-amber-400 text-gray-800"; // Màu hổ phách, chữ đen để dễ đọc
+      case "Đã xác nhận":
+        return "bg-blue-600 text-white"; // Màu xanh dương đậm
+      case "Đang giao":
+        return "bg-orange-500 text-white"; // Màu cam
+      case "Đã giao":
+        return "bg-emerald-500 text-white"; // Màu xanh lá ngọc bích (rõ ràng hơn so với xanh lá thông thường)
+      case "Còn Hàng":
+        return "bg-teal-500 text-white"; // Màu xanh cyan/ngọc lam
+      case "Hết Hàng":
+        return "bg-rose-500 text-white"; // Màu hồng đỏ (thay vì đỏ thông thường)
+      case "Đã hủy":
+        return "bg-gray-500 text-white"; // Màu xám (thay vì tím, hợp lý hơn cho trạng thái hủy)
+      case "Đã đặt hàng":
+        return "bg-indigo-500 text-white"; // Màu chàm/indigo (khác biệt với "Đã Giao")
+      case "Đã Đặt Cọc":
+        return "bg-amber-600 text-white"; // Màu nâu hổ phách đậm (thay vì stone/đá)
+      default:
+        return "bg-gray-300 text-gray-800"; // Mặc định xám nhạt với chữ đen
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -162,28 +225,38 @@ const TableDonHang: React.FC<TableDashboardProps> = ({
       </dialog>
 
       <div className="overflow-x-auto">
-      <div className="flex items-center gap-2">
-            <label htmlFor="pageSize" className="text-sm">
+      <div className="flex items-center gap-2 w-full ">
+            <label htmlFor="pageSize" className="text-sm w-36">
               Số mục mỗi trang:
             </label>
             <select
               id="pageSize"
               value={pageSize}
               onChange={handlePageSizeChange}
-              className="border rounded px-2 py-1"
+              className="border rounded px-2 py-1 text-xs"
             >
               <option value="5">5</option>
               <option value="10">10</option>
               <option value="20">20</option>
               <option value="50">50</option>
             </select>
+            <div className="flex w-full justify-end pb-3">
+            <ReportHopDongComponent selectedOrders={selectedOrders} />
           </div>
-          <div>
-            <ReportHopDongComponent/>
           </div>
+         
         <table className="table w-[1000px]">
           <thead>
             <tr className="bg-blue-900 text-white text-center">
+              <th className="flex justify-evenly">
+                <input 
+                  type="checkbox" 
+                  className="checkbox checkbox-sm ml-5 bg-white"
+                  checked={selectAll}
+                  onChange={handleSelectAll}
+                />
+                <span className="pt-1 ml-1">All</span>
+              </th>
               <th>Id</th>
               <th>Tên Khách Hàng</th>
               <th>Số điện Thoại</th>
@@ -197,17 +270,25 @@ const TableDonHang: React.FC<TableDashboardProps> = ({
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={6} className="text-center py-4">
+                <td colSpan={9} className="text-center py-4">
                   Đang tải...
                 </td>
               </tr>
             ) : (
               isDonHangTable.map((donhang) => (
                 <tr key={donhang.idDonHang} className="text-black text-center">
+                  <th>
+                    <input 
+                      type="checkbox"
+                      checked={selectedOrders.includes(donhang.idDonHang)}
+                      onChange={() => handleCheckboxChange(donhang.idDonHang)}
+                      className="checkbox checkbox-sm"
+                    />
+                  </th>
                   <th>{donhang.idDonHang}</th>
                   <td>{donhang.khachHang?.Hoten || "Undefine"}</td>
                   <td>{donhang.khachHang?.Sdt || "Undefine"}</td>
-                  <td>{donhang.TrangThaiDonHang}</td>
+                  <td><span className={`px-3 py-1 rounded-full ${getStatusColor(donhang.TrangThaiDonHang)}`}>{donhang.TrangThaiDonHang}</span></td>
                   <td>{formatCurrency(donhang.TongTien)}</td>
                   <td>{formatDateTime(donhang.NgayDatHang)}</td>
                   <td>{formatDateTime(donhang.LichGiaoXe?.[0]?.NgayGiao)}</td>

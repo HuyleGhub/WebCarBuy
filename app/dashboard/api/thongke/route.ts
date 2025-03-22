@@ -33,6 +33,7 @@ export async function GET() {
         }
       }
     });
+    const totalLichhen = await prisma.lichHen.count();
 
     // Get monthly sales data
     const today = new Date();
@@ -70,6 +71,7 @@ export async function GET() {
       totalDeposits,
       pendingDeposits,
       totalOrders,
+      totalLichhen,
       pendingOrders,
       totalCustomers,
       monthlyData,

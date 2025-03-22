@@ -164,8 +164,7 @@ const OrderPage = () => {
 
   return (
     <div data-theme="light">
-      <Toaster position="top-center" />
-      <div className="container mx-auto px-20 py-28 ">
+      <div className="container mx-auto px-14 py-28 ">
         <h1 className="text-2xl font-bold mb-6">Đơn hàng của tôi</h1>
 
         {donHangs.length === 0 ? (

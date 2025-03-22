@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import Link from 'next/link';
+import { toast, Toaster } from 'react-hot-toast';
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState('');
@@ -27,9 +27,26 @@ const ForgotPasswordPage = () => {
 
       const data = await response.json();
 
+
+      
+
       if (!response.ok) {
         throw new Error(data.error || 'Có lỗi xảy ra');
       }
+
+      const toastPromise = toast.promise(
+        new Promise(resolve => setTimeout(resolve, 3500)),
+        {
+          loading: 'Đang gửi...',
+          success: 'Email hướng dẫn đặt lại mật khẩu đã được gửi. Vui lòng kiểm tra hộp thư của bạn.',
+          error: 'Có lỗi xảy ra',
+        },
+        {
+          duration: 4000,
+        }
+      )
+
+      await toastPromise;
 
       setSuccess(true);
     } catch (err: any) {
@@ -41,7 +58,27 @@ const ForgotPasswordPage = () => {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
-      <Card className="w-full max-w-md">
+      <Toaster
+      position='top-right'
+      toastOptions={{
+        style: {
+          background: '#363636',
+          color: '#fff',
+        },
+        duration: 3000,
+        success: {
+          style: {
+            background: 'green',
+          },
+        },
+        error: {
+          style: {
+            background: 'red',
+          },
+        },
+      }}
+      />
+      <Card className="w-full max-w-xl h-full max-h-92">
         <CardHeader>
           <CardTitle>Quên mật khẩu</CardTitle>
           <CardDescription>
@@ -49,20 +86,9 @@ const ForgotPasswordPage = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {error && (
-            <Alert variant="destructive" className="mb-4">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+          
 
-          {success ? (
-            <Alert className="mb-4">
-              <AlertDescription>
-                Email hướng dẫn đặt lại mật khẩu đã được gửi. Vui lòng kiểm tra hộp thư của bạn.
-              </AlertDescription>
-            </Alert>
-          ) : (
+         
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Input
@@ -73,6 +99,11 @@ const ForgotPasswordPage = () => {
                   required
                   className="w-full"
                 />
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
               </div>
               <Button 
                 type="submit" 
@@ -94,7 +125,7 @@ const ForgotPasswordPage = () => {
                 </a>
               </div>
             </form>
-          )}
+          
         </CardContent>
       </Card>
     </div>

@@ -14,13 +14,14 @@ export async function middleware(request: NextRequest) {
 
   // Protected routesm
   if (!session && !request.nextUrl.pathname.startsWith('/Login') && !request.nextUrl.pathname.startsWith('/Register') && !request.nextUrl.pathname.startsWith('/Forgotpassword') 
-    && !request.nextUrl.pathname.startsWith('/Resetpassword')) {
+    && !request.nextUrl.pathname.startsWith('/Resetpassword') && !request.nextUrl.pathname.startsWith('/')) {
     return NextResponse.redirect(new URL('/Login', request.url));
   }
 
   // Admin-only routesi
   if (request.nextUrl.pathname.startsWith('/dashboard') && session?.role !== 'Admin') {
-    return NextResponse.redirect(new URL('/', request.url));
+    return NextResponse.redirect(new URL('/Login', request.url));
+    
   }
 
   return NextResponse.next();

@@ -22,12 +22,13 @@ const BackgroundSlider = () => {
   
     const images = [
       {
-        desktop: "https://static-cms-prod.vinfastauto.com/26Aug_Vinfast-Website_3060x1406px.png",
-        mobile: "https://static-cms-prod.vinfastauto.com/26Aug_Vinfast-Mobile_540x960px.png",
+        desktop: "https://static-cms-prod.vinfastauto.com/vf3-20250225.webp",
+        mobile: "https://static-cms-prod.vinfastauto.com/vf3-20250225-mobile.webp",
+        
       },
       {
-        desktop: "https://static-cms-prod.vinfastauto.com/Slider-VF8-25Aug-Desktop_3060x1406.jpg",
-        mobile: "https://static-cms-prod.vinfastauto.com/VinFast_VF%208_Mobile_Lux-540x960.jpg",
+        desktop: "https://static-cms-prod.vinfastauto.com/26Aug_Vinfast-Website_3060x1406px.png",
+        mobile: "https://static-cms-prod.vinfastauto.com/26Aug_Vinfast-Mobile_540x960px.png",
       },
       {
         desktop: "https://static-cms-prod.vinfastauto.com/xmd_20240715_1721017659.jpg",

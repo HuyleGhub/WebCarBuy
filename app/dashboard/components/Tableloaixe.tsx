@@ -32,9 +32,9 @@ const TableLoaiXe: React.FC<TableDashboardProps> = ({
 }) => {
   const [isLoaiXeTable, setLoaiXeTable] = useState<LoaiXe[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(5);
   const [paginationMeta, setPaginationMeta] = useState<PaginationMeta | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState("");
  
 
@@ -80,33 +80,6 @@ const TableLoaiXe: React.FC<TableDashboardProps> = ({
     setPageSize(newSize);
     setCurrentPage(1); // Reset to first page when changing page size
   };
-  const handleExport = async() => {
-      try {
-        const response = await fetch("api/loaixe?export=true", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ search: searchText }),
-        });
-  
-        if (!response.ok) {
-          throw new Error("Export failed");
-        }
-  
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "Loaixe_list.xlsx";
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-      } catch (error) {
-        console.error("Export error:", error);
-        toast.error("Xuất Excel thất bại");
-      }
-    };
   
 
   return (
@@ -129,13 +102,13 @@ const TableLoaiXe: React.FC<TableDashboardProps> = ({
               <option value="50">50</option>
             </select>
           </div>
-          <div className="flex pl-3 items-center gap-4 ">
+          <div className="flex pl-3 items-center gap-4  ">
             <input
               type="text"
               placeholder="Tìm kiếm..."
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
-              className="input input-bordered w-full max-w-xs"
+              className="input input-bordered w-full h-10 text-sm max-w-xs"
             />
            <ImportExportComponent/>
           </div>
@@ -155,6 +128,12 @@ const TableLoaiXe: React.FC<TableDashboardProps> = ({
               <tr>
                 <td colSpan={10} className="text-center text-black py-4">
                   Đang tải...
+                </td>
+              </tr>
+            ): isLoaiXeTable.length === 0 ? (
+              <tr>
+                <td colSpan={10} className="text-center text-black py-4">
+                  Không có dữ liệu loại xe
                 </td>
               </tr>
             ) : (

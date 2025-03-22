@@ -1,5 +1,3 @@
-
-
 import { initiatePasswordReset } from '@/nodemailer/route';
 import { NextResponse } from 'next/server';
 

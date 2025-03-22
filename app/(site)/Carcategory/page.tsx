@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Footer from '@/app/components/Footer'
 import toast, { Toaster } from 'react-hot-toast'
 import Link from 'next/link'
+import CarReviews from '@/app/components/CarReviews'
 
 interface Car {
   idXe: number;
@@ -90,7 +91,8 @@ const Category = () => {
       await toastPromise
       
     } catch (err) {
-      toast.error('Có lỗi xảy ra khi thêm vào giỏ hàng. Vui lòng thử lại sau.')
+      toast.error('Vui lòng đăng nhập để thêm vào giỏ hàng')
+      router.push('/Login')
       console.error('Error adding to cart:', err)
     } finally {
       setAddingToCart(false)
@@ -152,26 +154,6 @@ const Category = () => {
 
   return (
     <div className="w-full h-full pt-24" data-theme="light">
-      <Toaster 
-        position="top-right"
-        toastOptions={{
-          style: {
-            background: '#363636',
-            color: '#fff',
-          },
-          duration: 2000,
-          success: {
-            style: {
-              background: 'green',
-            },
-          },
-          error: {
-            style: {
-              background: 'red',
-            },
-          },
-        }}
-      />
       <div className="px-24 pb-24 w-full h-full flex flex-col">
         
         <h1 className="text-3xl font-bold mb-8">Chi tiết sản phẩm</h1>
@@ -246,7 +228,7 @@ const Category = () => {
                 <button 
                   className="mt-4 w-48 bg-indigo-600 text-white py-2 mx-4 rounded-md hover:bg-indigo-700 transition duration-300"
                 >
-                  <Link href={`/Datcoc?id=${car.idXe}`}>Đặt cọc ngay</Link>
+                  <Link href={`/Cartestdrive?id=${car.idXe}`}>Đặt cọc ngay</Link>
                 </button>
               ) : (
                 <button 
@@ -281,6 +263,7 @@ const Category = () => {
             </div>
           </div>
         </div>
+        <CarReviews idXe={car.idXe} />
       </div>
       <Footer />
     </div>

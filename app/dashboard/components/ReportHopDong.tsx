@@ -1,12 +1,21 @@
-import React, { useState } from 'react';
-import { Upload, FileType, FileText } from 'lucide-react';
+import React from 'react';
+import { FileText } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
-const ReportHopDongComponent = () => {
+interface ReportHopDongComponentProps {
+  selectedOrders: number[];
+}
 
-  const handleReport = async () => {
+const ReportHopDongComponent: React.FC<ReportHopDongComponentProps> = ({ selectedOrders }) => {
+  const handleGenerateReport = async () => {
+    if (selectedOrders.length === 0) {
+      toast.error('Vui lòng chọn ít nhất một đơn hàng');
+      return;
+    }
+
     try {
-      const response = await fetch('api/donhang/reports');
+      const orderIds = selectedOrders.join(',');
+      const response = await fetch(`api/donhang/reports?orderIds=${orderIds}`);
       
       if (!response.ok) {
         throw new Error(response.statusText);
@@ -22,27 +31,24 @@ const ReportHopDongComponent = () => {
       window.URL.revokeObjectURL(url);
       a.remove();
       
-      toast.success('Report generated successfully');
-    } catch (error:any) {
-      toast.error(`Report generation failed: ${error.message}`);
+    } catch (error: any) {
+      
     }
   };
 
   return (
-    <div className="p-4">
-      <div className="flex gap-6">
-        {/* Import Section */}
-
-            <button
-              onClick={handleReport}
-              className="inline-flex items-center px-1 py-1 pr-5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-            >
-              <FileText className="h-5 w-5 mr-2 ml-2" />
-              Generate Report
-            </button>
-          </div>
-        </div>
-
+    <button
+      onClick={handleGenerateReport}
+      disabled={selectedOrders.length === 0}
+      className={`inline-flex items-center px-3 py-2 text-white rounded-lg transition-colors ${
+        selectedOrders.length === 0 
+          ? 'bg-gray-400 cursor-not-allowed' 
+          : 'bg-red-500 hover:bg-red-600'
+      }`}
+    >
+      <FileText className="h-5 w-5 mr-2" />
+      Xuất hợp đồng ({selectedOrders.length})
+    </button>
   );
 };
 

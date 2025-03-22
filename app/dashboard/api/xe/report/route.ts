@@ -1,9 +1,8 @@
 import prisma from '@/prisma/client';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import puppeteer from 'puppeteer';
- // Đảm bảo bạn đã có prisma instance
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     // Lấy danh sách xe từ DB
     const xeList = await prisma.xe.findMany({
@@ -46,7 +45,10 @@ export async function GET() {
                     <td>${index + 1}</td>
                     <td>${xe.TenXe || 'N/A'}</td>
                     <td>${xe.loaiXe?.TenLoai || 'N/A'}</td>
-                    <td>${xe.GiaXe ? xe.GiaXe.toFixed(2) + ' VND' : 'N/A'}</td>
+                    <td>${xe.GiaXe ? new Intl.NumberFormat('vi-VN', {
+                      style: 'currency',
+                      currency: 'VND'
+                    }).format(Number(xe.GiaXe)) : 'N/A'}</td>
                     <td>${xe.MauSac || 'N/A'}</td>
                     <td>${xe.DongCo || 'N/A'}</td>
                     <td>${xe.TrangThai || 'N/A'}</td>
@@ -60,22 +62,29 @@ export async function GET() {
       </html>
     `;
 
-    // Khởi tạo Puppeteer & xuất PDF
-    const browser = await puppeteer.launch();
+    // Khởi tạo Puppeteer & xuất PDF - sử dụng cấu hình tương tự như export endpoint
+    const browser = await puppeteer.launch({
+      headless: true
+    });
     const page = await browser.newPage();
     await page.setContent(htmlContent);
-    const pdfBuffer = await page.pdf({ format: 'A4' });
+    const pdfBuffer = await page.pdf({ 
+      format: 'A4',
+      printBackground: true
+    });
 
     await browser.close();
 
+    // Sử dụng NextResponse giống như trong export endpoint
     return new NextResponse(pdfBuffer, {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': 'attachment; filename=car-report.pdf',
-      },
+        'Content-Disposition': 'attachment; filename="car-report.pdf"',
+        'Content-Length': pdfBuffer.length.toString()
+      }
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Lỗi tạo PDF:', error);
     return NextResponse.json({ message: 'Lỗi tạo PDF' }, { status: 500 });
   }

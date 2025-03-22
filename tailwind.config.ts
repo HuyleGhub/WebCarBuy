@@ -67,7 +67,8 @@ module.exports = withUt({
   			'appearbottom': 'appearbottom linear',
   			'borderrun': 'borderrun 2s linear infinite',
   			'spinrun': 'spinrun 2s linear infinite',
-  			'fadeleftdashboard': 'fadeleftdashboard 3s linear'
+  			'fadeleftdashboard': 'fadeleftdashboard 3s linear',
+			'loop-scroll': 'loop-scroll 5s linear infinite',
   		},
   		keyframes: {
   			autoslide: {
@@ -262,7 +263,11 @@ module.exports = withUt({
   				'75%': {
   					clipPath: 'inset(0 0 0 98%)'
   				}
-  			}
+  			},
+			"loop-scroll": {
+          from: { transform: "translateX(-100%)" },
+          to: { transform: "translateX(0%)" },
+         },
   		},
   		borderRadius: {
   			lg: 'var(--radius)',

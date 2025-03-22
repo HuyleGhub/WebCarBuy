@@ -92,5 +92,3 @@ export async function GET() {
     return NextResponse.json({ error: 'Không thể tải lịch hẹn lấy xe' }, { status: 500 });
   }
 }
-
-

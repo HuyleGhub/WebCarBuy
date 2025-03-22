@@ -1,8 +1,7 @@
 import prisma from "@/prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import ExcelJS from "exceljs";
-import JsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+
 
 export async function GET(request: NextRequest) {
     try {
@@ -10,7 +9,7 @@ export async function GET(request: NextRequest) {
       
       // Pagination parameters
       const page: number = searchParams.get('page') ? Number(searchParams.get('page')) : 1;
-      const limit_size: number = searchParams.get('limit_size') ? Number(searchParams.get('limit_size')) : 10;
+      const limit_size: number = searchParams.get('limit_size') ? Number(searchParams.get('limit_size')) : 5;
   
       const skip = (page - 1) * limit_size;
   

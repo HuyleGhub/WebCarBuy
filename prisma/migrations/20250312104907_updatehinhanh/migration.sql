@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `xe` MODIFY `HinhAnh` VARCHAR(10000) NULL;

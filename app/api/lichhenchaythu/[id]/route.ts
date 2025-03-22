@@ -1,7 +1,6 @@
 import prisma from "@/prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
-
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
     try {
       const { id } = params;
@@ -67,6 +66,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
           NgayHen: pickupDate.toISOString(),
           DiaDiem: DiaDiem.trim(),
           NoiDung: NoiDung.trim(),
+          trangThai: 'PENDING',
         },
       });
   
@@ -93,12 +93,13 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
   }
+  
   export async function DELETE(req: NextRequest, {params}: {params: {id:string} }) {
-      try {
-        const id = parseInt(params.id);
-        const deletedLichHen = await prisma.lichHen.delete({ where: { idLichHen: id } });
-        return NextResponse.json({deletedLichHen, message: "Xóa lịch hẹn thành công"}, {status: 200});
-      } catch (error: any) {
-        return NextResponse.json(error.message);
-      }
-  }
+    try {
+      const id = parseInt(params.id);
+      const deletedLichHen = await prisma.lichHen.delete({ where: { idLichHen: id } });
+      return NextResponse.json({deletedLichHen, message: "Xóa lịch hẹn thành công"}, {status: 200});
+    } catch (error: any) {
+      return NextResponse.json(error.message);
+    }
+}

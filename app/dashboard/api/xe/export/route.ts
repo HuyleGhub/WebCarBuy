@@ -34,6 +34,7 @@ export async function GET(req: NextRequest) {
       'Màu Sắc': car.MauSac,
       'Động Cơ': car.DongCo,
       'Trạng Thái': car.TrangThai,
+      'Hình Ảnh': car.HinhAnh,
       'Năm Sản Xuất': car.NamSanXuat
     }));
 

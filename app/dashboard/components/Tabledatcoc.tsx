@@ -47,7 +47,7 @@ const TableDatCoc: React.FC<TableDashboardProps> = ({
 }) => {
   const [isDatCocTable, setDatCocTable] = useState<DatCoc[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(5);
   const [paginationMeta, setPaginationMeta] = useState<PaginationMeta | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -100,7 +100,30 @@ const TableDatCoc: React.FC<TableDashboardProps> = ({
     }).format(amount);
   };
   
-  
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "Chờ xác nhận":
+        return "bg-amber-400 text-gray-800"; // Màu hổ phách, chữ đen để dễ đọc
+      case "Đã xác nhận":
+        return "bg-blue-600 text-white"; // Màu xanh dương đậm
+      case "Đang giao":
+        return "bg-orange-500 text-white"; // Màu cam
+      case "Đã giao":
+        return "bg-emerald-500 text-white"; // Màu xanh lá ngọc bích (rõ ràng hơn so với xanh lá thông thường)
+      case "Còn Hàng":
+        return "bg-teal-500 text-white"; // Màu xanh cyan/ngọc lam
+      case "Hết Hàng":
+        return "bg-rose-500 text-white"; // Màu hồng đỏ (thay vì đỏ thông thường)
+      case "Đã hủy":
+        return "bg-gray-500 text-white"; // Màu xám (thay vì tím, hợp lý hơn cho trạng thái hủy)
+      case "Đã đặt hàng":
+        return "bg-indigo-500 text-white"; // Màu chàm/indigo (khác biệt với "Đã Giao")
+      case "Đã Đặt Cọc":
+        return "bg-amber-600 text-white"; // Màu nâu hổ phách đậm (thay vì stone/đá)
+      default:
+        return "bg-gray-300 text-gray-800"; // Mặc định xám nhạt với chữ đen
+    }
+  };
 
   return (
     <div className="w-full">
@@ -126,11 +149,10 @@ const TableDatCoc: React.FC<TableDashboardProps> = ({
       <div className="overflow-x-auto">
         <table className="w-full table-auto border-collapse">
           <thead>
-            <tr className="bg-blue-900 text-white text-center">
+            <tr className="bg-blue-900 text-white h-10 text-center text-xs">
               <th>ID</th>
               <th>Khách Hàng</th>
               <th>SĐT</th>
-              <th>Email</th>
               <th>Xe</th>
               <th>Giá Xe</th>
               <th>Trạng Thái</th>
@@ -151,18 +173,17 @@ const TableDatCoc: React.FC<TableDashboardProps> = ({
             ) : (
               isDatCocTable.map((donhang) => (
                 <tr key={donhang.idDatCoc} className="hover:bg-gray-100 border-b">
-                  <td className="p-2 text-center">{donhang.idDatCoc}</td>
-                  <td className="p-2 text-center">{donhang.khachHang?.Hoten || "Chưa xác định"}</td>
-                  <td className="p-2 text-center">{donhang.khachHang?.Sdt || "N/A"}</td>
-                  <td className="p-2 text-center">{donhang.khachHang?.Email || "N/A"}</td>
-                  <td className="p-2 text-center">{donhang.xe?.TenXe || "Chưa chọn"}</td>
-                  <td className="p-2 text-center">{formatCurrency(donhang.xe?.GiaXe || 0)}</td>
-                  <td className="p-2 text-center">{donhang.TrangThaiDat}</td>
-                  <td className="p-2 text-center">{formatCurrency(donhang.SotienDat)}</td>
-                  <td className="p-2 text-center">{formatDateTime(donhang.NgayDat)}</td>
-                  <td className="p-2 text-center">{formatDateTime(donhang.LichHenLayXe?.[0]?.NgayLayXe)}</td>
-                  <td className="p-2 text-center">{donhang.LichHenLayXe?.[0]?.DiaDiem || "Chưa xác định"}</td>
-                  <td className="p-2 text-center">
+                  <td className="p-2 text-center text-sm font-bold">{donhang.idDatCoc}</td>
+                  <td className="p-2 text-center text-sm">{donhang.khachHang?.Hoten || "Chưa xác định"}</td>
+                  <td className="p-2 text-center text-sm">{donhang.khachHang?.Sdt || "N/A"}</td>
+                  <td className="p-2 text-center text-sm">{donhang.xe?.TenXe || "Chưa chọn"}</td>
+                  <td className="p-2 text-center text-sm">{formatCurrency(donhang.xe?.GiaXe || 0)}</td>
+                  <td className="p-2 text-center text-sm"><span className={`px-3 py-1 rounded-full ${getStatusColor(donhang.TrangThaiDat)}`}>{donhang.TrangThaiDat}</span></td>
+                  <td className="p-2 text-center text-sm">{formatCurrency(donhang.SotienDat)}</td>
+                  <td className="p-2 text-center text-sm">{formatDateTime(donhang.NgayDat)}</td>
+                  <td className="p-2 text-center text-sm">{formatDateTime(donhang.LichHenLayXe?.[0]?.NgayLayXe)}</td>
+                  <td className="p-2 text-center text-sm">{donhang.LichHenLayXe?.[0]?.DiaDiem || "Chưa xác định"}</td>
+                  <td className="p-2 text-center text-sm">
                     <div className="flex gap-2">
                       <button
                         onClick={() => onEdit(donhang)}

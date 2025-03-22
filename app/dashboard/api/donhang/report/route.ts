@@ -2,10 +2,62 @@ import prisma from '@/prisma/client';
 import { NextResponse } from 'next/server';
 import puppeteer from 'puppeteer';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    // Get contract data (in a real app, this would come from request params/query)
-    // Create HTML content
+    // Get orderIds from URL parameters
+    const { searchParams } = new URL(request.url);
+    const orderIds = searchParams.get('orderIds')?.split(',').map(Number) || [];
+
+    if (!orderIds.length) {
+      return NextResponse.json(
+        { message: 'No orders specified' },
+        { status: 400 }
+      );
+    }
+
+    // Fetch orders with all related data
+    const orders = await prisma.donHang.findMany({
+      where: {
+        idDonHang: {
+          in: orderIds
+        }
+      },
+      include: {
+        khachHang: true,
+        ChiTietDonHang: {
+          include: {
+            xe: true
+          }
+        }
+      }
+    });
+
+    if (!orders.length) {
+      return NextResponse.json(
+        { message: 'No orders found' },
+        { status: 404 }
+      );
+    }
+
+    // Generate table rows from order data
+    const productTableRows = orders.map(order => 
+      order.ChiTietDonHang.map(detail => `
+        <tr>
+          <td>${detail.xe?.TenXe || ''}</td>
+          <td>${detail.xe?.DongCo || ''}</td>
+          <td>${detail.xe?.MauSac || ''}</td>
+          <td>${detail.xe?.NamSanXuat || ''}</td>
+          <td>${detail.SoLuong || 1}</td>
+          <td>${new Intl.NumberFormat('vi-VN').format(Number(detail.DonGia))} VNĐ</td>
+        </tr>
+      `).join('')
+    ).join('');
+
+    // Calculate total amount
+    const totalAmount = orders.reduce((sum, order) => 
+      sum + (Number(order.TongTien) || 0), 0
+    );
+
     const htmlContent = `
       <html>
         <head>
@@ -14,7 +66,6 @@ export async function GET() {
               font-family: Arial, sans-serif;
               margin: 40px;
               font-size: 12px;
-              
             }
             .p {
               font-family: Arial, sans-serif;
@@ -94,17 +145,10 @@ export async function GET() {
                 <th>Số lượng</th>
                 <th>Giá bán VNĐ</th>
               </tr>
-              <tr>
-                <td>Vinfast ........</td>
-                <td>..........</td>
-                <td>..........</td>
-                <td>..........</td>
-                <td>01</td>
-                <td>..............</td>
-              </tr>
+               ${productTableRows}
               <tr>
                 <th colspan="5">Tổng giá trị hợp đồng:</th>
-                <td>(Bằng chữ:.......................đồng chẵn)</td>
+                <td>${new Intl.NumberFormat('vi-VN').format(totalAmount)} VNĐ</td>
               </tr>
             </table>
           </div>

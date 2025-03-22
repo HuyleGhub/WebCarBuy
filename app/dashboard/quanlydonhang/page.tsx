@@ -204,30 +204,7 @@ export default function Page() {
           Quản Lý Đơn Hàng
         </h1>
       </div>
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          duration: 5000,
-          style: {
-            background: "#333",
-            color: "#fff",
-            padding: "16px",
-            borderRadius: "8px",
-          },
-          success: {
-            duration: 3000,
-            style: {
-              background: "#22c55e",
-            },
-          },
-          error: {
-            duration: 3000,
-            style: {
-              background: "#ef4444",
-            },
-          },
-        }}
-      />
+      
       <dialog id="my_modal_3" className="modal">
         <div className="modal-box w-11/12 max-w-5xl">
           <form method="dialog">

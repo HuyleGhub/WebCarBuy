@@ -29,6 +29,7 @@ interface DashboardData {
   totalDeposits: number;
   pendingDeposits: number;
   totalOrders: number;
+  totalLichhen: number;
   pendingOrders: number;
   totalCustomers: number;
   monthlyData: MonthlyData[];
@@ -177,6 +178,7 @@ const SalesDashboard: React.FC = () => {
             />
           </div>
         </div>
+        <div className="flex gap-10">
         <div className="w-72">
           <StatsCard
             title="Tổng Khách Hàng"
@@ -184,6 +186,15 @@ const SalesDashboard: React.FC = () => {
             icon={<Users size={24} className="text-white" />}
             isLoading={isLoading}
           />
+        </div>
+        <div className="w-72">
+          <StatsCard
+            title="Tổng Lịch Hẹn"
+            value={dashboardData?.totalLichhen || 0}
+            icon={<Users size={24} className="text-white" />}
+            isLoading={isLoading}
+          />
+        </div>
         </div>
       </div>
       <div className="flex-1">

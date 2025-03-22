@@ -3,8 +3,8 @@ import { FaCheckCircle, FaChargingStation, FaHeadset } from "react-icons/fa";
 
 const Videobg = () => {
   return (
-    <div className='w-full py-14 ' data-theme="light" >
-        <div className='xl:mx-36 mt-14 md:mx-26 mx-10 mb-14 animate-appeartop [animation-timeline:view()] animation-range-entry text-center '>
+    <div className='w-full  ' data-theme="light" >
+        <div className='xl:mx-36  md:mx-26 mx-10 mb-14 animate-appeartop [animation-timeline:view()] animation-range-entry text-center '>
         <span className='font-semibold text-center xl:text-3xl md:text-2xl text-xl w-full font-serif '>Explore the VinFast Family
         quality & comfort</span>
         <br />

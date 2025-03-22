@@ -29,11 +29,11 @@ const TableNhaCungCap: React.FC<TableDashboardProps> = ({
 }) => {
   const [isXeTable, setXeTable] = useState<nhacungcap[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(5);
   const [paginationMeta, setPaginationMeta] = useState<PaginationMeta | null>(
     null
   );
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
@@ -135,11 +135,11 @@ const TableNhaCungCap: React.FC<TableDashboardProps> = ({
               placeholder="Tìm kiếm..."
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
-              className="input input-bordered w-full max-w-xs"
+              className="input input-bordered w-full text-sm h-10 max-w-xs"
             />
             <button
               onClick={handleExport}
-              className="btn btn-outline btn-success"
+              className="btn text-xs h-3 bg-green-400 btn-success"
             >
               Xuất Excel
             </button>

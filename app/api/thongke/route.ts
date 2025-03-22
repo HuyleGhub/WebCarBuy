@@ -34,6 +34,8 @@ export async function GET() {
       }
     });
 
+    const totalLichhen = await prisma.lichHen.count();
+
     // Get monthly sales data
     const today = new Date();
     const sixMonthsAgo = new Date(today.setMonth(today.getMonth() - 6));
@@ -53,7 +55,7 @@ export async function GET() {
 
     // Get recent transactions
     const recentTransactions = await prisma.donHang.findMany({
-      take: 5,
+      take: 3,
       orderBy: {
         NgayDatHang: 'desc'
       },
@@ -67,7 +69,7 @@ export async function GET() {
     });
 
     const recentDatCoc = await prisma.datCoc.findMany({
-      take: 5,
+      take: 3,
       orderBy: {
         NgayDat: 'desc'
       },
@@ -89,6 +91,7 @@ export async function GET() {
       totalDeposits,
       pendingDeposits,
       totalOrders,
+      totalLichhen,
       pendingOrders,
       totalCustomers,
       monthlyData,

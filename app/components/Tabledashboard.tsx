@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import ImportExportComponent from "../dashboard/components/ImportExport";
+import { get } from "http";
 
 interface Xe {
   idXe: number;
@@ -46,11 +47,11 @@ const TableDashboard: React.FC<TableDashboardProps> = ({
   const [isXeTable, setXeTable] = useState<Xe[]>([]);
   const [isLoaiXeTable, setLoaiXeTable] = useState<LoaiXe[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(5);
   const [paginationMeta, setPaginationMeta] = useState<PaginationMeta | null>(
     null
   );
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState("");
   useEffect(() => {
     fetch(
@@ -102,11 +103,35 @@ const TableDashboard: React.FC<TableDashboardProps> = ({
     setPageSize(newSize);
     setCurrentPage(1); // Reset to first page when changing page size
   };
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "Chờ xác nhận":
+        return "bg-amber-400 text-gray-800"; // Màu hổ phách, chữ đen để dễ đọc
+      case "Đã xác nhận":
+        return "bg-blue-600 text-white"; // Màu xanh dương đậm
+      case "Đang giao":
+        return "bg-orange-500 text-white"; // Màu cam
+      case "Đã giao":
+        return "bg-emerald-500 text-white"; // Màu xanh lá ngọc bích (rõ ràng hơn so với xanh lá thông thường)
+      case "Còn Hàng":
+        return "bg-teal-500 text-white"; // Màu xanh cyan/ngọc lam
+      case "Hết Hàng":
+        return "bg-rose-500 text-white"; // Màu hồng đỏ (thay vì đỏ thông thường)
+      case "Đã hủy":
+        return "bg-gray-500 text-white"; // Màu xám (thay vì tím, hợp lý hơn cho trạng thái hủy)
+      case "Đã đặt hàng":
+        return "bg-indigo-500 text-white"; // Màu chàm/indigo (khác biệt với "Đã Giao")
+      case "Đã Đặt Cọc":
+        return "bg-amber-600 text-white"; // Màu nâu hổ phách đậm (thay vì stone/đá)
+      default:
+        return "bg-gray-300 text-gray-800"; // Mặc định xám nhạt với chữ đen
+    }
+  };
 
   return (
     <div className="space-y-4">
       <div className="overflow-x-auto">
-        <div className="flex justify-between pb-5">
+        <div className="flex justify-between pb-5 ">
           <div className="mt-6">
             <label htmlFor="pageSize" className="text-sm">
               Số mục mỗi trang:
@@ -129,7 +154,7 @@ const TableDashboard: React.FC<TableDashboardProps> = ({
               placeholder="Tìm kiếm..."
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
-              className="input input-bordered w-full max-w-xs ml-4"
+              className="input input-bordered h-10 text-sm w-full max-w-xs ml-4"
             />
             {/* <button
               onClick={handleExport}
@@ -156,13 +181,19 @@ const TableDashboard: React.FC<TableDashboardProps> = ({
             </tr>
           </thead>
           <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={10} className="text-center py-4">
-                  Đang tải...
-                </td>
-              </tr>
-            ) : (
+          {loading ? (
+                  <tr>
+                    <td colSpan={10} className="px-3 py-4 text-sm text-center">
+                      <span>Đang tải...</span>
+                    </td>
+                  </tr>
+                ) : isXeTable.length === 0 ? (
+                  <tr>
+                    <td colSpan={10} className="px-3 py-4 text-sm text-center">
+                      Không có dữ liệu người dùng
+                    </td>
+                  </tr>
+                ) : (
               isXeTable.map((xetable) => (
                 <tr key={xetable.idXe} className="text-black text-center">
                   <th>{xetable.idXe}</th>
@@ -176,7 +207,7 @@ const TableDashboard: React.FC<TableDashboardProps> = ({
                   </td>
                   <td>{xetable.MauSac}</td>
                   <td>{xetable.DongCo}</td>
-                  <td>{xetable.TrangThai}</td>
+                  <td className="w-40"><span className={`py-1 px-2 rounded-full text-sm ${getStatusColor(xetable.TrangThai)}`}>{xetable.TrangThai}</span></td>
                   <td>
                     {xetable.HinhAnh && (
                       <img

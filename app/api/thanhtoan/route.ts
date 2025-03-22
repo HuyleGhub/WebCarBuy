@@ -3,6 +3,7 @@ import prisma from '@/prisma/client';
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { Prisma } from '@prisma/client';
+import { createNotification } from '@/lib/create-notification';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-12-18.acacia',
@@ -137,6 +138,28 @@ async function processOrder(cartItems: any[], paymentMethod: string, userId: num
         },
       });
       allOrders.push(order);
+
+      // Create notification for the customer
+      await createNotification({
+        userId,
+        type: 'order',
+        message: `Đơn hàng #${order.idDonHang} đã được tạo thành công. Tổng tiền: ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Number(totalAmount))}`
+      });
+
+      // Create notifications for staff
+      const staffMembers = await prisma.users.findMany({
+        where: {
+          idRole: 3 // Assuming 2 is the role ID for staff
+        }
+      });
+
+      await Promise.all(staffMembers.map(staff => 
+        createNotification({
+          userId: staff.idUsers,
+          type: 'order',
+          message: `Đơn hàng mới #${order.idDonHang} cần xử lý`
+        })
+      ));
 
       for (const item of cartItemsWithDetails) {
         try {

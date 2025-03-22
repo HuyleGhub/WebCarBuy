@@ -43,7 +43,7 @@ const TableUser: React.FC<TableUserProps> = ({
   const [users, setUsers] = useState<User[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(5);
   const [paginationMeta, setPaginationMeta] = useState<PaginationMeta | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState("");
@@ -179,14 +179,14 @@ const TableUser: React.FC<TableUserProps> = ({
             <table className="min-w-full divide-y divide-gray-300">
               <thead className="bg-blue-900">
                 <tr>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">Id User</th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">Họ tên</th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">Số điện thoại</th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">Địa chỉ</th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">Email</th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">Vai trò</th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">Ngày đăng ký</th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">Action</th>
+                  <th scope="col" className="px-3 py-3.5 text-left text-xs font-semibold text-white">Id User</th>
+                  <th scope="col" className="px-3 py-3.5 text-left text-xs font-semibold text-white">Họ tên</th>
+                  <th scope="col" className="px-3 py-3.5 text-left text-xs font-semibold text-white">Số điện thoại</th>
+                  <th scope="col" className="px-3 py-3.5 text-left text-xs font-semibold text-white">Địa chỉ</th>
+                  <th scope="col" className="px-3 py-3.5 text-left text-xs font-semibold text-white">Email</th>
+                  <th scope="col" className="px-3 py-3.5 text-left text-xs font-semibold text-white">Vai trò</th>
+                  <th scope="col" className="px-3 py-3.5 text-left text-xs font-semibold text-white">Ngày đăng ký</th>
+                  <th scope="col" className="px-3 py-3.5 text-left text-xs font-semibold text-white">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">

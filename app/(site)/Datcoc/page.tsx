@@ -61,7 +61,7 @@ const CarDepositPage = () => {
 
         if (!sessionData) {
           toast.error("Vui lòng đăng nhập");
-          router.push("/login");
+          router.push("/Login");
           return;
         }
 
@@ -69,7 +69,7 @@ const CarDepositPage = () => {
       } catch (err) {
         console.error("Lỗi khi lấy thông tin người dùng:", err);
         toast.error("Vui lòng đăng nhập");
-        router.push("/login");
+        router.push("/Login");
       } finally {
         // If car details are not yet loaded, change loading state
         if (!car) setLoading(false);

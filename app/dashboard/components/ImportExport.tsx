@@ -40,31 +40,31 @@ const ImportExportComponent = () => {
     }
   };
 
-  const handleExport = async () => {
-    try {
-      const response = await fetch(`api/xe/export?format=${exportFormat}`);
-      
-      if (!response.ok) {
-        throw new Error(response.statusText);
+   const handleExport = async () => {
+      try {
+        const response = await fetch(`api/xe/export?format=${exportFormat}`);
+        
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
+    
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const fileExtension = exportFormat === 'excel' ? 'xlsx' : exportFormat;
+        a.download = `cars.${fileExtension}`;
+    
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+        
+        toast.success('Export successful');
+      } catch (error:any) {
+        toast.error(`Export failed: ${error.message}`);
       }
-  
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      const fileExtension = exportFormat === 'excel' ? 'xlsx' : exportFormat;
-      a.download = `cars.${fileExtension}`;
-  
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      a.remove();
-      
-      toast.success('Export successful');
-    } catch (error:any) {
-      toast.error(`Export failed: ${error.message}`);
-    }
-  };
+    };
 
   const handleReport = async () => {
     try {
@@ -104,7 +104,7 @@ const ImportExportComponent = () => {
               disabled={importing}
             />
             <Upload className="h-5 w-5 mr-2 ml-2" />
-            <span className='justify-center'>{importing ? 'Importing...' : 'Import File'}</span>
+            <span className='justify-center text-xs'>{importing ? 'Importing...' : 'Import File'}</span>
           </label>
         </div>
 
@@ -116,13 +116,13 @@ const ImportExportComponent = () => {
               onClick={handleExport}
               className="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
             >
-              <FileType className="h-5 w-5 mr-2" />
-              Export
+              <FileType className="h-6 w-5 mr-2" />
+              <span className='text-xs'>Export</span>
             </button>
             <select
               value={exportFormat}
               onChange={(e) => setExportFormat(e.target.value)}
-              className="px-3 py-2 border rounded-lg bg-white"
+              className="px-3 py-2 h-10 border rounded-lg bg-white text-xs"
             >
               <option value="excel">Excel</option>
               <option value="pdf">PDF</option>
@@ -133,8 +133,8 @@ const ImportExportComponent = () => {
               onClick={handleReport}
               className="inline-flex items-center px-1 py-1 pr-5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
             >
-              <FileText className="h-5 w-5 mr-2 ml-2" />
-              Generate Report
+              <FileText className="h-6 w-5 mr-2 ml-2" />
+              <span className='text-xs'>Generate Report</span>
             </button>
           </div>
         </div>

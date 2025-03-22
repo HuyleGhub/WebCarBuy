@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import { UserAuth } from '../types/auth';
+import NotificationComponent from '../dashboard/components/NotificationComponent';
+
 
 
 interface CartItem {
@@ -75,6 +77,9 @@ const Navbardashboard: React.FC<NavbarProps> = ({ onToggleSidebar })=> {
           Dashboard
         </Link>
       </div>
+      <div>
+        <NotificationComponent/>
+        </div>
       <div className="dropdown dropdown-end">
                 <div
                   tabIndex={0}
@@ -98,6 +103,11 @@ const Navbardashboard: React.FC<NavbarProps> = ({ onToggleSidebar })=> {
                     <a href="/" className="justify-between">
                       Home
                       <span className="badge">New</span>
+                    </a>    
+                  </li>
+                  <li>
+                    <a href="dashboard/Changepasswordpage" className="justify-between">
+                      Change Password
                     </a>    
                   </li>
                   <li>

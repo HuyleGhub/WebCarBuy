@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import {toast, Toaster} from 'react-hot-toast';
 
 const ResetPasswordPage = () => {
   const searchParams = useSearchParams();
@@ -35,6 +36,18 @@ const ResetPasswordPage = () => {
       });
 
       const data = await response.json();
+      const toastPromise = toast.promise(
+        new Promise(resolve => setTimeout(resolve, 3500)),
+        {
+          loading: 'Đang xử lý...',
+          success: 'Mật khẩu đã được đặt lại thành công!',
+          error: 'Có lỗi xảy ra',
+        },
+        {
+          duration: 4000,
+        }
+      )
+      await toastPromise;
 
       if (!response.ok) {
         throw new Error(data.error || 'Có lỗi xảy ra');
@@ -42,6 +55,7 @@ const ResetPasswordPage = () => {
 
       setSuccess(true);
     } catch (err: any) {
+      toast.error(err.message);
       setError(err.message);
     } finally {
       setIsLoading(false);
@@ -50,7 +64,26 @@ const ResetPasswordPage = () => {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
-      <Card className="w-full max-w-md">
+      <Toaster
+        position='top-right'
+        toastOptions={{
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+          duration: 3000,
+          success: {
+            style: {
+              background: 'green',
+            },
+          },
+          error: {
+            style: {
+              background: 'red',
+            },
+          },
+        }}/>
+      <Card className="w-full max-w-xl h-full max-h-92">
         <CardHeader>
           <CardTitle>Đặt lại mật khẩu</CardTitle>
           <CardDescription>
@@ -58,23 +91,12 @@ const ResetPasswordPage = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {error && (
-            <Alert variant="destructive" className="mb-4">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
 
           {success ? (
             <div className="space-y-4">
-              <Alert className="mb-4">
-                <AlertDescription>
-                  Mật khẩu đã được đặt lại thành công!
-                </AlertDescription>
-              </Alert>
               <Button 
                 onClick={() => window.location.href = '/Login'} 
-                className="w-full"
+                className="w-full "
               >
                 Đăng nhập với mật khẩu mới
               </Button>
@@ -91,6 +113,12 @@ const ResetPasswordPage = () => {
                   minLength={6}
                   className="w-full"
                 />
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertCircle />
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
                 <Input
                   type="password"
                   placeholder="Xác nhận mật khẩu"
@@ -100,6 +128,12 @@ const ResetPasswordPage = () => {
                   minLength={6}
                   className="w-full"
                 />
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertCircle />
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
               </div>
               <Button 
                 type="submit" 

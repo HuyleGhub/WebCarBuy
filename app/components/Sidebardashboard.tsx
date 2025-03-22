@@ -56,6 +56,11 @@ const SidebarDashboard: React.FC<SidebarDashboardProps> = ({ isOpen }) => {
       icon: <GiCarDoor />,
       href: "/dashboard/quanlylichhenlayxe",
       label: "Lịch Hẹn",
+    },
+    {
+      icon: <GiCarDoor />,
+      href: "/dashboard/quanlydanhgia",
+      label: "Đánh Giá",
     }
   ];
 

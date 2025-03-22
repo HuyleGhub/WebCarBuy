@@ -26,8 +26,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import toast, { Toaster } from "react-hot-toast";
 import { PickupScheduleForm } from "../components/LichHen";
 
-
-// Interfaces (kept from your original code)
+// Extended interface with status
 interface PickupSchedule {
   idLichHen: number;
   TenKhachHang: string;
@@ -39,6 +38,7 @@ interface PickupSchedule {
   GioHen: string;
   DiaDiem: string;
   NoiDung: string;
+  trangThai?: string; // Added status field
   xe: {
     TenXe: string;
   };
@@ -62,7 +62,6 @@ const locales = {
       weekStartsOn: 1 // 0 is Sunday, 1 is Monday
     }
   }
-
 };
 
 // Localizer setup
@@ -79,6 +78,44 @@ const endOfHour = (date: Date): Date => addHours(startOfHour(date), 1);
 const now = new Date();
 const start = endOfHour(now);
 const end = addHours(start, 2);
+
+// Status badge renderer
+const getStatusBadge = (status?: string) => {
+  switch (status) {
+    case 'APPROVED':
+      return {
+        color: 'bg-green-100 text-green-800',
+        text: 'Đã duyệt'
+      };
+    case 'REJECTED':
+      return {
+        color: 'bg-red-100 text-red-800',
+        text: 'Từ chối'
+      };
+    default:
+      return {
+        color: 'bg-yellow-100 text-yellow-800',
+        text: 'Chờ xử lý'
+      };
+  }
+};
+
+// Event style getter for calendar
+const eventStyleGetter = (event: Event) => {
+  const schedule = event.resource as PickupSchedule;
+  const status = schedule.trangThai || 'PENDING';
+  
+  // Define colors based on status
+  const styleMap: Record<string, React.CSSProperties> = {
+    'APPROVED': { backgroundColor: '#10b981', borderColor: '#047857' },
+    'REJECTED': { backgroundColor: '#ef4444', borderColor: '#b91c1c' },
+    'PENDING': { backgroundColor: '#f59e0b', borderColor: '#d97706' }
+  };
+  
+  return {
+    style: styleMap[status] || styleMap['PENDING']
+  };
+};
 
 // Drag and Drop Calendar
 const DnDCalendar = withDragAndDrop(Calendar);
@@ -139,11 +176,10 @@ const PickupScheduleCalendar: FC = () => {
 
       // Transform schedules into calendar events
       const calendarEvents: Event[] = schedulesData.map((schedule: PickupSchedule) => ({
-        title: `${schedule.NoiDung} - ${schedule.TenKhachHang}`,
+        title: `${getStatusBadge(schedule.trangThai).text} - ${schedule.NoiDung} - ${schedule.TenKhachHang}`,
         start: new Date(schedule.NgayHen),
         end: addHours(new Date(schedule.NgayHen), 1),
         resource: schedule,
-
       }));
 
       setEvents(calendarEvents);
@@ -179,7 +215,7 @@ const PickupScheduleCalendar: FC = () => {
       return [
         ...filteredEvents,
         {
-          title: `${newSchedule.NoiDung} - ${newSchedule.TenKhachHang}`,
+          title: `${getStatusBadge(newSchedule.trangThai).text} - ${newSchedule.NoiDung} - ${newSchedule.TenKhachHang}`,
           start: new Date(newSchedule.NgayHen),
           end: addHours(new Date(newSchedule.NgayHen), 1),
           resource: newSchedule,
@@ -217,11 +253,10 @@ const PickupScheduleCalendar: FC = () => {
   
                   // Cập nhật lại sự kiện
                   const updatedEvents: Event[] = updatedSchedules.map((schedule: PickupSchedule) => ({
-                    title: `${schedule.NoiDung} - ${schedule.TenKhachHang}`,
+                    title: `${getStatusBadge(schedule.trangThai).text} - ${schedule.NoiDung} - ${schedule.TenKhachHang}`,
                     start: new Date(schedule.NgayHen),
                     end: addHours(new Date(schedule.NgayHen), 1),
                     resource: schedule,
-
                   }));
   
                   // Cập nhật lại danh sách sự kiện
@@ -263,6 +298,8 @@ const PickupScheduleCalendar: FC = () => {
       }
     );
   };
+
+  // Update status handler
   
 
   // Event drag and drop handlers
@@ -313,7 +350,6 @@ const PickupScheduleCalendar: FC = () => {
 
   return (
     <Card className="w-full max-w-6xl mx-auto mt-4">
-      <Toaster position="top-center" />
       <CardHeader>
         <div className="flex items-center">
           <CardTitle>Lịch Hẹn Lấy Xe</CardTitle>
@@ -326,6 +362,20 @@ const PickupScheduleCalendar: FC = () => {
         </div>
       </CardHeader>
       <CardContent>
+        <div className="flex justify-start gap-4 mb-4">
+          <div className="flex items-center">
+            <div className="w-4 h-4 bg-yellow-500 rounded-full mr-2"></div>
+            <span>Chờ xử lý</span>
+          </div>
+          <div className="flex items-center">
+            <div className="w-4 h-4 bg-green-500 rounded-full mr-2"></div>
+            <span>Đã duyệt</span>
+          </div>
+          <div className="flex items-center">
+            <div className="w-4 h-4 bg-red-500 rounded-full mr-2"></div>
+            <span>Từ chối</span>
+          </div>
+        </div>
         <DnDCalendar
           date={date}
           onNavigate={onNavigate}
@@ -337,6 +387,7 @@ const PickupScheduleCalendar: FC = () => {
           onEventDrop={onEventDrop}
           onEventResize={onEventResize}
           onSelectEvent={handleSelectEvent}
+          eventPropGetter={eventStyleGetter}
           resizable
           style={{ height: "100vh", }}
           views={["month", "week", "day", "agenda"]}
@@ -361,18 +412,28 @@ const PickupScheduleCalendar: FC = () => {
             <h3 className="font-bold text-lg mb-4">
               {selectedSchedule ? "Cập Nhật Lịch Hẹn" : "Thêm Mới Lịch Hẹn"}
             </h3>
+            
             {selectedSchedule && (
-  <div className="flex justify-end items-center mt-4">
-    <button
-      className="btn btn-error"
-      onClick={() => handleDelete(selectedSchedule.idLichHen)}
-    >
-      Xóa Lịch Hẹn
-    </button>
-  </div>
-)}
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">Trạng thái hiện tại:</span>
+                  <span className={`px-3 py-1 rounded-full text-sm ${getStatusBadge(selectedSchedule.trangThai).color}`}>
+                    {getStatusBadge(selectedSchedule.trangThai).text}
+                  </span>
+                </div>
+              </div>
+            )}
 
-
+            {selectedSchedule && (
+              <div className="flex justify-end items-center">
+                <button
+                  className="bg-red-500 rounded-md w-28 h-8 text-sm"
+                  onClick={() => handleDelete(selectedSchedule.idLichHen)}
+                >
+                  Xóa Lịch Hẹn
+                </button>
+              </div>
+            )}
 
             <PickupScheduleForm
               initialData={selectedSchedule ? {
@@ -386,6 +447,7 @@ const PickupScheduleCalendar: FC = () => {
                 GioHen: selectedSchedule.GioHen,
                 DiaDiem: selectedSchedule.DiaDiem,
                 NoiDung: selectedSchedule.NoiDung,
+                trangThai: selectedSchedule.trangThai || 'PENDING',
               } : undefined}
               onSubmitSuccess={handleSubmitSuccess}
             />

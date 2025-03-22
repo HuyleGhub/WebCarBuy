@@ -1,48 +1,62 @@
+import { sendEmail } from "@/app/emailService/route";
+import { createAppointmentEmailTemplate } from "@/app/emailTemplate/route";
 import { getSession } from "@/app/lib/auth";
 import prisma from "@/prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
+
 export async function POST(req: NextRequest) {
   try {
-    const {TenKhachHang, Sdt, Email, idLoaiXe, idXe, NgayHen, GioHen, DiaDiem, NoiDung } = await req.json();
+    const {TenKhachHang, Sdt, Email, idLoaiXe, idXe, NgayHen, GioHen, DiaDiem, NoiDung, trangThai } = await req.json();
 
-    // Debug log
-    console.log('NgayLayXe:', NgayHen);
-    console.log('GioHenLayXe:', GioHen);
-
-    // Chuyển đổi giờ sang 24-hour
     const GioHenLayXe24h = convertTo24Hour(GioHen);
-    console.log('GioHenLayXe (24-hour):', GioHenLayXe24h);
-
-    // Tạo đối tượng Date từ NgayLayXe (ISO 8601)
     const pickupDate = new Date(NgayHen);
 
     if (isNaN(pickupDate.getTime())) {
       throw new Error("Giá trị ngày không hợp lệ");
     }
 
-    // Tách giờ và phút từ GioHenLayXe24h
     const [hours, minutes] = GioHenLayXe24h.split(':').map(Number);
-
-    // Gán giờ và phút vào đối tượng Date theo giờ địa phương
-    pickupDate.setHours(hours, minutes, 0, 0); // Sử dụng setHours thay vì setUTCHours
-
-    console.log('pickupDateTime (combined):', pickupDate.toISOString());
+    pickupDate.setHours(hours, minutes, 0, 0);
 
     // Lưu vào cơ sở dữ liệu
     const lichHenLay = await prisma.lichHen.create({
       data: {
-        TenKhachHang: TenKhachHang.trim(),
-        Sdt: Sdt.trim(),
-        Email: Email.trim(),
+        TenKhachHang: TenKhachHang?.trim() || '',
+        Sdt: Sdt?.trim() || '',
+        Email: Email?.trim() || '',
         idXe: parseInt(idXe),
         idLoaiXe: parseInt(idLoaiXe), 
         GioHen: pickupDate,  
         NgayHen: pickupDate.toISOString(),
-        DiaDiem: DiaDiem.trim(),
-        NoiDung: NoiDung.trim(),
+        DiaDiem: DiaDiem?.trim() || '',
+        NoiDung: NoiDung?.trim() || '',
+        trangThai: 'PENDING'
       },
+      include: {
+        xe: true
+      }
     });
+
+    // Ensure required data is available before sending email
+    if (lichHenLay && lichHenLay.Email) {
+      const emailHtml = createAppointmentEmailTemplate({
+        TenKhachHang: lichHenLay.TenKhachHang || '',
+        NgayHen: lichHenLay.NgayHen || null,
+        GioHen: GioHen || '',
+        DiaDiem: lichHenLay.DiaDiem || '',
+        NoiDung: lichHenLay.NoiDung || '',
+        xe: {
+          TenXe: lichHenLay.xe?.TenXe || null
+        }
+      });
+
+      await sendEmail(
+        lichHenLay.Email,
+        'Xác nhận lịch hẹn lái thử xe',
+        emailHtml
+      );
+    }
 
     return NextResponse.json(lichHenLay);
   } catch (error: any) {
@@ -68,22 +82,17 @@ function convertTo24Hour(time12h: string): string {
   return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 }
 
-
-  export async function GET() {
-    try {
-      
-      // Fetch pickup schedules for the current user
-      const pickupSchedules = await prisma.lichHen.findMany({
-        include: {
-            xe: true,
-             // Optional: include vehicle details if needed
-          }
-      });
-      
-      return NextResponse.json(pickupSchedules);
-    } catch (error) {
-      console.error('Pickup schedules fetch error:', error);
-      return NextResponse.json({ error: 'Không thể tải lịch hẹn lấy xe' }, { status: 500 });
-    }
+export async function GET() {
+  try {
+    const pickupSchedules = await prisma.lichHen.findMany({
+      include: {
+        xe: true,
+      }
+    });
+    
+    return NextResponse.json(pickupSchedules);
+  } catch (error) {
+    console.error('Pickup schedules fetch error:', error);
+    return NextResponse.json({ error: 'Không thể tải lịch hẹn lấy xe' }, { status: 500 });
   }
-  
+}

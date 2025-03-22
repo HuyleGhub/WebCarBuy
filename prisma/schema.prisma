@@ -26,7 +26,7 @@ model Users {
   Matkhau     String?   @db.VarChar(225)
   Hoten       String?   @db.VarChar(225)
   Sdt         String?   @db.VarChar(15)
-  Diachi      String?   @db.VarChar(45)
+  Diachi      String?   @db.VarChar(500)
   Email       String?   @db.VarChar(45) @unique
   idRole      Int?      
   Ngaydangky  DateTime? @db.Date
@@ -41,8 +41,25 @@ model Users {
   ChamCong    ChamCong[]
   DatCoc      DatCoc[]
   Luong       Luong[]
+  LichHen     LichHen[]
   LichHenLayXe LichHenLayXe[]
   LichGiaoXe  LichGiaoXe[]
+  notifications Notification[]
+  DanhGiaTraiNghiem DanhGiaTraiNghiem[]
+}
+
+model DanhGiaTraiNghiem {
+  idDanhGia    Int       @id @default(autoincrement())
+  idLichHen    Int
+  idUser       Int
+  idXe         Int
+  SoSao        Int?      // Rating (e.g., 1-5 stars)
+  NoiDung      String?   @db.LongText
+  NgayDanhGia  DateTime  @default(now())
+
+  lichHen      LichHen   @relation(fields: [idLichHen], references: [idLichHen])
+  user         Users     @relation(fields: [idUser], references: [idUsers])
+  xe           Xe        @relation(fields: [idXe], references: [idXe])
 }
 
 model LoaiXe {
@@ -62,7 +79,7 @@ model Xe {
   MauSac      String?   @db.VarChar(50)
   DongCo      String?   @db.VarChar(225)
   TrangThai   String?   @db.VarChar(50)
-  HinhAnh     String?   @db.VarChar(225)
+  HinhAnh     String?   @db.VarChar(10000)
   NamSanXuat  String?   @db.VarChar(45)
   loaiXe      LoaiXe?   @relation(fields: [idLoaiXe], references: [idLoaiXe])
   ChiTietDonHang ChiTietDonHang[]
@@ -73,6 +90,20 @@ model Xe {
   LichHenLayXe LichHenLayXe[]
   LichGiaoXe  LichGiaoXe[]
   LichHen LichHen[]
+  DanhGiaTraiNghiem DanhGiaTraiNghiem[]
+}
+
+model Notification {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  type        String   @db.VarChar(50)
+  message     String   @db.VarChar(255)
+  data        String?  @db.LongText
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  user        Users    @relation(fields: [userId], references: [idUsers])
 }
 
 model DonHang {
@@ -243,15 +274,19 @@ model LichHen {
   TenKhachHang String?   @db.VarChar(225)
   Sdt          String?   @db.VarChar(15)
   Email        String?   @db.VarChar(225)
-  idXe         Int?      
+  idXe         Int?
+  idUser       Int?      
   idLoaiXe     Int?      
   GioHen       DateTime? 
   NgayHen      DateTime? 
   DiaDiem      String?   @db.VarChar(225)
   NoiDung      String?   @db.LongText
+  trangThai    String?   @db.VarChar(225)
 
   xe           Xe?       @relation(fields: [idXe], references: [idXe])
   loaiXe       LoaiXe?   @relation(fields: [idLoaiXe], references: [idLoaiXe])
+  user         Users?    @relation(fields: [idUser], references: [idUsers])
+  DanhGiaTraiNghiem DanhGiaTraiNghiem[]
 }
 
 model LichHenLayXe {

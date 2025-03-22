@@ -1,11 +1,12 @@
-"use client";
-
+"use client"
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import SearchModal from "./Searchmodel";
 import { useRouter } from "next/navigation";
 import { UserAuth } from "../types/auth";
+import { useDrop } from 'react-dnd';
+import toast from "react-hot-toast";
 
 interface LoaiXe {
   idLoaiXe: number;
@@ -27,6 +28,18 @@ interface CartItem {
   };
 }
 
+interface Car {
+  idXe: number;
+  TenXe: string;
+  GiaXe: number;
+  MauSac: string;
+  DongCo: string;
+  TrangThai: string;
+  HinhAnh: string;
+  NamSanXuat: string;
+  idLoaiXe: number;
+}
+
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [loaiXe, setLoaiXe] = useState<LoaiXe[]>([]);
@@ -35,6 +48,35 @@ export default function Navbar() {
   const [user, setUser] = useState<UserAuth | null>(null);
   const router = useRouter();
 
+  const [{ isOver }, dropRef] = useDrop(() => ({
+    accept: 'CAR_ITEM',
+    drop: async (item: Car) => {
+      try {
+        const response = await fetch('/api/giohang', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            idXe: item.idXe,
+            SoLuong: 1,
+          }),
+        });
+
+        if (!response.ok) throw new Error('Failed to add to cart');
+        
+        window.dispatchEvent(new Event('cartUpdated'));
+        toast.success('Thêm vào giỏ hàng thành công!');
+      } catch (error) {
+        console.error('Error adding to cart:', error);
+        toast.error('Không thể thêm vào giỏ hàng');
+      }
+    },
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+    }),
+  }));
+
   useEffect(() => {
     const fetchCartItems = async () => {
       try {
@@ -42,16 +84,15 @@ export default function Navbar() {
         const response = await fetch("/api/giohang");
         if (!response.ok) throw new Error("Failed to fetch cart items");
         const data = await response.json();
-        setCartItems(data || []); // Ensure we always have an array
+        setCartItems(data || []);
       } catch (error) {
         console.error("Failed to fetch cart items", error);
-        setCartItems([]); // Set empty array on error
+        setCartItems([]);
       } finally {
         setIsLoading(false);
       }
     };
 
-    // Add event listener for cart updates
     const handleCartUpdate = async () => {
       try {
         const response = await fetch("/api/giohang");
@@ -68,10 +109,8 @@ export default function Navbar() {
       fetchCartItems();
     }
 
-    // Add event listener
     window.addEventListener('cartUpdated', handleCartUpdate);
 
-    // Remove event listener on cleanup
     return () => {
       window.removeEventListener('cartUpdated', handleCartUpdate);
     };
@@ -98,7 +137,7 @@ export default function Navbar() {
         const response = await fetch("api/loaixe");
         if (!response.ok) throw new Error("Failed to fetch loai xe");
         const data = await response.json();
-        setLoaiXe(data || []); // Ensure we always have an array
+        setLoaiXe(data || []);
       } catch (error) {
         console.error("Failed to fetch loai xe", error);
         setLoaiXe([]);
@@ -111,24 +150,23 @@ export default function Navbar() {
     try {
       await fetch("/api/auth/logout", { method: "POST" });
       setUser(null);
-      setCartItems([]); // Clear cart items on logout
+      setCartItems([]);
       router.push("/");
     } catch (error) {
       console.error("Logout failed:", error);
     }
   };
 
-  // Calculate cart totals
   const cartItemCount = cartItems?.length || 0;
+  
 
   return (
     <div data-theme="light">
-      <div className="navbar bg-base-100 shadow-sm fixed z-50">
-        {/* Left section with logo and navigation */}
-        <div className="flex-1  px-4 py-2">
+      <div className="navbar opacity-90 bg-base-100 shadow-sm fixed z-50">
+        <div className="flex-1 px-4 py-2">
           <Link href="/">
             <Image
-              className="ml-2 h-8  hover:scale-105 md:ml-6 md:text-2xl sm:text-2xl"
+              className="ml-2 h-8 hover:scale-105 md:ml-6 md:text-2xl sm:text-2xl"
               alt="VinFast - Thương hiệu xe điện đầu tiên Việt Nam"
               width={100}
               height={100}
@@ -136,10 +174,9 @@ export default function Navbar() {
             />
           </Link>
 
-          {/* Navigation menu */}
           <div className="justify-start ml-36 xl:flex hidden items-start w-full gap-7">
             <Link href="/">
-              <button className="font-semibold font-serif py-2 transition-all duration-500 text-blue-500 hover:text-red-500 ">
+              <button className="font-semibold font-serif py-2 transition-all duration-500 text-blue-500 hover:text-red-500">
                 Trang Chủ
               </button>
             </Link>
@@ -152,7 +189,6 @@ export default function Navbar() {
               </li>
             </ul>
 
-            {/* Product dropdown */}
             <div
               onMouseLeave={() => setIsMenuOpen(false)}
               className={`absolute z-99 top-16 border-t-2 border-blue-200 left-0 w-full bg-white flex flex-col justify-center items-center gap-10 text-lg border-b-4 shadow-2xl transform transition-all duration-75 ease-in-out ${
@@ -195,14 +231,12 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Search section */}
         <div className="justify-center w-10 md:w-60 items-center mr-4 relative">
           <div className="mb-2">
             <SearchModal />
           </div>
         </div>
 
-        {/* Right section with cart and user profile */}
         <div className="flex-none">
           {!user ? (
             <div className="flex gap-2 h-14">
@@ -221,12 +255,12 @@ export default function Navbar() {
             </div>
           ) : (
             <div className="flex relative">
-              {/* Cart dropdown */}
-              <div className="dropdown dropdown-end ">
+              <div className="dropdown dropdown-end">
                 <div
+                  ref={dropRef as any}
                   tabIndex={0}
                   role="button"
-                  className="btn btn-ghost btn-circle"
+                  className={`btn btn-ghost btn-circle ${isOver ? 'bg-blue-100' : ''}`}
                 >
                   <Link href={"/Cart"}>
                     <div className="indicator">
@@ -252,7 +286,6 @@ export default function Navbar() {
                 </div>
               </div>
 
-              {/* User profile dropdown */}
               <div className="dropdown dropdown-end hidden xl:block">
                 <div
                   tabIndex={0}
@@ -284,6 +317,15 @@ export default function Navbar() {
                   <li>
                     <a href="/Orders">Orders</a>
                   </li>
+                  <li>
+                    <a href="/Lichhen">Lich Hen</a>
+                  </li>
+                  <li>
+                    <a href="/Danhgia">Revivew Car</a>
+                  </li>
+                  <li>
+                    <a href="/Changepassword">Change Password</a>
+                  </li>
                   {user.role?.TenNguoiDung === "Admin" && (
                     <li>
                       <a href="/dashboard">Dashboard</a>
@@ -298,11 +340,9 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Mobile menu */}
-
         <div className="xl:hidden">
           <button
-            className="btn btn-ghost rounded-lg p-2 "
+            className="btn btn-ghost rounded-lg p-2"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             <div className="w-6 h-6 relative">
@@ -325,7 +365,6 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Enhanced Mobile Menu */}
         <div
           className={`fixed xl:hidden top-[4rem] left-0 w-full overflow-y-auto bg-white transform transition-all duration-300 ease-in-out ${
             isMenuOpen
@@ -335,8 +374,6 @@ export default function Navbar() {
           style={{ height: "calc(100vh - 4rem)" }}
         >
           <div className="flex flex-col h-full">
-            {/* Navigation Links */}
-
             <div className="border-t border-gray-200 ml-3 p-4">
               {user ? (
                 <div className="flex items-center space-x-3 p-3 w-80 bg-blue-50 rounded-lg">
@@ -371,10 +408,10 @@ export default function Navbar() {
                 </div>
               )}
             </div>
-            <div className="flex flex-col p-4 space-y-4"> 
+            <div className="flex flex-col p-4 space-y-4">
               <Link
                 href="/"
-                className="flex items-center space-x-3 p-4  rounded-lg hover:bg-blue-50 transition-colors duration-200"
+                className="flex items-center space-x-3 p-4 rounded-lg hover:bg-blue-50 transition-colors duration-200"
                 onClick={() => setIsMenuOpen(false)}
               >
                 <svg
@@ -394,50 +431,49 @@ export default function Navbar() {
                 <span className="font-semibold text-gray-700">Trang Chủ</span>
               </Link>
 
-              {/* Products Dropdown */}
               <div className="collapse collapse-arrow">
                 <input type="checkbox" />
                 <div className="collapse-title flex text-base font-medium">
-                <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6 text-blue-600"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                      />
-                    </svg>
-                    <span className="font-semibold ml-3 text-gray-700">
-                      Sản Phẩm
-                    </span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6 text-blue-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10 M7 7h10"
+                    />
+                  </svg>
+                  <span className="font-semibold ml-3 text-gray-700">
+                    Sản Phẩm
+                  </span>
                 </div>
                 <div className="collapse-content">
-                <div className="mt-2 p-2 bg-gray-50 rounded-lg">
-                  {loaiXe.map((loai) => (
-                    <Link
-                      key={loai.idLoaiXe}
-                      href={`LoaiXe?id=${loai.idLoaiXe}`}
-                      className="flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-100 transition-colors duration-200"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <Image
-                        src={loai.HinhAnh}
-                        alt={loai.TenLoai}
-                        width={40}
-                        height={40}
-                        className="rounded-md"
-                      />
-                      <span className="font-medium text-gray-700">
-                        {loai.TenLoai}
-                      </span>
-                    </Link>
-                  ))}
-                </div>
+                  <div className="mt-2 p-2 bg-gray-50 rounded-lg">
+                    {loaiXe.map((loai) => (
+                      <Link
+                        key={loai.idLoaiXe}
+                        href={`LoaiXe?id=${loai.idLoaiXe}`}
+                        className="flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-100 transition-colors duration-200"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <Image
+                          src={loai.HinhAnh}
+                          alt={loai.TenLoai}
+                          width={40}
+                          height={40}
+                          className="rounded-md"
+                        />
+                        <span className="font-medium text-gray-700">
+                          {loai.TenLoai}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -486,7 +522,6 @@ export default function Navbar() {
               </Link>
             </div>
 
-            {/* Bottom Section with User Info if logged in */}
             {user && (
               <div className="">
                 <ul className="menu menu-lg gap-2 mt-4 h-96 pt-4 font-semibold text-gray-700 text-base border-t">
@@ -522,11 +557,10 @@ export default function Navbar() {
                     </a>
                   </li>
                 </ul>
-                </div>
-              )}
+              </div>
+            )}
           </div>
         </div>
-        {/* Rest of the navbar components... */}
       </div>
     </div>
   );
