@@ -154,11 +154,11 @@ const DepositOrderPage = () => {
               Bạn chưa có đơn đặt cọc nào
             </div>
           ) : (
-            <div className="flex flex-wrap flex-shrink justify-center gap-12">
+            <div className="flex flex-wrap gap-3">
               {datCocs.map((datCoc) => (
                 <div
                   key={datCoc.idDatCoc}
-                  className="bg-white rounded-2xl shadow-xl p-6 space-y-4"
+                  className="bg-white rounded-2xl shadow-xl p-6 w-[550px] space-y-4"
                 >
                   <div className="flex justify-between items-center">
                     <div>
@@ -177,7 +177,7 @@ const DepositOrderPage = () => {
                   <div className="flex items-center gap-4 border-t pt-4">
                     <div className="w-24 h-24 flex-shrink-0">
                       <img
-                        src={datCoc.xe.HinhAnh.split("|")[0]}
+                        src={datCoc.xe.HinhAnh[0]}
                         alt={datCoc.xe.TenXe}
                         className="w-full h-full object-cover rounded-lg"
                       />

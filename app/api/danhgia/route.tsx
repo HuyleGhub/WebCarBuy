@@ -27,6 +27,7 @@ export async function GET(request: NextRequest) {
           select: {
             Hoten: true,
             Email: true,
+            Avatar: true,
           },
         },
         xe: {

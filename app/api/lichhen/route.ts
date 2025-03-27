@@ -1,4 +1,4 @@
-
+//api/lichhen
 import { getSession } from '@/app/lib/auth';
 import prisma from '@/prisma/client'
 import { PrismaClient } from '@prisma/client'

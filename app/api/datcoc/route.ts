@@ -1,3 +1,4 @@
+//api/datcoc
 import { getSession } from '@/app/lib/auth'
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/prisma/client';
@@ -8,12 +9,12 @@ export async function POST(req: NextRequest) {
         const session = await getSession();
         const body = await req.json();
 
-        // Create deposit record
+        // Create deposit record with ChiTietDatCoc
         const result = await prisma.$transaction(async (prisma) => {
             // Get vehicle details
             const vehicle = await prisma.xe.findUnique({
                 where: { idXe: parseInt(body.idXe) },
-                select: { TenXe: true }
+                select: { TenXe: true, GiaXe: true }
             });
 
             // Create deposit record
@@ -27,6 +28,33 @@ export async function POST(req: NextRequest) {
                 }
             });
 
+            // Check if ChiTietDatCoc already exists for this vehicle
+            const existingChiTietDatCoc = await prisma.chiTietDatCoc.findUnique({
+                where: { idXe: parseInt(body.idXe) }
+            });
+
+            // Create or update ChiTietDatCoc record
+            if (!existingChiTietDatCoc) {
+                await prisma.chiTietDatCoc.create({
+                    data: {
+                        idDatCoc: datCoc.idDatCoc,
+                        idXe: parseInt(body.idXe),
+                        SoLuong: 1, // Assuming single vehicle deposit
+                        DonGia: vehicle?.GiaXe // Use vehicle price from database
+                    }
+                });
+            } else {
+                // If exists, update the existing record
+                await prisma.chiTietDatCoc.update({
+                    where: { idXe: parseInt(body.idXe) },
+                    data: {
+                        idDatCoc: datCoc.idDatCoc,
+                        SoLuong: 1,
+                        DonGia: vehicle?.GiaXe
+                    }
+                });
+            }
+
             // Update car status to 'Đã Đặt Cọc'
             await prisma.xe.update({
                 where: { idXe: parseInt(body.idXe) },
@@ -35,6 +63,7 @@ export async function POST(req: NextRequest) {
                 }
             });
 
+            // Remove from cart
             await prisma.gioHang.deleteMany({
                 where: {
                     idXe: parseInt(body.idXe),
@@ -52,7 +81,7 @@ export async function POST(req: NextRequest) {
             // Create notifications for staff
             const staffMembers = await prisma.users.findMany({
                 where: {
-                    idRole: 3 // Assuming 2 is the role ID for staff
+                    idRole: 3 // Assuming 3 is the role ID for staff
                 }
             });
 
@@ -79,6 +108,7 @@ export async function POST(req: NextRequest) {
     }
 }
 
+// GET method remains the same as in the previous version
 export async function GET() { 
     const session = await getSession();
     try {
@@ -104,7 +134,17 @@ export async function GET() {
             }
         }
     })
-    return NextResponse.json(datCoc);
+
+    // Convert HinhAnh to arrays for each xe in datCoc, with null check
+    const modifiedDatCoc = datCoc.map(item => ({
+        ...item,
+        xe: item.xe ? {
+            ...item.xe,
+            HinhAnh: item.xe.HinhAnh ? item.xe.HinhAnh.split('|') : []
+        } : null
+    }));
+
+    return NextResponse.json(modifiedDatCoc);
     }catch (error: any) {
       return NextResponse.json({ error: error.message }, { status:500})
     }

@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import { UserAuth } from '@/app/types/auth';
 import Footer from '@/app/components/Footer';
+import { Fileupload } from "@/app/components/Fileupload";
 
 const ProfilePage = () => {
   const [user, setUser] = useState<UserAuth | null>(null);
@@ -19,6 +20,7 @@ const ProfilePage = () => {
     Hoten: '',
     Sdt: '',
     Diachi: '',
+    Avatar: [] as string[],
   });
 
   useEffect(() => {
@@ -28,12 +30,19 @@ const ProfilePage = () => {
         if (!response.ok) throw new Error('Failed to fetch user data');
         const userData = await response.json();
         setUser(userData);
+        
+        // Convert Avatar string to array if it exists
+        const avatarArray = userData.Avatar ? 
+          (typeof userData.Avatar === 'string' ? userData.Avatar.split('|') : userData.Avatar) : 
+          [];
+        
         setFormData({
           Tentaikhoan: userData.Tentaikhoan || '',
           Email: userData.Email || '',
           Hoten: userData.Hoten || '',
           Sdt: userData.Sdt || '',
           Diachi: userData.Diachi || '',
+          Avatar: avatarArray,
         });
         setIsLoading(false);
       } catch (error) {
@@ -62,7 +71,8 @@ const ProfilePage = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...formData
+          ...formData,
+          Avatar: Array.isArray(formData.Avatar) ? formData.Avatar : [formData.Avatar]
         }),
       });
 
@@ -97,9 +107,10 @@ const ProfilePage = () => {
       <span className="loading loading-spinner text-blue-600 loading-lg"></span>
     </div>
   );
+  
   return (
-    <div className="min-h-screen bg-gray-100 pt-20">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gray-100 pt-20 ">
+      <div className="container mx-auto px-4 pt-20 pb-44">
         <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold text-gray-800">Thông tin cá nhân</h1>
@@ -129,6 +140,40 @@ const ProfilePage = () => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Avatar Upload Section */}
+            <div className="flex flex-col items-center mb-6">
+              <div className="mb-4">
+                {formData.Avatar && formData.Avatar.length > 0 ? (
+                  <div className="relative w-32 h-32 rounded-full overflow-hidden">
+                    <img 
+                      src={formData.Avatar[0]} 
+                      alt="Profile Avatar" 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-32 h-32 rounded-full bg-blue-500 font-bold flex items-center justify-center">
+                    <span className="text-white text-3xl">
+                      {formData.Hoten ? formData.Hoten.charAt(0).toUpperCase() : '?'}
+                    </span>
+                  </div>
+                )}
+              </div>
+              
+              {isEditing && (
+                <div className="w-full">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Profile Picture
+                  </label>
+                  <Fileupload 
+                    endpoint='imageUploader'
+                    onChange={(urls) => setFormData(prev => ({ ...prev, Avatar: urls }))}
+                    value={formData.Avatar}
+                  />
+                </div>
+              )}
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700">Email</label>
@@ -138,7 +183,7 @@ const ProfilePage = () => {
                   value={formData.Email}
                   onChange={handleInputChange}
                   disabled={!isEditing}
-                  className={`mt-1 block w-full rounded-md border ${!isEditing ? "text-black":"text-white"} text-blackborder-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-blue-500 disabled:bg-gray-100`}
+                  className={`mt-1 block w-full rounded-md border ${!isEditing ? "bg-gray-100 text-black":"bg-white text-black"} border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-blue-500 disabled:bg-gray-100`}
                 />
               </div>
 
@@ -150,7 +195,7 @@ const ProfilePage = () => {
                   value={formData.Hoten}
                   onChange={handleInputChange}
                   disabled={!isEditing}
-                  className={`mt-1 block w-full rounded-md border ${!isEditing ? "text-black":"text-white"} text-blackborder-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-blue-500 disabled:bg-gray-100`}
+                  className={`mt-1 block w-full rounded-md border ${!isEditing ? "bg-gray-100 text-black":"bg-white text-black"} border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-blue-500 disabled:bg-gray-100`}
                 />
               </div>
 
@@ -162,7 +207,7 @@ const ProfilePage = () => {
                   value={formData.Sdt}
                   onChange={handleInputChange}
                   disabled={!isEditing}
-                  className={`mt-1 block w-full rounded-md border ${!isEditing ? "text-black":"text-white"} text-blackborder-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-blue-500 disabled:bg-gray-100`}
+                  className={`mt-1 block w-full rounded-md border ${!isEditing ? "bg-gray-100 text-black":"bg-white text-black"} border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-blue-500 disabled:bg-gray-100`}
                 />
               </div>
 
@@ -174,7 +219,7 @@ const ProfilePage = () => {
                   value={formData.Diachi}
                   onChange={handleInputChange}
                   disabled={!isEditing}
-                  className={`mt-1 block w-full rounded-md border ${!isEditing ? "text-black":"text-white"} text-blackborder-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-blue-500 disabled:bg-gray-100`}
+                  className={`mt-1 block w-full rounded-md border ${!isEditing ? "bg-gray-100 text-black":"bg-white text-black"} border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-blue-500 disabled:bg-gray-100`}
                 />
               </div>
             </div>
@@ -183,7 +228,7 @@ const ProfilePage = () => {
               <div className="flex justify-end mt-6">
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-blue-500 text-white rounded-md  hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 >
                   Save Changes
                 </button>

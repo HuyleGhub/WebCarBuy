@@ -39,6 +39,7 @@ export async function GET(
         user: {
           select: {
             Hoten: true,
+            Avatar: true,
           },
         },
       },

@@ -24,6 +24,7 @@ export async function GET(request: NextRequest) {
         Sdt: true,
         Diachi: true,
         idRole: true,
+        Avatar: true,
         role: {
           select: {
             TenNguoiDung: true
@@ -44,6 +45,7 @@ export async function GET(request: NextRequest) {
       Hoten: user.Hoten,
       Sdt: user.Sdt,
       Diachi: user.Diachi,
+      Avatar: user.Avatar,
       role: user.role
     });
 

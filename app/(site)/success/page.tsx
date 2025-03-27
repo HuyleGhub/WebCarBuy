@@ -17,7 +17,7 @@ export default function SuccessPage() {
 
       if (!paymentIntentId) {
         toast.error('Không tìm thấy mã thanh toán');
-        setTimeout(() => router.push('/Cart'), 2000);
+        setTimeout(() => router.push('/'), 2000);
         return;
       }
 
@@ -44,11 +44,11 @@ export default function SuccessPage() {
         }
         
         setOrderProcessed(true);
-        setTimeout(() => router.push('/Orders'), 2000);
+        setTimeout(() => router.push('/'), 2000);
       } catch (error: any) {
         console.error('Error processing payment:', error);
         toast.error(error.message || 'Có lỗi xảy ra khi xử lý thanh toán');
-        setTimeout(() => router.push('/Cart'), 2000);
+        setTimeout(() => router.push('/'), 2000);
       } finally {
         setProcessing(false);
       }
@@ -63,7 +63,7 @@ export default function SuccessPage() {
     } else {
       setProcessing(false);
       setOrderProcessed(true);
-      setTimeout(() => router.push('/Orders'), 1000);
+      setTimeout(() => router.push('/'), 1000);
     }
     
     // Cleanup function to remove the processing flag when navigating away
@@ -81,7 +81,7 @@ export default function SuccessPage() {
           {processing ? 'Đang xử lý thanh toán...' : 'Thanh toán thành công!'}
         </h1>
         <p className="text-gray-600">
-          {processing ? 'Vui lòng đợi trong giây lát...' : 'Bạn sẽ được chuyển hướng tới trang đơn hàng...'}
+          {processing ? 'Vui lòng đợi trong giây lát...' : 'Bạn sẽ được chuyển hướng tới trang chủ...'}
         </p>
       </div>
     </div>

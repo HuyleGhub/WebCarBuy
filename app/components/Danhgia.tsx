@@ -46,7 +46,9 @@ interface DanhGiaTraiNghiem {
 
 const TestDriveReviewPage = () => {
   const [lichHens, setLichHens] = useState<LichHen[]>([]);
-  const [danhGias, setDanhGias] = useState<{[key: number]: DanhGiaTraiNghiem}>({});
+  const [danhGias, setDanhGias] = useState<{
+    [key: number]: DanhGiaTraiNghiem;
+  }>({});
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [ratingModal, setRatingModal] = useState<{
@@ -90,7 +92,10 @@ const TestDriveReviewPage = () => {
       // Initialize displayed items
       setDisplayedLichHens(data.slice(0, lichHensPerPage));
     } catch (error) {
-      console.error("There has been a problem with your fetch operation:", error);
+      console.error(
+        "There has been a problem with your fetch operation:",
+        error
+      );
       setError("Không thể tải danh sách lịch hẹn");
     } finally {
       setLoading(false);
@@ -104,13 +109,13 @@ const TestDriveReviewPage = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      
+
       // Create a map of ratings by lichHenId for easy lookup
-      const ratingsMap: {[key: number]: DanhGiaTraiNghiem} = {};
+      const ratingsMap: { [key: number]: DanhGiaTraiNghiem } = {};
       data.forEach((danhGia: DanhGiaTraiNghiem) => {
         ratingsMap[danhGia.idLichHen] = danhGia;
       });
-      
+
       setDanhGias(ratingsMap);
     } catch (error) {
       console.error("Error fetching ratings:", error);
@@ -181,7 +186,7 @@ const TestDriveReviewPage = () => {
 
       toast.success("Đánh giá thành công");
       closeRatingModal();
-      
+
       // Refresh ratings after submission
       await fetchDanhGias();
     } catch (error) {
@@ -194,9 +199,9 @@ const TestDriveReviewPage = () => {
   const formatDateTime = (dateTimeString: string) => {
     try {
       const date = new Date(dateTimeString);
-      return date.toLocaleTimeString('vi-VN', {
-        hour: '2-digit',
-        minute: '2-digit'
+      return date.toLocaleTimeString("vi-VN", {
+        hour: "2-digit",
+        minute: "2-digit",
       });
     } catch (error) {
       return dateTimeString;
@@ -206,8 +211,11 @@ const TestDriveReviewPage = () => {
   // Load more function
   const loadMore = () => {
     const currentLength = displayedLichHens.length;
-    const newItems = lichHens.slice(currentLength, currentLength + lichHensPerPage);
-    setDisplayedLichHens(prevItems => [...prevItems, ...newItems]);
+    const newItems = lichHens.slice(
+      currentLength,
+      currentLength + lichHensPerPage
+    );
+    setDisplayedLichHens((prevItems) => [...prevItems, ...newItems]);
   };
 
   // Show less function
@@ -217,7 +225,10 @@ const TestDriveReviewPage = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen" data-theme="light">
+      <div
+        className="flex justify-center items-center h-screen"
+        data-theme="light"
+      >
         <span className="loading loading-spinner text-blue-600 loading-lg"></span>
       </div>
     );
@@ -233,7 +244,6 @@ const TestDriveReviewPage = () => {
 
   return (
     <div data-theme="light">
-      
       {/* Rating Modal */}
       {ratingModal.isOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -241,7 +251,7 @@ const TestDriveReviewPage = () => {
             <h3 className="text-xl font-bold mb-4">
               Đánh giá trải nghiệm lái thử: {ratingModal.carName}
             </h3>
-            
+
             <div className="flex justify-center mb-4">
               <ReactStars
                 count={5}
@@ -251,14 +261,14 @@ const TestDriveReviewPage = () => {
                 isHalf={false}
               />
             </div>
-            
+
             <textarea
               className="w-full p-3 border rounded-md mb-4 min-h-[100px]"
               placeholder="Chia sẻ cảm nhận của bạn về trải nghiệm lái thử xe..."
               value={rating.NoiDung}
               onChange={handleInputChange}
             ></textarea>
-            
+
             <div className="flex justify-end gap-2">
               <button
                 className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
@@ -281,10 +291,8 @@ const TestDriveReviewPage = () => {
       {viewRatingModal.isOpen && viewRatingModal.rating && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-xl font-bold mb-4">
-              Đánh giá của bạn
-            </h3>
-            
+            <h3 className="text-xl font-bold mb-4">Đánh giá của bạn</h3>
+
             <div className="flex justify-center mb-4">
               <ReactStars
                 count={5}
@@ -294,15 +302,18 @@ const TestDriveReviewPage = () => {
                 edit={false}
               />
             </div>
-            
+
             <div className="p-3 border rounded-md mb-4 min-h-[100px] bg-gray-50">
               {viewRatingModal.rating.NoiDung}
             </div>
-            
+
             <p className="text-sm text-gray-500 mb-4">
-              Đánh giá vào: {new Date(viewRatingModal.rating.NgayDanhGia).toLocaleDateString('vi-VN')}
+              Đánh giá vào:{" "}
+              {new Date(viewRatingModal.rating.NgayDanhGia).toLocaleDateString(
+                "vi-VN"
+              )}
             </p>
-            
+
             <div className="flex justify-end gap-2">
               <button
                 className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
@@ -333,7 +344,9 @@ const TestDriveReviewPage = () => {
                   <div className="flex justify-between items-center">
                     <div>
                       <span className="text-gray-600">Mã lịch hẹn: </span>
-                      <span className="font-semibold">#{lichHen.idLichHen}</span>
+                      <span className="font-semibold">
+                        #{lichHen.idLichHen}
+                      </span>
                     </div>
                   </div>
 
@@ -346,7 +359,9 @@ const TestDriveReviewPage = () => {
                       />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-lg mb-1">{lichHen.xe.TenXe}</h3>
+                      <h3 className="font-semibold text-lg mb-1">
+                        {lichHen.xe.TenXe}
+                      </h3>
                       <p className="text-gray-600 mb-1">
                         Loại xe: <span>{lichHen.loaiXe.TenLoai}</span>
                       </p>
@@ -373,18 +388,22 @@ const TestDriveReviewPage = () => {
                         {formatDateTime(lichHen.GioHen)}
                       </p>
                       <p className="text-gray-600">
-                        <span className="font-medium">Địa điểm:</span> {lichHen.DiaDiem}
+                        <span className="font-medium">Địa điểm:</span>{" "}
+                        {lichHen.DiaDiem}
                       </p>
                     </div>
                     <div>
                       <p className="text-gray-600 mb-1">
-                        <span className="font-medium">Khách hàng:</span> {lichHen.TenKhachHang}
+                        <span className="font-medium">Khách hàng:</span>{" "}
+                        {lichHen.TenKhachHang}
                       </p>
                       <p className="text-gray-600 mb-1">
-                        <span className="font-medium">Số điện thoại:</span> {lichHen.Sdt}
+                        <span className="font-medium">Số điện thoại:</span>{" "}
+                        {lichHen.Sdt}
                       </p>
                       <p className="text-gray-600">
-                        <span className="font-medium">Email:</span> {lichHen.Email}
+                        <span className="font-medium">Email:</span>{" "}
+                        {lichHen.Email}
                       </p>
                     </div>
                   </div>
@@ -399,14 +418,18 @@ const TestDriveReviewPage = () => {
                   <div className="flex justify-end items-center gap-4 border-t pt-4">
                     {danhGias[lichHen.idLichHen] ? (
                       <button
-                        onClick={() => openViewRatingModal(danhGias[lichHen.idLichHen])}
+                        onClick={() =>
+                          openViewRatingModal(danhGias[lichHen.idLichHen])
+                        }
                         className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-200"
                       >
                         Xem đánh giá
                       </button>
                     ) : (
                       <button
-                        onClick={() => openRatingModal(lichHen.idLichHen, lichHen.xe.TenXe)}
+                        onClick={() =>
+                          openRatingModal(lichHen.idLichHen, lichHen.xe.TenXe)
+                        }
                         className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200"
                       >
                         Đánh giá trải nghiệm
@@ -416,7 +439,7 @@ const TestDriveReviewPage = () => {
                 </div>
               ))}
             </div>
-            
+
             {/* Load More / Show Less Buttons */}
             <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-5 px-4 sm:px-0 mt-8 w-full">
               {displayedLichHens.length < lichHens.length && (

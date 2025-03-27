@@ -1,3 +1,4 @@
+//checkout/success/page.tsx
 "use client";
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -17,7 +18,7 @@ export default function SuccessPage() {
 
       if (!paymentIntentId) {
         toast.error('Không tìm thấy mã thanh toán');
-        setTimeout(() => router.push('/Cart'), 2000);
+        setTimeout(() => router.push('/'), 2000);
         return;
       }
 
@@ -44,11 +45,11 @@ export default function SuccessPage() {
         }
         
         setOrderProcessed(true);
-        setTimeout(() => router.push('/Orders'), 2000);
+        setTimeout(() => router.push('/'), 2000);
       } catch (error: any) {
         console.error('Error processing payment:', error);
         toast.error(error.message || 'Có lỗi xảy ra khi xử lý thanh toán');
-        setTimeout(() => router.push('/Cart'), 2000);
+        setTimeout(() => router.push('/'), 2000);
       } finally {
         setProcessing(false);
       }
@@ -63,7 +64,7 @@ export default function SuccessPage() {
     } else {
       setProcessing(false);
       setOrderProcessed(true);
-      setTimeout(() => router.push('/Orders'), 1000);
+      setTimeout(() => router.push('/'), 1000);
     }
     
     // Cleanup function to remove the processing flag when navigating away
