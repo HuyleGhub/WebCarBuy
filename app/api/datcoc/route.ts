@@ -130,6 +130,7 @@ export async function GET() {
                 select:{
                     NgayLayXe: true,
                     DiaDiem: true,
+                    GioHenLayXe: true,
                 },
             }
         }

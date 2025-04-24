@@ -39,16 +39,16 @@ export async function GET() {
     const today = new Date();
     const sixMonthsAgo = new Date(today.setMonth(today.getMonth() - 6));
     
-    const monthlyData = await prisma.donHang.groupBy({
-      by: ['NgayDatHang'],
+    const monthlyData = await prisma.datCoc.groupBy({
+      by: ['NgayDat'],
       _sum: {
-        TongTien: true
+        SotienDat: true
       },
       where: {
-        NgayDatHang: {
+        NgayDat: {
           gte: sixMonthsAgo
         },
-        TrangThaiDonHang: "Đã xác nhận"
+        TrangThaiDat: "Đã xác nhận"
       }
     });
 

@@ -1,3 +1,4 @@
+//api/checkout
 import { getSession } from '@/app/lib/auth';
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
@@ -48,7 +49,7 @@ const validateTotalAmount = async (vehicles: any[], depositPercentage: number) =
 export async function POST(req: Request) {
   try {
     const session = await getSession();
-    const { vehicles, depositPercentage = 0.2 } = await req.json();
+    const { vehicles, depositPercentage = 0.2, pickupSchedule } = await req.json();
 
     // Validate session and vehicles
     if (!session || !session.idUsers) {
@@ -90,7 +91,7 @@ export async function POST(req: Request) {
       MAX_USD_AMOUNT * 100
     );
 
-    // Create Stripe payment intent
+    // Create Stripe payment intent with pickup schedule in metadata
     const paymentIntent = await stripe.paymentIntents.create({
       amount: cappedDepositInUSD,
       currency: 'usd',
@@ -108,7 +109,9 @@ export async function POST(req: Request) {
         deposit_percentage: String(depositPercentage),
         total_amount_vnd: String(totalVND),
         deposit_amount_vnd: String(depositAmount),
-        capped_amount: cappedDepositInUSD > MAX_USD_AMOUNT * 100 ? 'true' : 'false'
+        capped_amount: cappedDepositInUSD > MAX_USD_AMOUNT * 100 ? 'true' : 'false',
+        // Add pickup schedule to metadata if provided
+        pickup_schedule: pickupSchedule ? JSON.stringify(pickupSchedule) : ''
       },
     });
 

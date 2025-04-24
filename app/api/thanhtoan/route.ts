@@ -1,3 +1,4 @@
+//api/thanhtoan
 import { getSession } from '@/app/lib/auth';
 import prisma from '@/prisma/client';
 import { NextResponse } from 'next/server';
@@ -80,14 +81,6 @@ export async function POST(req: Request) {
     const { vehicles, stripeSessionId, paymentMethod, depositPercentage = 0.2 } = body;
 
     // Validate session
-    if (!session || !session.idUsers) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
-
-    // Handle Stripe payment verification
     if (stripeSessionId && !vehicles) {
       try {
         const paymentIntent = await stripe.paymentIntents.retrieve(stripeSessionId);
@@ -110,12 +103,23 @@ export async function POST(req: Request) {
             ? parseInt(session.idUsers, 10) 
             : session.idUsers;
           
+          // Extract pickup schedule from metadata if it exists
+          let pickupSchedule;
+          if (paymentIntent.metadata?.pickup_schedule) {
+            try {
+              pickupSchedule = JSON.parse(paymentIntent.metadata.pickup_schedule);
+            } catch (e) {
+              console.error('Error parsing pickup schedule:', e);
+            }
+          }
+          
           return await processDeposit(
             parsedVehicles, 
             paymentMethod || 'STRIPE', 
             userId, 
             stripeSessionId, 
-            Number(paymentIntent.metadata.deposit_percentage)
+            Number(paymentIntent.metadata.deposit_percentage),
+            pickupSchedule  // Pass the parsed pickup schedule
           );
         } else {
           throw new Error("No vehicles found in payment metadata");
@@ -204,7 +208,18 @@ export async function POST(req: Request) {
   }
 }
 
-async function processDeposit(vehicles: any[], paymentMethod: string, userId: number, stripeSessionId?: string, depositPercentage: number = 0.2) {
+async function processDeposit(
+  vehicles: any[], 
+  paymentMethod: string, 
+  userId: number, 
+  stripeSessionId?: string, 
+  depositPercentage: number = 0.2,
+  pickupSchedule?: {
+    NgayLayXe: string;
+    GioHenLayXe: string;
+    DiaDiem: string;
+  }
+) {
   try {
     const result = await prisma.$transaction(async (prisma) => {
       const { totalVND, vehiclesWithDetails } = await validateTotalAmount(vehicles, depositPercentage);
@@ -237,66 +252,68 @@ async function processDeposit(vehicles: any[], paymentMethod: string, userId: nu
 
       // Create deposit details and update vehicle statuses
       const depositDetails = await Promise.all(
-        vehiclesWithDetails.map(async (item) => {
+        vehiclesWithDetails.map(async (item, index) => {
           // Check vehicle availability
           const vehicle = await prisma.xe.findUnique({
             where: { idXe: item.idXe }
           });
-
-          if (vehicle?.TrangThai === 'Đã đặt cọc') {
+      
+          if (!vehicle) {
+            throw new Error(`Vehicle ${item.idXe} not found`);
+          }
+      
+          if (vehicle.TrangThai === 'Đã đặt cọc') {
             throw new Error(`Vehicle ${item.idXe} is already reserved`);
           }
-
+      
+          // Check if this vehicle is already in a ChiTietDatCoc record
+          const existingRecord = await prisma.chiTietDatCoc.findFirst({
+            where: { idXe: parseInt(item.idXe) }
+          });
+      
+          let chiTietDatCoc;
+      
+          if (existingRecord) {
+            // If exists, update it to point to our new deposit
+            chiTietDatCoc = await prisma.chiTietDatCoc.update({
+              where: { idChiTietDatCoc: existingRecord.idChiTietDatCoc },
+              data: {
+                idDatCoc: deposit.idDatCoc,
+                SoLuong: 1,
+                DonGia: vehicle.GiaXe || 0
+              }
+            });
+          } else {
+            // If it doesn't exist, create a new record
+            chiTietDatCoc = await prisma.chiTietDatCoc.create({
+              data: {
+                idDatCoc: deposit.idDatCoc,
+                idXe: parseInt(item.idXe),
+                SoLuong: 1,
+                DonGia: vehicle.GiaXe || 0
+              }
+            });
+          }
+      
           // Update vehicle status
           await prisma.xe.update({
             where: { idXe: item.idXe },
             data: { TrangThai: 'Đã đặt cọc' }
           });
-
-          // Create deposit detail
-          const existingChiTietDatCoc = await prisma.chiTietDatCoc.findFirst({
-            where: { 
-                idXe: parseInt(item.idXe),
-                idDatCoc: item.idDatCoc 
-            }
-        });
-        
-        // Create or update ChiTietDatCoc record
-        if (!existingChiTietDatCoc) {
-            await prisma.chiTietDatCoc.create({
-                data: {
-                    idDatCoc: item.idDatCoc,
-                    idXe: parseInt(item.idXe),
-                    SoLuong: 1, // Assuming single vehicle deposit
-                    DonGia: vehicle?.GiaXe || 0 // Use vehicle price from database, default to 0 if undefined
-                }
-            });
-        } else {
-            // If exists, update the existing record
-            await prisma.chiTietDatCoc.update({
-                where: { 
-                    idChiTietDatCoc: existingChiTietDatCoc.idChiTietDatCoc 
-                },
-                data: {
-                    SoLuong: 1,
-                    DonGia: vehicle?.GiaXe || 0
-                }
-            });
-        }
-
+      
           // Create pickup schedule
           await prisma.lichHenLayXe.create({
             data: {
               idDatCoc: deposit.idDatCoc,
               idXe: item.idXe,
               idKhachHang: userId,
-              NgayLayXe: await calculatePickupDate(),
-              GioHenLayXe: await calculatePickupTime(),
-              DiaDiem: 'Showroom Chính'
+              NgayLayXe: pickupSchedule?.NgayLayXe ? new Date(pickupSchedule.NgayLayXe) : await calculatePickupDate(),
+              GioHenLayXe: pickupSchedule?.GioHenLayXe,
+              DiaDiem: pickupSchedule?.DiaDiem
             }
           });
-
-          return existingChiTietDatCoc;
+      
+          return chiTietDatCoc;
         })
       );
 

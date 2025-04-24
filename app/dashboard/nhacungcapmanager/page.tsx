@@ -1,13 +1,7 @@
+//nhacungcapmanager
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Tabledashboard from "@/app/components/Tabledashboard";
-import { IoAddCircleOutline } from "react-icons/io5";
-import { createUploadthing, type FileRouter } from "uploadthing/next";
-import { UploadButton } from "@/app/lib/uploadthing";
-import { Fileupload } from "@/app/components/Fileupload";
-import { url } from "inspector";
-import TableLoaiXe from "../components/Tableloaixe";
 import TableNhaCungCap from "../components/Tablenhacungcap";
 import toast, { Toaster } from "react-hot-toast";
 

@@ -43,60 +43,60 @@ const CarReviews = ({ idXe }: CarReviewsProps) => {
     5: 0,
   });
 
-  useEffect(() => {
-    fetchReviews();
-  }, [idXe]);
+  // useEffect(() => {
+  //   fetchReviews();
+  // }, [idXe]);
 
-  const fetchReviews = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`/api/danhgia/${idXe}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      setReviews(data);
+  // const fetchReviews = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const response = await fetch(`/api/danhgia/${idXe}`);
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! status: ${response.status}`);
+  //     }
+  //     const data = await response.json();
+  //     setReviews(data);
 
-      // Calculate average rating and stats
-      if (data.length > 0) {
-        const totalStars = data.reduce(
-          (sum: number, review: DanhGiaTraiNghiem) => sum + review.SoSao,
-          0
-        );
-        const avg = totalStars / data.length;
-        setAverageRating(parseFloat(avg.toFixed(1)));
+  //     // Calculate average rating and stats
+  //     if (data.length > 0) {
+  //       const totalStars = data.reduce(
+  //         (sum: number, review: DanhGiaTraiNghiem) => sum + review.SoSao,
+  //         0
+  //       );
+  //       const avg = totalStars / data.length;
+  //       setAverageRating(parseFloat(avg.toFixed(1)));
 
-        // Count reviews by star rating
-        const stats: RatingStats = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-        data.forEach((review: DanhGiaTraiNghiem) => {
-          const rating = review.SoSao;
-          // Make sure we only count valid ratings from 1-5
-          if (rating >= 1 && rating <= 5) {
-            stats[rating as 1 | 2 | 3 | 4 | 5]++;
-          }
-        });
-        setReviewStats(stats);
-      }
-    } catch (error) {
-      console.error("Error fetching reviews:", error);
-      setError("Không thể tải đánh giá");
-    } finally {
-      setLoading(false);
-    }
-  };
+  //       // Count reviews by star rating
+  //       const stats: RatingStats = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+  //       data.forEach((review: DanhGiaTraiNghiem) => {
+  //         const rating = review.SoSao;
+  //         // Make sure we only count valid ratings from 1-5
+  //         if (rating >= 1 && rating <= 5) {
+  //           stats[rating as 1 | 2 | 3 | 4 | 5]++;
+  //         }
+  //       });
+  //       setReviewStats(stats);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching reviews:", error);
+  //     setError("Không thể tải đánh giá");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-  const formatDate = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString("vi-VN", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      });
-    } catch (error) {
-      return dateString;
-    }
-  };
+  // const formatDate = (dateString: string) => {
+  //   try {
+  //     const date = new Date(dateString);
+  //     return date.toLocaleDateString("vi-VN", {
+  //       day: "2-digit",
+  //       month: "2-digit",
+  //       year: "numeric",
+  //     });
+  //   } catch (error) {
+  //     return dateString;
+  //   }
+  // };
 
   if (loading) {
     return (
@@ -205,7 +205,7 @@ const CarReviews = ({ idXe }: CarReviewsProps) => {
                       {review.user?.Hoten || "Người dùng ẩn danh"}
                     </div>
                     <div className="text-gray-500 text-sm">
-                      {formatDate(review.NgayDanhGia)}
+                      {/* {formatDate(review.NgayDanhGia)} */}
                     </div>
                   </div>
                 </div>

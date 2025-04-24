@@ -207,7 +207,7 @@ const CarDepositPage = () => {
       toast.error("Thông tin không đầy đủ");
       return;
     }
-
+  
     try {
       setLoading(true);
       
@@ -223,15 +223,21 @@ const CarDepositPage = () => {
               SoLuong: 1, // Assuming one car per deposit
             },
           ],
-          depositPercentage: formData.depositPercentage / 100 // Convert to decimal
+          depositPercentage: formData.depositPercentage / 100, // Convert to decimal
+          // Include pickup schedule data
+          pickupSchedule: {
+            NgayLayXe: pickupSchedule.NgayLayXe?.toISOString(),
+            GioHenLayXe: pickupSchedule.GioHenLayXe,
+            DiaDiem: pickupSchedule.DiaDiem,
+          }
         }),
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || "Không thể khởi tạo thanh toán");
       }
-
+  
       const data = await response.json();
       setStripePaymentData(data);
       setShowStripePayment(true);
@@ -283,14 +289,14 @@ const CarDepositPage = () => {
           },
         }),
       });
-
+  
       if (!depositResponse.ok) {
         throw new Error("Không thể tạo đơn đặt cọc");
       }
-
+  
       const depositData = await depositResponse.json();
-
-      // Create pickup schedule
+  
+      // Create pickup schedule with user-entered data
       const pickupResponse = await fetch("/api/lichhen", {
         method: "POST",
         headers: {
@@ -305,11 +311,11 @@ const CarDepositPage = () => {
           DiaDiem: pickupSchedule.DiaDiem,
         }),
       });
-
+  
       if (!pickupResponse.ok) {
         throw new Error("Không thể tạo lịch hẹn lấy xe");
       }
-
+  
       // Show success toast and redirect
       toast.success("Đặt cọc và lịch hẹn thành công!");
       router.push("/");

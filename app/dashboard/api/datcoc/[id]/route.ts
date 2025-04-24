@@ -72,7 +72,7 @@ export async function DELETE(req: NextApiRequest, {params}:{params: {id:string}}
     const emailTemplate = deleteManyDatCocAppointmentEmailTemplate({
       TenKhachHang: datCoc.khachHang.Hoten || 'Khách hàng',
       NgayLayXe: datCoc.LichHenLayXe[0]?.NgayLayXe?.toISOString() || null,
-      GioHenLayXe: datCoc.LichHenLayXe[0]?.GioHenLayXe?.toLocaleTimeString() || '',
+      GioHenLayXe: datCoc.LichHenLayXe[0]?.GioHenLayXe || '',
       DiaDiem: datCoc.LichHenLayXe[0]?.DiaDiem || '',
       NoiDung: 'Hủy đơn đặt cọc',
       Email: datCoc.khachHang.Email || '',
@@ -130,7 +130,7 @@ export async function PUT(req: NextRequest, {params}: {params: {id: string}}) {
     const emailTemplate = createDatCocAppointmentEmailTemplate({
       TenKhachHang: datCoc.khachHang.Hoten || 'Khách hàng',
       NgayLayXe: datCoc.LichHenLayXe[0]?.NgayLayXe?.toISOString() || null,
-      GioHenLayXe: datCoc.LichHenLayXe[0]?.GioHenLayXe?.toLocaleTimeString() || '',
+      GioHenLayXe: datCoc.LichHenLayXe[0]?.GioHenLayXe || '',
       DiaDiem: datCoc.LichHenLayXe[0]?.DiaDiem || '',
       NoiDung: `Cập nhật trạng thái: ${body.TrangThaiDat}`,
       Email: datCoc.khachHang.Email || '',

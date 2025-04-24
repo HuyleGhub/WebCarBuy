@@ -12,8 +12,6 @@ CREATE TABLE `ChiTietDatCoc` (
     `SoLuong` INTEGER NULL,
     `DonGia` DECIMAL(19, 4) NULL,
 
-    UNIQUE INDEX `ChiTietDatCoc_idDatCoc_key`(`idDatCoc`),
-    UNIQUE INDEX `ChiTietDatCoc_idXe_key`(`idXe`),
     PRIMARY KEY (`idChiTietDatCoc`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

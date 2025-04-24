@@ -273,8 +273,8 @@ model DatCoc {
 
 model ChiTietDatCoc {
   idChiTietDatCoc Int      @id @default(autoincrement())
-  idDatCoc        Int?     @unique
-  idXe            Int?     @unique
+  idDatCoc        Int?     
+  idXe            Int?     
   SoLuong         Int?
   DonGia          Decimal? @db.Decimal(19, 4)
   
@@ -317,7 +317,7 @@ model LichHenLayXe {
   idXe           Int?      
   idKhachHang    Int?      
   NgayLayXe      DateTime? 
-  GioHenLayXe    DateTime? 
+  GioHenLayXe    String?   
   DiaDiem        String?   @db.VarChar(225)
   datCoc         DatCoc?   @relation(fields: [idDatCoc], references: [idDatCoc])
   xe             Xe?       @relation(fields: [idXe], references: [idXe])
