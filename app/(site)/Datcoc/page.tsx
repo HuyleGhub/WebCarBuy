@@ -362,7 +362,7 @@ const CarDepositPage = () => {
     );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br  from-slate-100 to-slate-200 flex flex-col" data-theme="light">
+    <div className=" bg-gradient-to-br  from-slate-100 to-slate-200 flex flex-col" data-theme="light">
       <Toaster position="top-right" />
       
       <div className="flex-1 flex justify-center items-center py-24 px-4" >
