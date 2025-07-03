@@ -8,6 +8,9 @@ import { DndProvider } from 'react-dnd';
 import { useEffect, useState } from "react";
 import ClientNavbar from "./components/ClientNavbar";
 import { Toaster } from 'react-hot-toast';
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
+import { ourFileRouter } from "./api/uploadthing/core";
 
 // Font definitions need to stay outside the component
 const geistSans = localFont({
@@ -49,6 +52,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
+     
         <DndProvider backend={HTML5Backend}>
         <Toaster position="top-right" 
          toastOptions={{
@@ -71,6 +75,9 @@ export default function RootLayout({
         />
           <div className="min-h-screen ">
             <ClientNavbar />
+            <NextSSRPlugin
+              routerConfig={extractRouterConfig(ourFileRouter)}
+            />
             <main>{children}</main>
           </div>
         </DndProvider>

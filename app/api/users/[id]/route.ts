@@ -14,10 +14,14 @@ export async function DELETE(req: NextRequest, {params}: {params: {id: string}})
         return NextResponse.json({message: "Xóa Không Thành Công"}, {status: 500});
     }
 }
+
 export async function PUT(request: NextRequest,{ params }: { params: { id: string } }) {
     try {
       const id = parseInt(params.id);
       const data = await request.json();
+      
+      // Process avatar if provided
+      const avatarUrls = Array.isArray(data.Avatar) ? data.Avatar : [data.Avatar].filter(Boolean);
       
       // Prepare update data
       const updateData: any = {
@@ -27,6 +31,12 @@ export async function PUT(request: NextRequest,{ params }: { params: { id: strin
         Sdt: data.Sdt,
         Diachi: data.Diachi,
       };
+      
+      // Only add Avatar field if there are URLs to save
+      if (avatarUrls.length > 0) {
+        updateData.Avatar = avatarUrls.join('|');
+      }
+      
       // Update user
       const updatedUser = await prisma.users.update({
         where: { 

@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
   
       const skip = (page - 1) * limit_size;
 
-      const searchText = searchParams.get('searchText') || '';
+      const searchText = searchParams.get('search') || '';
 
       const whereClause = searchText ? {
         OR: [
@@ -41,6 +41,10 @@ export async function GET(request: NextRequest) {
       const data = await prisma.users.findMany({
           skip: skip,
           take: limit_size,
+          where: whereClause,  // This was missing
+          include: {  // Also include the role information for proper display
+              role: true
+          }
       })
       
       return NextResponse.json(

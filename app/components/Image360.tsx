@@ -8,7 +8,7 @@ const PanoramaViewer = () => {
 
   useEffect(() => {
     if (!viewerRef.current && panoramaRef.current) {
-      const panorama = new PANOLENS.ImagePanorama("/vinfast-president-360.jpg");
+      const panorama = new PANOLENS.ImagePanorama("/huy2.jpg");
       const viewer = new PANOLENS.Viewer({ container: panoramaRef.current });
 
       viewer.add(panorama);

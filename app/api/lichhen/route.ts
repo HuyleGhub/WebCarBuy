@@ -1,4 +1,4 @@
-
+//api/lichhen
 import { getSession } from '@/app/lib/auth';
 import prisma from '@/prisma/client'
 import { PrismaClient } from '@prisma/client'
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
         idXe: parseInt(idXe),
         idKhachHang: session.idUsers,
         NgayLayXe: pickupDate.toISOString(), // Lưu ngày và giờ theo giờ địa phương
-        GioHenLayXe: pickupDate,             // Lưu giờ đầy đủ theo múi giờ địa phương
+        GioHenLayXe: pickupDate.toISOString(),             // Lưu giờ đầy đủ theo múi giờ địa phương
         DiaDiem: DiaDiem,
       },
     });

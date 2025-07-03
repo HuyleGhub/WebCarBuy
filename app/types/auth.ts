@@ -7,6 +7,7 @@ export interface UserAuth {
   Sdt?: string;
   DiaChi?: string;
   idRole?: number;
+  Avatar?: string;
   role?: {
     TenNguoiDung?: string;
   }

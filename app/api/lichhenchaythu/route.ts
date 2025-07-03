@@ -1,5 +1,3 @@
-import { sendEmail } from "@/app/emailService/route";
-import { createAppointmentEmailTemplate } from "@/app/emailTemplate/route";
 import { getSession } from "@/app/lib/auth";
 import prisma from "@/prisma/client";
 import { NextRequest, NextResponse } from "next/server";
@@ -85,7 +83,11 @@ function convertTo24Hour(time12h: string): string {
 
 export async function GET() {
   try {
+    const session = await getSession();
     const pickupSchedules = await prisma.lichHen.findMany({
+      where: {
+        idUser: session.idUsers , // Assuming you want to fetch schedules for a specific user
+      },
       include: {
         xe: true,
         loaiXe: true,

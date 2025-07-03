@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { UserAuth } from "../types/auth";
 import { useDrop } from 'react-dnd';
 import toast from "react-hot-toast";
+import { NotificationBell } from "../dashboard/components/notifications/notification-bell";
+import NotificationComponent from "../dashboard/components/NotificationComponent";
 
 interface LoaiXe {
   idLoaiXe: number;
@@ -119,7 +121,7 @@ export default function Navbar() {
   useEffect(() => {
     const fetchSession = async () => {
       try {
-        const response = await fetch("api/auth/session");
+        const response = await fetch("/api/auth/session");
         if (!response.ok) throw new Error("Failed to fetch session");
         const data = await response.json();
         setUser(data);
@@ -158,6 +160,8 @@ export default function Navbar() {
   };
 
   const cartItemCount = cartItems?.length || 0;
+
+  
   
 
   return (
@@ -255,6 +259,7 @@ export default function Navbar() {
             </div>
           ) : (
             <div className="flex relative">
+              <NotificationComponent />
               <div className="dropdown dropdown-end">
                 <div
                   ref={dropRef as any}
@@ -296,9 +301,21 @@ export default function Navbar() {
                     className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold leading-none"
                     style={{ lineHeight: "2.5rem" }}
                   >
-                    {user?.Hoten?.[0]?.toUpperCase() ||
-                      user?.Tentaikhoan?.[0]?.toUpperCase() ||
-                      "U"}
+                   {user.Avatar && user.Avatar.length > 0 ? (
+                  <div className="relative w-10 h-10 rounded-full overflow-hidden">
+                    <img 
+                      src={user.Avatar} 
+                      alt="Profile Avatar" 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
+                    <span className="text-white text-sm">
+                      {user.Hoten ? user.Hoten.charAt(0).toUpperCase() : '?'}
+                    </span>
+                  </div>
+                )}
                   </div>
                 </div>
                 <ul
@@ -331,7 +348,7 @@ export default function Navbar() {
                       <a href="/dashboard">Dashboard</a>
                     </li>
                   )}
-                  <li>
+                  <li className="text-red-500">
                     <a onClick={handleLogout}>Logout</a>
                   </li>
                 </ul>
